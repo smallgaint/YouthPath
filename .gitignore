@@ -1,0 +1,19 @@
+# Python 관련 제외
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# 라이브러리 및 DB 관련
+
+
+
+# 운영체제 관련 (Mac 전용)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE 관련 (VS Code, Cursor 등)
+.vscode/
+.idea/
