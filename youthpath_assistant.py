@@ -99,16 +99,16 @@ class Router:
         self._default_agent_name = default_agent_name
 
     def route(self, user_query: str) -> list[SpecialistAgent]:
-        query = user_query.lower()
+        normalized_query = user_query.lower()
         selected: list[str] = []
 
-        if "정책" in query:
+        if "정책" in normalized_query:
             selected.append("policy")
-        if "채용" in query or "취업" in query:
+        if "채용" in normalized_query or "취업" in normalized_query:
             selected.append("job")
-        if "자소서" in query or "이력서" in query:
+        if "자소서" in normalized_query or "이력서" in normalized_query:
             selected.append("resume")
-        if "일정" in query or "캘린더" in query:
+        if "일정" in normalized_query or "캘린더" in normalized_query:
             selected.append("calendar")
 
         if not selected:
