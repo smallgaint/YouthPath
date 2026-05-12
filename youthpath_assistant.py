@@ -89,8 +89,11 @@ class CalendarAgent(SpecialistAgent):
 class Router:
     """간단한 키워드 라우터 (LLM 1회 분류를 대체하는 결정적 로직)."""
 
-    def __init__(self, agents: list[SpecialistAgent]) -> None:
+    def __init__(self, agents: list[SpecialistAgent], default_agent_name: str = "policy") -> None:
         self._agent_map = {agent.name: agent for agent in agents}
+        if default_agent_name not in self._agent_map:
+            raise ValueError(f"기본 에이전트 '{default_agent_name}'를 찾을 수 없습니다.")
+        self._default_agent_name = default_agent_name
 
     def route(self, user_query: str) -> list[SpecialistAgent]:
         query = user_query.lower()
@@ -106,7 +109,7 @@ class Router:
             selected.append("calendar")
 
         if not selected:
-            selected = ["policy"]
+            selected = [self._default_agent_name]
 
         return [self._agent_map[name] for name in selected]
 

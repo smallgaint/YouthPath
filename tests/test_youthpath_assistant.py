@@ -45,6 +45,11 @@ class YouthPathAssistantTests(unittest.TestCase):
             self.assertIn("matched", output)
             self.assertIn("query", output)
 
+    def test_router_default_agent_is_configurable(self) -> None:
+        router = Router(self.agents, default_agent_name="job")
+        result = YouthPathOrchestrator(router).handle("키워드가 없는 질의")
+        self.assertEqual(result["specialist_results"][0]["agent"], "job")
+
 
 if __name__ == "__main__":
     unittest.main()
