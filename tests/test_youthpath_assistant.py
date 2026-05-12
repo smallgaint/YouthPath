@@ -50,6 +50,11 @@ class YouthPathAssistantTests(unittest.TestCase):
         result = YouthPathOrchestrator(router).handle("키워드가 없는 질의")
         self.assertEqual(result["specialist_results"][0]["agent"], "job")
 
+    def test_router_invalid_default_agent_message_has_available_names(self) -> None:
+        with self.assertRaises(ValueError) as context:
+            Router(self.agents, default_agent_name="unknown")
+        self.assertIn("사용 가능한 값", str(context.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

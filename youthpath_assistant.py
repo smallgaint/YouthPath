@@ -92,7 +92,10 @@ class Router:
     def __init__(self, agents: list[SpecialistAgent], default_agent_name: str = "policy") -> None:
         self._agent_map = {agent.name: agent for agent in agents}
         if default_agent_name not in self._agent_map:
-            raise ValueError(f"기본 에이전트 '{default_agent_name}'를 찾을 수 없습니다.")
+            valid_names = ", ".join(sorted(self._agent_map.keys()))
+            raise ValueError(
+                f"기본 에이전트 '{default_agent_name}'를 찾을 수 없습니다. 사용 가능한 값: {valid_names}"
+            )
         self._default_agent_name = default_agent_name
 
     def route(self, user_query: str) -> list[SpecialistAgent]:
