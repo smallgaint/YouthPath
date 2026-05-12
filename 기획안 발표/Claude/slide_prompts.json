@@ -1,0 +1,1827 @@
+{
+  "deck_prompt_meta": {
+    "design_system_name": "Navy Editorial Report — Cool Lavender + Deep Navy",
+    "global_theme_summary": "A restrained, research-report visual system. Cool pale-lavender canvas (~#E9EDF6 approx) with a single deep-navy accent (~#1C2C5A approx) and a medium blue-grey for secondary text (~#7C8AAE approx). All slides use a Pretendard-family sans-serif with strong weight contrast (ExtraBold for titles, Light/Regular for body). The deck reads like an internal proposal document for a university research course — formal, evidence-led, and quietly confident. There are no warm colors, no gradients, no shadows, and no decorative shapes that do not appear in the original reference deck.",
+    "global_consistency_rules": [
+      "Color palette is fixed at four colors: deep navy (#1C2C5A approx) for primary text and emphasis, pale lavender (#C9D1E5 approx) for secondary panels and decorative bands, medium blue-grey (#7C8AAE approx) for secondary text, white (#FFFFFF) for cards and reverse-text. The canvas itself is a very pale lavender-blue (#E9EDF6 approx). No new accent colors are introduced anywhere in the deck.",
+      "Typography is locked to a Pretendard-style Korean/Latin sans-serif. Title-case headings use ExtraBold/Bold weights at large size; body copy uses Light/Regular at smaller size; ALL CAPS kickers use Bold or SemiBold with slightly loosened tracking. Plain black (#000) is never used for body text — always deep navy.",
+      "Number badges (01, 02, 03 …) always render as a deep navy filled square with bold white numerals. The badge size, corner radius, and font weight are identical across the entire deck.",
+      "Page numbers always sit in the bottom-right corner accompanied by a small navy accent square (~4–6px). The bottom-left corner of every body page is intentionally left empty.",
+      "The diagonal lavender-triangular overlay motif appears only on the cover (slide 1) and the closing (slide 13). Body pages keep a clean canvas — never reuse the diagonal motif on body slides.",
+      "Diagram connector lines and arrows share the same stroke weight (~1.0–1.5px equivalent) and the same deep-navy color across every page that contains a diagram.",
+      "Icons live only in the top-right corner of cards. All icons share a single line weight, a single color (deep navy or medium blue-grey), and a single approximate size. Filled-style icons are not used.",
+      "Cards use a white fill with a thin lavender-grey outline (#D6DCE9 approx). Card outline weight, corner radius, and internal padding are identical across every body slide that uses cards.",
+      "Tables follow a single style: deep navy filled header row with white text and centered alignment; body rows on white with very thin lavender-grey grid lines and left-aligned text labels.",
+      "Photographs and illustrations are not used. The deck is entirely typography, geometry, and minimal iconography."
+    ],
+    "body_slide_system": "Every body slide (slides 2–12) follows a fixed three-zone composition. (Header zone, top ~12–15%): a thin full-width deep-navy bar runs across the very top of the page; below it, the slide's Title Case heading sits left-aligned in large ExtraBold deep navy, paired with an ALL CAPS section kicker right-aligned in small bold deep navy; directly beneath the kicker, a two-line right-aligned subtitle in medium blue-grey gives a one-sentence frame for the slide. (Body zone, middle ~70–75%): the only zone that varies across slides — it is filled by exactly one of the nine allowed layout families (cover / contents-left-panel / insight-claim-deep-navy-block / insight-claim-white-card / comparison-two-column-cards / process-hub-and-spoke / data-gantt-table / metric-numbered-card-grid / closing-end-page). (Footer zone, bottom ~5–8%): a small page-number numeral sits in the bottom-right corner, flanked by a small navy accent square; the bottom-left corner is empty. The header and footer never change across slides 2–12 in any visible dimension. Slide 1 (cover) and slide 13 (closing) explicitly break out of this body system and follow their own title-page / closing-page logic.",
+    "json_version": "1.0"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_role": "cover",
+      "page_family": "title",
+      "slide_title": "YouthPath — A Multi-Agent Assistant for Youth Social Entry",
+      "layout_family": "cover",
+      "prompt": {
+        "objective": "Open the recorded video presentation with a single frame that establishes the project name, the team's affiliation, the submission date, and the four core technologies — without introducing any element that will not reappear elsewhere in the deck.",
+        "narrative_function": "Set tone and authority. The cover is the only slide besides the closing that uses the diagonal lavender overlay, so it must visually anchor the deck's opening before any body content arrives.",
+        "visual_intent": "Restrained editorial cover. The viewer should feel they are looking at a research report's title page rather than a marketing landing page. The diagonal overlay is a quiet background motif, never the focal point.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "State the project's English subtitle and name in two stacked lines that read as a single phrase.",
+            "content_instruction": "Line 1 (lighter weight): 'A Multi-Agent Assistant for'. Line 2 (heaviest weight, larger): 'Youth Social Entry'. Both lines left-aligned, deep navy.",
+            "placement_instruction": "Center-left of the slide. The title block occupies roughly the left 1/2 to 2/3 of the slide width, vertically centered.",
+            "style_instruction": "Pretendard ExtraBold for line 2, Pretendard Light/Regular for line 1. Tight leading between the two lines. Deep navy color. Title case (no all-caps)."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Identify the project shortname in formal/categorical voice.",
+            "content_instruction": "Single line: 'YOUTHPATH — INITIAL PROPOSAL'.",
+            "placement_instruction": "Directly below the title block, left-aligned to the same left margin.",
+            "style_instruction": "ALL CAPS, small size (~roughly 1/4 to 1/5 of the title height), Bold or SemiBold, medium blue-grey color, slightly loosened letter-spacing."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Identify the institution, the team, and the four core technologies.",
+            "content_instruction": "Three short stacked lines: 'Hanyang University · Deep Learning Methods and Application' / 'Five-Person Team' / 'LLM · RAG · Multi-Agent · MCP'.",
+            "placement_instruction": "Bottom-right corner of the slide, right-aligned.",
+            "style_instruction": "Small Pretendard Regular, deep navy. Lines are tight together. A small deep-navy filled accent square (~4–6px) sits just below the lowest line, also right-aligned."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "State the submission date.",
+            "content_instruction": "Single line: '2026.05.05'.",
+            "placement_instruction": "Top-right corner of the slide.",
+            "style_instruction": "Small Bold deep navy. Right-aligned."
+          },
+          {
+            "block_type": "icon_group",
+            "purpose": "Vertical chapter-style label running down the left edge — the cover's signature element from the reference 01.png.",
+            "content_instruction": "Single rotated word: 'PRESENTATION'.",
+            "placement_instruction": "Far left edge of the slide, rotated 90 degrees counter-clockwise so the word reads bottom-to-top. Vertically centered along the left edge.",
+            "style_instruction": "Small ALL CAPS, Bold, deep navy, slightly loosened letter-spacing."
+          },
+          {
+            "block_type": "image",
+            "purpose": "Set the cover's atmospheric background using the reference deck's diagonal overlay motif.",
+            "content_instruction": "Two or three asymmetric large triangles in pale lavender (~#C9D1E5 approx) and a slightly lighter shade. They form a diagonal cut across the right third of the slide, never overlapping the title text.",
+            "placement_instruction": "Right third of the slide as a background layer. Triangles extend off the right and bottom edges. Always sit behind all text.",
+            "style_instruction": "Flat fills only. No gradients, no shadows, no outlines. Low contrast against the pale lavender canvas."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Cover layout: a single composition with the title block as the visual anchor on the center-left and the diagonal overlay on the right. Vertical 'PRESENTATION' label on the far left edge. Date in the top-right. Metadata in the bottom-right.",
+          "header_body_footer": {
+            "header": "Thin full-width deep-navy bar across the very top edge. Date '2026.05.05' in the top-right.",
+            "body": "Title block (two lines) center-left. Subtitle 'YOUTHPATH — INITIAL PROPOSAL' directly below. Vertical 'PRESENTATION' label rotated on the left edge. Diagonal lavender triangles in the right third as background.",
+            "footer": "Three-line metadata block in the bottom-right with a small deep-navy accent square. The cover does not display a page number."
+          },
+          "reading_order": [
+            "Date (top-right)",
+            "Title line 1, then title line 2 (center-left)",
+            "Subtitle (below title)",
+            "Vertical 'PRESENTATION' label (left edge)",
+            "Metadata block (bottom-right)"
+          ],
+          "alignment": "Title and subtitle: left-aligned to a shared left margin (roughly 7% from the left edge). Date and metadata: right-aligned to a shared right margin. Vertical label: hugs the very left edge.",
+          "spacing": "Generous whitespace. Approximately the left half of the slide is dedicated to the title block and its surrounding air. The right half holds the diagonal overlay and the date.",
+          "density": "Low. The cover should breathe.",
+          "body_slide_consistency": "The cover deliberately does not follow the body-slide header rule. It is the only slide other than the closing where the diagonal overlay appears. No page number on this slide."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Use only the four deck colors: pale-lavender canvas, deep navy, medium blue-grey, pale lavender (overlay).",
+            "Diagonal overlay must be in pale lavender — never a saturated or warm color.",
+            "Background canvas is the deck's standard pale lavender-blue — not pure white."
+          ],
+          "typography_rules": [
+            "Title line 2 is the largest type element on the entire deck.",
+            "Title line 1 is roughly 50–60% the optical size of line 2 and a markedly lighter weight.",
+            "ALL CAPS subtitle uses loosened letter-spacing.",
+            "No italic, no underline anywhere on the cover."
+          ],
+          "component_rules": [
+            "Vertical 'PRESENTATION' label is rotated exactly 90 degrees, not 270.",
+            "The small deep-navy accent square in the bottom-right is the same accent square that will reappear next to every body-slide page number — establish its size here."
+          ],
+          "chart_rules": ["No charts on the cover."],
+          "table_rules": ["No tables on the cover."],
+          "icon_rules": ["No icons on the cover beyond the rotated word label."],
+          "infographic_rules": ["No infographic content on the cover."],
+          "diagram_rules": ["No diagrams on the cover."],
+          "imagery_rules": [
+            "No photographs.",
+            "No illustrations beyond the diagonal triangle overlay.",
+            "Triangles must be flat fills, no gradients."
+          ],
+          "anti_patterns_to_avoid": [
+            "Centering the title block dead-center of the slide (kills the editorial asymmetry).",
+            "Using the title in ALL CAPS (would conflict with the body-slide title style).",
+            "Adding a logo, icon, or illustration of a person.",
+            "Overlapping the diagonal triangles with the title text.",
+            "Adding a page number to the cover.",
+            "Adding bullet points or a contents preview to the cover."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "Project name 'YouthPath' (in subtitle line)",
+            "English title across two lines",
+            "Hanyang University and the course name",
+            "Five-Person Team",
+            "Four-keyword tech stack",
+            "Submission date"
+          ],
+          "must_not_include": [
+            "Individual presenter names",
+            "Logos",
+            "Detailed technology explanations",
+            "Slide-deck preview thumbnails",
+            "Korean text"
+          ],
+          "evidence_to_use": [
+            "F1-context-pain-points (project naming alignment)",
+            "G1-presentation-format (date, format)"
+          ],
+          "evidence_to_avoid": [
+            "Any source content — the cover should not summarize the proposal."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "When generated as a PPT slide, the diagonal overlay can be rendered as two or three flat-fill triangle shapes layered behind a transparent background; do not use gradient fills.",
+          "image_generation_note": "When generated as a flat image, treat the diagonal triangles as a single composed background motif. Avoid lens flares, glow effects, or any 3D treatment.",
+          "fallback_if_content_is_sparse": "Content is fixed and minimal by design. If the generator wants to add filler, suppress it — the cover's restraint is intentional."
+        }
+      }
+    },
+    {
+      "slide_number": 2,
+      "slide_role": "context",
+      "page_family": "body",
+      "slide_title": "Contents",
+      "layout_family": "contents-left-panel",
+      "prompt": {
+        "objective": "Give the audience a six-section map of the deck so they can mentally navigate the talk and so the evaluator can locate which slides answer which rubric criteria.",
+        "narrative_function": "Open the body of the deck. Set expectations about what is coming and how it is structured. This is the only body slide that uses the left-panel variant.",
+        "visual_intent": "Two-zone composition. The left third feels like an editorial chapter divider in pale lavender; the right two-thirds feels like a tidy numbered list of chapters. The whole slide should read as 'opening table of contents,' not as a content slide carrying argument.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Anchor the page with the chapter-header word 'Contents'.",
+            "content_instruction": "Single word: 'Contents'.",
+            "placement_instruction": "Inside the left 1/3 lavender panel, vertically centered.",
+            "style_instruction": "Very large Pretendard ExtraBold, deep navy, title case."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Identify the deck context in formal voice.",
+            "content_instruction": "Single line: 'YOUTHPATH PROPOSAL'.",
+            "placement_instruction": "Directly below the 'Contents' title inside the left panel.",
+            "style_instruction": "ALL CAPS, small Pretendard Bold or SemiBold, medium blue-grey, slightly loosened tracking."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Provide the standard right-aligned ALL CAPS section kicker that appears on every body slide.",
+            "content_instruction": "Single line: 'CONTENTS'.",
+            "placement_instruction": "Top-right corner, just below the deep-navy header bar.",
+            "style_instruction": "ALL CAPS, small Pretendard Bold, deep navy, right-aligned."
+          },
+          {
+            "block_type": "bullets",
+            "purpose": "List the six sections of the deck as a numbered chapter list.",
+            "content_instruction": "Six entries, each with a number badge, a Title Case section name, and a one-line description in medium blue-grey: 01 'Problem Definition' — 'A fragmented path into society.' / 02 'Solution and Differentiation' — 'YouthPath and what makes it different.' / 03 'System Design' — 'A four-layer architecture with a multi-agent core.' / 04 'Evaluation Plan' — 'Quantitative and qualitative dual-track evaluation.' / 05 'Execution Plan' — 'Team, schedule, and cost.' / 06 'Expected Outcomes' — 'User impact and a five-phase roadmap.'",
+            "placement_instruction": "Stacked vertically inside the right 2/3 of the slide. All six number badges share the same x-coordinate. Even vertical spacing between rows.",
+            "style_instruction": "Number badges as deep-navy filled squares with bold white numerals, identical to the deck's standard. Section name in Pretendard Bold deep navy. Description in Pretendard Regular medium blue-grey, smaller."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard body-slide page-number block.",
+            "content_instruction": "'02' followed by a small deep-navy accent square.",
+            "placement_instruction": "Bottom-right corner.",
+            "style_instruction": "Small Pretendard Bold deep navy. Accent square ~4–6px filled deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Two-column asymmetric: left 33% lavender panel holding the chapter-header title, right 67% holding the six-row numbered list.",
+          "header_body_footer": {
+            "header": "Thin deep-navy bar across the very top. The 'CONTENTS' kicker sits in the top-right. The left panel's pale lavender extends up to meet the header bar so the panel and header read as connected.",
+            "body": "Left 33% panel: large 'Contents' title and small ALL CAPS subtitle stacked. Right 67%: six numbered rows, each with badge + title + description.",
+            "footer": "Page number '02' bottom-right with a small navy accent square. Bottom-left empty."
+          },
+          "reading_order": [
+            "Left panel 'Contents' title",
+            "Top-right 'CONTENTS' kicker",
+            "Numbered list rows 01 through 06 (top to bottom)"
+          ],
+          "alignment": "Left panel content is left-aligned to a left margin inside the panel. Numbered rows are left-aligned at the badge x-coordinate.",
+          "spacing": "Even vertical rhythm between the six rows. Generous whitespace within the left panel — the panel should feel airy, not cramped.",
+          "density": "Low to medium. This is a navigation page, not a content page.",
+          "body_slide_consistency": "Even though this slide uses the left-panel variant, it still uses the same right-aligned ALL CAPS kicker, the same number-badge style, the same page-number block, and the same color palette as every other body slide."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Left panel fill is pale lavender (~#C9D1E5 approx).",
+            "Number badges are deep navy with white numerals — no other color.",
+            "Description text is medium blue-grey, never deep navy."
+          ],
+          "typography_rules": [
+            "The 'Contents' word is the largest type element on the slide.",
+            "ALL CAPS kicker text always uses loosened letter-spacing.",
+            "Section names in title case, never ALL CAPS."
+          ],
+          "component_rules": [
+            "All six number badges are identical in size, fill color, and font weight.",
+            "All six rows use identical row height and identical type sizes."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": ["No tables."],
+          "icon_rules": ["No icons. Number badges are the only visual cueing."],
+          "infographic_rules": ["The numbered list is the only infographic element."],
+          "diagram_rules": ["No diagrams."],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Adding decorative dots, bullets, or hairlines beside each row.",
+            "Adding a thumbnail preview of each section's slide.",
+            "Using more than six items.",
+            "Adding the diagonal overlay (this is a body slide).",
+            "Using ALL CAPS for the section names."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "All six section names",
+            "A one-line description per section",
+            "Number badges 01 through 06"
+          ],
+          "must_not_include": [
+            "Per-slide page-number mappings (e.g., 'Section 01: pages 3–4')",
+            "Estimated speaking time per section",
+            "Footnotes or asterisks"
+          ],
+          "evidence_to_use": [
+            "Section structure across the slide_plan.json (slides 3–12 grouped into six topic_groups)"
+          ],
+          "evidence_to_avoid": [
+            "Detailed proposal content — the contents page summarizes structure, not arguments."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Build the left panel as a single rectangle filled with the lavender swatch, extending from below the navy header bar to the bottom of the slide. The right column is a simple list, not a multi-column layout.",
+          "image_generation_note": "Render the number badges as filled squares with sharp 90-degree corners, not rounded.",
+          "fallback_if_content_is_sparse": "If the generator wants to add icons next to each row, suppress them — DESIGN.md restricts icons to card-corner placement only."
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "slide_role": "problem",
+      "page_family": "body",
+      "slide_title": "Problem Definition — A Fragmented Path into Society",
+      "layout_family": "insight-claim-white-card",
+      "prompt": {
+        "objective": "Establish the problem at scale (~12 million Korean youth) and shape (four fragmented information domains) in a single visually anchored frame.",
+        "narrative_function": "First substantive slide of the argument. It earns the macro half of the 20-point Problem Definition rubric. Pairs with slide 4 (the micro view) as a two-part problem statement.",
+        "visual_intent": "Asymmetric two-zone composition: a large emphasized number on the left grounds the slide's scale claim, and a 2x2 card grid on the right itemizes the four fragmented domains. The viewer should grasp 'big number + four pieces' in under five seconds.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Problem Definition'.",
+            "placement_instruction": "Top-left of the slide, below the navy header bar.",
+            "style_instruction": "Pretendard ExtraBold, large, deep navy, title case, left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Right-aligned ALL CAPS section kicker (standard body-slide element).",
+            "content_instruction": "'PROBLEM DEFINITION'.",
+            "placement_instruction": "Top-right corner.",
+            "style_instruction": "ALL CAPS, small Bold deep navy, right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle (standard body-slide element).",
+            "content_instruction": "Line 1: 'Youth career-entry information is fragmented,' Line 2: 'and qualification matching, real-time data, and alerts are all missing.'",
+            "placement_instruction": "Directly below the kicker, right-aligned.",
+            "style_instruction": "Small Pretendard Regular, medium blue-grey, two lines exactly, right-aligned."
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "Anchor the left side with a single emphasized scale figure.",
+            "content_instruction": "Large numeral '~12M' as the headline. Below it: small label 'Korean youth aged 19–34'. Below that: a single short sentence 'Average information-search cost: 2 hours.'",
+            "placement_instruction": "Left ~40% of the body zone, vertically centered.",
+            "style_instruction": "'~12M' in Pretendard ExtraBold deep navy, sized at roughly 25% of the slide width. Label in medium blue-grey ALL CAPS small Bold. Sentence in deep navy Regular."
+          },
+          {
+            "block_type": "infographic",
+            "purpose": "Itemize the four fragmented domains as parallel cards.",
+            "content_instruction": "A 2x2 grid of four cards. Each card contains: domain name (bold heading) / existing platform names (one line, smaller) / one-line limitation. Card 1: 'Youth Policy' / 'Government24, Ontongchungnyeon' / 'List-only search; no eligibility match.' Card 2: 'Job Postings' / 'WorkNet, JobKorea, Saramin' / 'Per-employer fragmentation; no resume linkage.' Card 3: 'Resume and Interview' / 'Standalone tools' / 'No company-specific reference data.' Card 4: 'Schedule Management' / 'Personal calendar apps' / 'No automatic deadline sync.'",
+            "placement_instruction": "Right ~60% of the body zone. 2x2 grid, even spacing.",
+            "style_instruction": "White-fill cards with thin lavender-grey outline. Domain name in Pretendard Bold deep navy. Platform list in medium blue-grey small Regular. Limitation in deep navy Regular. One small line icon per card in the top-right corner."
+          },
+          {
+            "block_type": "icon_group",
+            "purpose": "Single domain-cue icon per card.",
+            "content_instruction": "Card 1 = document icon. Card 2 = briefcase icon. Card 3 = pen icon. Card 4 = calendar icon.",
+            "placement_instruction": "Top-right corner of each card, small.",
+            "style_instruction": "All four icons share the same line weight and the same deep-navy color. Outline-only style, never filled."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard body-slide page-number block.",
+            "content_instruction": "'03' with a small deep-navy accent square.",
+            "placement_instruction": "Bottom-right corner.",
+            "style_instruction": "Small Pretendard Bold deep navy. Accent square ~4–6px filled deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Asymmetric two-column body: left ~40% (single emphasized number block), right ~60% (2x2 card grid).",
+          "header_body_footer": {
+            "header": "Standard body-slide header: navy bar, 'Problem Definition' title left, 'PROBLEM DEFINITION' kicker top-right, two-line subtitle below the kicker.",
+            "body": "Left: '~12M' emphasized number with supporting label and sentence. Right: 2x2 grid of four white cards, one per domain.",
+            "footer": "Page number '03' bottom-right with navy accent square. Bottom-left empty."
+          },
+          "reading_order": [
+            "Title 'Problem Definition' (top-left)",
+            "Kicker 'PROBLEM DEFINITION' (top-right)",
+            "Two-line subtitle (top-right)",
+            "Big number '~12M' and label (left)",
+            "Card grid clockwise from top-left (right)"
+          ],
+          "alignment": "All four cards align to the same baseline grid; identical card width and height. The big number block aligns to the left edge of the body zone.",
+          "spacing": "Generous whitespace between the title and the body. Inter-card gap roughly 8–10% of card width. Vertical breathing room between the big number and the supporting label.",
+          "density": "Medium.",
+          "body_slide_consistency": "Header zone is identical in geometry to slides 4–12. Footer is identical to slides 2 and 4–12. Card outline weight, corner radius, and internal padding established here will be reused on slides 4, 6, 9, 10, 12."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Big number is deep navy on the canvas — no fill behind it.",
+            "Cards are white with thin lavender-grey outlines.",
+            "No fill colors inside the cards beyond white."
+          ],
+          "typography_rules": [
+            "The big number '~12M' is the largest type element on this slide but not as large as the cover title.",
+            "Card headings use title case in Bold, not ALL CAPS.",
+            "Card platform-name lists are smaller than card headings and in medium blue-grey."
+          ],
+          "component_rules": [
+            "All four cards are visually identical in size, outline weight, padding, and icon size.",
+            "Number badges are not used on this slide — the cards are domain cards, not numbered cards."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": ["No tables — cards are intentionally chosen instead."],
+          "icon_rules": [
+            "Exactly one icon per card, top-right corner.",
+            "Outline icons only, single line weight, single color.",
+            "Icons must read as semantic cues for the domain, not as decoration."
+          ],
+          "infographic_rules": [
+            "The 2x2 card grid is the slide's primary infographic — keep it visually clean.",
+            "No connecting lines between the cards or between the cards and the big number."
+          ],
+          "diagram_rules": ["No diagrams."],
+          "imagery_rules": ["No photographs or illustrations beyond the four card icons."],
+          "anti_patterns_to_avoid": [
+            "Putting the '~12M' number inside a card or behind a colored fill.",
+            "Adding a fifth card to the grid.",
+            "Using bar-chart-style visualizations of the platform list.",
+            "Decorating the cards with corner ribbons or starbursts.",
+            "Using filled icons or multicolor icons."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "The ~12M scale figure",
+            "The 'aged 19–34' qualifier",
+            "All four domains and their existing-platform examples",
+            "A one-line limitation per domain"
+          ],
+          "must_not_include": [
+            "Per-platform user counts not stated in the proposal",
+            "Welfare-coverage gap statistics not stated in the proposal",
+            "Any pain-point details (those belong on slide 4)"
+          ],
+          "evidence_to_use": [
+            "F1-context-pain-points (the four-domain limitation table)",
+            "F2-target-users (the ~12M figure)"
+          ],
+          "evidence_to_avoid": [
+            "F1's pain-point list — that is slide 4's territory.",
+            "F4's competitive comparison — that is slide 6's territory."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Render '~12M' as a single text element, not as an image — keep it editable so the team can adjust the figure if a more recent statistic is found.",
+          "image_generation_note": "Render the four cards with hairline outlines — about 0.5–0.75px equivalent — to keep the report-like restraint.",
+          "fallback_if_content_is_sparse": "If platform names per card are unknown, default to leaving the platform line empty rather than inventing names."
+        }
+      }
+    },
+    {
+      "slide_number": 4,
+      "slide_role": "problem",
+      "page_family": "body",
+      "slide_title": "Pain Points — Four Frictions a Single Tool Cannot Fix",
+      "layout_family": "metric-numbered-card-grid",
+      "prompt": {
+        "objective": "Show the four lived pain points that compound on each other and explain why no single existing tool resolves them.",
+        "narrative_function": "Continuation of slide 3 (split topic). Slide 3 covered the macro view (scale and domains); this slide covers the micro view (the user's lived friction). Together they earn the 20-point Problem Definition rubric.",
+        "visual_intent": "A clean 2x2 numbered card grid. The viewer should perceive four parallel, equally weighted problems that together form a structural barrier. No single card should visually dominate.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Pain Points'.",
+            "placement_instruction": "Top-left, below the navy header bar.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'PAIN POINTS'.",
+            "placement_instruction": "Top-right corner.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'Four structural problems compound on each other,' Line 2: 'so no single existing tool can resolve them.'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "Itemize the four pain points as numbered, equally weighted cards.",
+            "content_instruction": "A 2x2 grid of four cards. Each card contains: a deep-navy number badge tucked into the top-left corner (01–04), a bold heading, a one-line description, and a small emphasized fact. Card 01 'Information Fragmentation' / 'Information lives across 5–6 separate platforms.' / fact: '~2 hours per task'. Card 02 'No Qualification Matching' / 'Policy sites list policies but never decide whether you qualify.' / fact: 'Manual eligibility check'. Card 03 'LLM Knowledge Cutoff' / 'General-purpose LLMs cannot see new policies, filings, or postings.' / fact: 'Stale answers'. Card 04 'Missed Application Deadlines' / 'Deadlines are scattered; users miss eligible policies.' / fact: 'No unified alerts'.",
+            "placement_instruction": "Body zone, 2x2 grid, even spacing. All four cards identical in size.",
+            "style_instruction": "White-fill cards with thin lavender-grey outline. Number badge tucked outside the top-left card corner, slightly overlapping it. Heading in Pretendard Bold deep navy. Description in Pretendard Regular deep navy. Fact in medium blue-grey ALL CAPS small Bold."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard body-slide page-number block.",
+            "content_instruction": "'04' with a small deep-navy accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Body zone is a single 2x2 grid. No left/right division.",
+          "header_body_footer": {
+            "header": "Standard: navy bar, 'Pain Points' title left, 'PAIN POINTS' kicker top-right, two-line subtitle below.",
+            "body": "2x2 grid of four numbered cards filling the body zone.",
+            "footer": "Page number '04' bottom-right with accent square."
+          },
+          "reading_order": [
+            "Title (top-left)",
+            "Kicker and subtitle (top-right)",
+            "Cards in z-order: 01 top-left, 02 top-right, 03 bottom-left, 04 bottom-right"
+          ],
+          "alignment": "All four cards share identical width, height, padding, and badge placement. The grid is perfectly symmetric.",
+          "spacing": "Inter-card gap ~8–10% of card width, both horizontally and vertically.",
+          "density": "Medium.",
+          "body_slide_consistency": "Card outline, corner radius, internal padding, badge style match slide 3 exactly. Number badges here use the same fill, size, and numeral weight as the badges on slide 2 (contents) and slide 6 (differentiators). Header and footer are identical to slides 3 and 5–12."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Cards: white fill, lavender-grey outline.",
+            "Number badge: deep navy fill with white numeral.",
+            "Fact text: medium blue-grey only.",
+            "No filled accent on the cards beyond the number badges."
+          ],
+          "typography_rules": [
+            "Card headings use title case Bold, not ALL CAPS.",
+            "Fact lines use ALL CAPS small Bold for visual punctuation.",
+            "Description lines use Regular weight, deep navy."
+          ],
+          "component_rules": [
+            "All four number badges are identical in size, corner radius, and fill.",
+            "Badges sit slightly outside the card's top-left corner, overlapping by ~25–30% of the badge size."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": ["No tables."],
+          "icon_rules": [
+            "Icons are optional on this slide.",
+            "If used, exactly one outline icon per card in the top-right corner, single line weight, single deep-navy color, identical size across cards.",
+            "If not used, the card layout is sufficient on its own."
+          ],
+          "infographic_rules": [
+            "The 2x2 numbered card grid is the slide's only infographic system.",
+            "No connecting lines between cards.",
+            "No background tint behind the grid."
+          ],
+          "diagram_rules": ["No diagrams."],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Making one card visually larger than the others.",
+            "Adding a fifth or sixth pain point.",
+            "Using a colored badge for the most-important pain point — all four are equally weighted.",
+            "Using filled icons or multicolor icons.",
+            "Adding a 'CTA' or 'next step' card to the grid."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "All four pain points",
+            "Numbered badges 01–04",
+            "A short emphasized fact line per card"
+          ],
+          "must_not_include": [
+            "User-interview quotes (none exist in the source proposal)",
+            "Pain points beyond the four in the source",
+            "Solution language (that comes on slide 5)"
+          ],
+          "evidence_to_use": [
+            "F1-context-pain-points (four pain points map directly to the four cards)"
+          ],
+          "evidence_to_avoid": [
+            "F2 (scale) — handled on slide 3.",
+            "F3 (solution summary) — handled on slide 5."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "If the generator supports it, group each card as a single object so the four cards can be re-flowed as a unit if the slide aspect ratio changes.",
+          "image_generation_note": "Keep card outlines hairline. Avoid drop shadows.",
+          "fallback_if_content_is_sparse": "If a 'fact' line cannot be sourced for a given card, omit it rather than inventing one."
+        }
+      }
+    },
+    {
+      "slide_number": 5,
+      "slide_role": "insight",
+      "page_family": "body",
+      "slide_title": "Solution — One Profile, Four Domains, One Interface",
+      "layout_family": "process-hub-and-spoke",
+      "prompt": {
+        "objective": "Introduce YouthPath's value proposition and reveal that the solution mirrors the problem's shape — four agents, one per fragmented domain — anchored by a single central hub.",
+        "narrative_function": "The pivot point of the deck. The audience moves from problem framing to solution framing. The visual mirror of slide 3's four domains is intentional and should feel inevitable.",
+        "visual_intent": "A central deep-navy circle as the visual anchor with four agent cards in symmetric quadrants around it. The eye should move outward from center to cards in radial fashion. The diagram should not feel mechanical or templated — proportions matter.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Solution'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'SOLUTION OVERVIEW'.",
+            "placement_instruction": "Top-right corner.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'One profile entry, four domains.' Line 2: 'A single interface replaces five to six platform visits.'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "diagram_flow",
+            "purpose": "Render the central circle hub and connect it to four agent cards arranged in symmetric quadrants.",
+            "content_instruction": "A large filled deep-navy circle at the page center with a pale-lavender outer ring. Inside the circle, white ALL CAPS text 'YOUTHPATH'. Four agent cards placed in the four quadrants (top-left, top-right, bottom-left, bottom-right). Card labels: 'Policy Agent — Eligibility match and application guide.' / 'Job Agent — GitHub-aware posting matching.' / 'Resume Agent — Company-specific resume coaching from DART filings.' / 'Calendar Agent — Unified deadline alerts.' Each card has a number badge (01–04) and a small domain icon top-right.",
+            "placement_instruction": "Body zone center. Circle diameter ~45–55% of slide height. Cards equidistant from circle in the four quadrants.",
+            "style_instruction": "Circle: filled deep navy with white type, surrounded by a 1–2px-wide pale-lavender outer ring (a separate stroke, not a gradient). Cards: white fill, thin lavender-grey outline, identical size. Number badge style identical to slide 4. Each card linked to the circle by a thin straight line in deep navy at uniform stroke weight."
+          },
+          {
+            "block_type": "icon_group",
+            "purpose": "Domain-cue icons for the four agents.",
+            "content_instruction": "Policy Agent = document icon. Job Agent = briefcase icon. Resume Agent = pen icon. Calendar Agent = calendar icon.",
+            "placement_instruction": "Top-right corner of each card, small.",
+            "style_instruction": "Outline-only single line weight single deep-navy color. The same four icons used on slide 3, deliberately reused for cross-slide reinforcement of the four-domain mapping."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard body-slide page-number block.",
+            "content_instruction": "'05' with a small deep-navy accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Hub-and-spoke: a single central element with four equidistant peripheral elements connected to the center.",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Central deep-navy circle as the visual hub. Four agent cards at the four quadrant positions. Connector lines between hub and each card.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title (top-left)",
+            "Kicker and subtitle (top-right)",
+            "Central circle (anchor)",
+            "Cards radiating outward, top-left first then clockwise"
+          ],
+          "alignment": "Cards are placed symmetrically around the circle's center. The circle's center coincides with the body zone's center.",
+          "spacing": "Generous whitespace between the circle and the cards (cards do not touch the outer ring). Card-to-card spacing equal across the four quadrants.",
+          "density": "Medium-low. The diagram should breathe.",
+          "body_slide_consistency": "Card style identical to slides 3, 4, 6, 9, 10. Connector stroke weight matches slide 7 (architecture) and slide 8 (multi-agent) so the entire system of diagrams reads as one family. Number badges match slides 2, 4, 6."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Circle: deep navy fill, pale-lavender outer ring stroke.",
+            "Cards: white fill, lavender-grey outline.",
+            "Connector lines: deep navy, single stroke weight."
+          ],
+          "typography_rules": [
+            "'YOUTHPATH' inside the circle is ALL CAPS Bold white.",
+            "Card heading 'Policy Agent' etc. is title case Bold deep navy.",
+            "Card description in Regular weight deep navy."
+          ],
+          "component_rules": [
+            "All four cards identical in size, padding, badge, icon.",
+            "Outer ring stroke is thinner than the connector lines."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": ["No tables."],
+          "icon_rules": [
+            "One domain icon per card, top-right corner, identical line weight.",
+            "Reuse the four icons from slide 3 verbatim for cross-slide reinforcement."
+          ],
+          "infographic_rules": [
+            "The hub-and-spoke is the only infographic on the slide.",
+            "Do not add secondary diagrams or arrows beyond hub-card connectors."
+          ],
+          "diagram_rules": [
+            "Connector lines must be straight, not curved.",
+            "No directional arrowheads on slide 5 — directionality is reserved for slide 8 (Router → sub-agents).",
+            "All four connectors share identical stroke weight and length."
+          ],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Putting arrowheads on the connector lines (would suggest data flow, which is slide 8's job).",
+            "Adding extra spokes or hub variations.",
+            "Using a different shape than a circle for the hub.",
+            "Filling the cards with a colored background.",
+            "Stacking the cards vertically (would conflict with slide 8's vertical-stack diagram)."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "Project name 'YouthPath' inside the hub",
+            "All four agent names",
+            "A single line of responsibility per agent"
+          ],
+          "must_not_include": [
+            "Router agent (introduced on slide 8)",
+            "Detailed tech stack (introduced on slide 7)",
+            "RAG/MCP details (introduced on slide 9)",
+            "Cost or schedule"
+          ],
+          "evidence_to_use": [
+            "F3-solution-summary (one-liner and four agent responsibilities)"
+          ],
+          "evidence_to_avoid": [
+            "F5 (4-layer architecture) — slide 7's territory",
+            "F6 (full agent process specs) — slide 8's territory"
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Group the central circle and its outer ring as a single composite shape. Group each card with its badge and icon. This makes the diagram easy to nudge as a unit.",
+          "image_generation_note": "Render the outer ring as a thin stroke around a separate, slightly smaller filled circle — not as a gradient ring.",
+          "fallback_if_content_is_sparse": "If a one-liner cannot be sourced for an agent, default to a generic 'Domain expert agent' placeholder rather than fabricating specifics."
+        }
+      }
+    },
+    {
+      "slide_number": 6,
+      "slide_role": "comparison",
+      "page_family": "body",
+      "slide_title": "Differentiation — Why Existing Tools Fall Short",
+      "layout_family": "comparison-two-column-cards",
+      "prompt": {
+        "objective": "Show in one frame where each existing tool stops and where YouthPath continues, alongside the four technical differentiators that enable that continuation.",
+        "narrative_function": "Earns the 20-point Background and Related Work rubric. Sits after the solution slide so the audience can judge 'why new' against a freshly understood 'what new'.",
+        "visual_intent": "Hybrid composition: a four-row comparison table on the left, four small differentiator cards stacked on the right. Reading flows left-to-right: 'here is what exists and how it falls short → here is the technical reason YouthPath does not fall short.'",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Differentiation'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'DIFFERENTIATION'.",
+            "placement_instruction": "Top-right.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'Existing tools cover only part of one domain.' Line 2: 'YouthPath integrates all four through hybrid RAG, multi-agent orchestration, MCP, and personalized matching.'",
+            "placement_instruction": "Below kicker, right-aligned.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "table",
+            "purpose": "Four-row comparison of existing tools.",
+            "content_instruction": "Header row: 'Existing Tool' / 'Limitation' / 'YouthPath Differentiator'. Row 1: 'Government24' / 'Keyword search; no eligibility decision.' / 'Profile-based eligibility match.' Row 2: 'JobKorea AI Match' / 'Postings only; no resume linkage.' / 'Postings + resume + interview unified.' Row 3: 'ChatGPT' / 'Knowledge cutoff; cannot see new filings/postings.' / 'RAG and MCP for live data.' Row 4: 'Personal Calendar' / 'Manual entry required.' / 'Automatic deadline sync from agents.'",
+            "placement_instruction": "Left ~60% of the body zone.",
+            "style_instruction": "Header row: deep navy fill with white Bold ALL CAPS centered text. Body rows: white background with very thin lavender-grey horizontal grid lines (no vertical grid lines). Body row text: Regular deep navy left-aligned. Modest row height, kept tight to maintain medium density."
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "Four stacked differentiator cards.",
+            "content_instruction": "Vertical stack of four small cards. Card 01 'Hybrid RAG' / 'Static + Dynamic indexing.' Card 02 'Multi-Agent Orchestration' / 'Router + four domain experts.' Card 03 'MCP Integration' / 'Five external APIs unified.' Card 04 'Personalized Matching' / 'Profile-to-eligibility automation.' Each card has a number badge top-left and a small icon top-right.",
+            "placement_instruction": "Right ~40% of the body zone, stacked vertically.",
+            "style_instruction": "White fill cards with thin lavender-grey outline. Identical card size. Heading in Pretendard Bold deep navy. Description in medium blue-grey Regular. Standard deep-navy number badge top-left."
+          },
+          {
+            "block_type": "icon_group",
+            "purpose": "Differentiator-cue icons.",
+            "content_instruction": "Card 01 (Hybrid RAG) = book + magnifier icon. Card 02 (Multi-Agent) = connected nodes icon. Card 03 (MCP) = plug icon. Card 04 (Personalized) = silhouette icon.",
+            "placement_instruction": "Top-right corner of each card, small.",
+            "style_instruction": "Outline only, single line weight, single deep-navy color."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard page-number block.",
+            "content_instruction": "'06' with accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Two-column body zone. Left ~60%: comparison table. Right ~40%: vertical stack of four differentiator cards. A thin vertical divider (1px lavender-grey) optionally separates the two zones.",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Left: 4-row comparison table. Right: vertical stack of 4 differentiator cards.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title and kicker",
+            "Subtitle (frame for the comparison)",
+            "Table left-to-right, top-to-bottom",
+            "Cards top-to-bottom on the right"
+          ],
+          "alignment": "Table rows and right-side cards share approximately the same vertical baseline rhythm where possible — but not at the cost of forcing oversized cards.",
+          "spacing": "Modest spacing between table rows. Equal vertical gaps between the four right-side cards.",
+          "density": "Medium.",
+          "body_slide_consistency": "Card style identical to slides 3, 4, 5, 9, 10. Number badge style identical to slides 2, 4, 5. Table style established here is reused on slides 10 (dataset) and 11 (Gantt) — same header treatment, same grid weight, same alignment."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Table header: deep navy fill with white text.",
+            "Table body: white background with very thin lavender-grey grid lines.",
+            "Cards: white fill, lavender-grey outline.",
+            "No fill colors inside the table or cards beyond what's specified."
+          ],
+          "typography_rules": [
+            "Table header: Bold ALL CAPS small white centered.",
+            "Table body: Regular deep navy left-aligned.",
+            "Card heading: title case Bold deep navy.",
+            "Card description: Regular medium blue-grey."
+          ],
+          "component_rules": [
+            "Vertical grid lines in the table are omitted (only horizontal hairlines).",
+            "Right-side cards are identical in size, outline, and padding."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": [
+            "Use the table only for the existing-tool comparison, not for the differentiator list (cards are intentional for the differentiators).",
+            "Table is four content rows plus one header row. Do not add a footer/total row."
+          ],
+          "icon_rules": [
+            "Icons appear only on the right-side cards, never inside the table cells.",
+            "Outline icons only, single line weight."
+          ],
+          "infographic_rules": [
+            "The table + vertical card stack is the slide's only infographic system.",
+            "No connecting lines between table rows and cards."
+          ],
+          "diagram_rules": ["No diagrams on this slide."],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Replacing the table with a comparison-card grid (loses the report-style discipline).",
+            "Adding column-totals or aggregate rows to the table.",
+            "Putting checkmark/X icons inside the table cells (template-y).",
+            "Color-coding rows red/green for limitation vs differentiator.",
+            "Adding a fifth differentiator."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "All four existing tools and their limitations",
+            "All four YouthPath differentiators",
+            "Numbered badges 01–04 on the right cards"
+          ],
+          "must_not_include": [
+            "User counts, revenue, or market share of the existing tools",
+            "Implementation details of the differentiators (slides 7–9 cover those)",
+            "Marketing language like 'best in class' or 'industry-leading'"
+          ],
+          "evidence_to_use": [
+            "F4-differentiation-table (the comparison table)",
+            "F4 (the four technical differentiators list)"
+          ],
+          "evidence_to_avoid": [
+            "F5 (architecture) — slide 7's territory.",
+            "F7 (RAG/MCP details) — slide 9's territory."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Build the table as a native table object so the text is editable. Apply the deep-navy header fill via cell shading.",
+          "image_generation_note": "Render table grid as hairlines, not full borders.",
+          "fallback_if_content_is_sparse": "If a row's 'Limitation' or 'YouthPath Differentiator' is unclear, leave it blank rather than fabricate."
+        }
+      }
+    },
+    {
+      "slide_number": 7,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "System Architecture — A Four-Layer Design",
+      "layout_family": "insight-claim-deep-navy-block",
+      "prompt": {
+        "objective": "Establish the whole-system big picture in one frame — four stacked layers, each named, with their key components named as chips, and arrows indicating top-to-bottom request flow.",
+        "narrative_function": "First of three system-design slides (the highest-weighted rubric criterion at 30 points). Sets up the depth zooms on slides 8 (multi-agent layer) and 9 (data layer).",
+        "visual_intent": "A horizontally banded layered diagram. The viewer should perceive 'four layers, top-to-bottom flow, separation of concerns.' Layers should feel like architectural strata, not boxes in a flowchart.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'System Architecture'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'SYSTEM ARCHITECTURE'.",
+            "placement_instruction": "Top-right.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'A four-layer design where each layer' Line 2: 'is joined by standard protocols (MCP, HTTP).'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "diagram_flow",
+            "purpose": "Render the four-layer stack with chips and inter-layer arrows.",
+            "content_instruction": "Four equal-height horizontal bands stacked vertically. Top to bottom: L1 'Frontend' / chips: 'Streamlit', 'User Profile Form', 'Unified Dashboard'. L2 'Multi-Agent Orchestration' / chips: 'LangGraph', 'Router', '4 Sub-Agents'. L3 'Data Layer' / chips: 'Static RAG', 'Dynamic RAG', '5 MCP Servers'. L4 'Infrastructure' / chips: 'AWS EC2', 'AWS S3', 'LUXIA Platform'. Single downward arrow between every adjacent layer pair (three arrows total).",
+            "placement_instruction": "Body zone fills the four bands. Each layer's label sits on the far left (e.g., 'L1 / Frontend'). Chips sit on the right side of the band.",
+            "style_instruction": "Bands: deep navy fills for L2 and L3 (the system core), white fills with lavender-grey outline for L1 and L4 (less central). Layer labels: white Bold inside navy bands, deep navy Bold inside white bands. Chips: small rounded rectangles, lavender-grey fill on white bands, white-with-outline on navy bands. Arrows: deep navy filled triangle heads, single stroke weight."
+          },
+          {
+            "block_type": "icon_group",
+            "purpose": "One layer-character icon per band.",
+            "content_instruction": "L1 = screen icon. L2 = connected-nodes icon. L3 = database/cylinder icon. L4 = cloud icon.",
+            "placement_instruction": "Far-left of each band, just to the left of the layer label.",
+            "style_instruction": "Outline only, single line weight, color matches the band's text color (white inside navy bands, deep navy inside white bands)."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard page-number block.",
+            "content_instruction": "'07' with accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Four equal-height horizontal bands stacked vertically with arrows between each pair.",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Four stacked layer bands with chips. Three downward arrows between bands.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title and kicker",
+            "Subtitle",
+            "Layer 1 → 2 → 3 → 4, top to bottom"
+          ],
+          "alignment": "Layer labels left-aligned. Chips right-aligned within each band. Arrows centered horizontally between bands.",
+          "spacing": "Small gap between bands (just enough room for the arrow). Chips inside a band have even spacing.",
+          "density": "Medium-high (four bands fill the body).",
+          "body_slide_consistency": "Diagram connector style established here (single stroke weight, deep-navy fill on arrowheads) is reused on slide 8. Chip style established here is referenced visually on slide 9 (MCP API chips)."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "L2 and L3 bands use deep navy fill with white text (these are the system's core layers).",
+            "L1 and L4 bands use white fill with lavender-grey outline and deep navy text.",
+            "Chips on navy bands: white text on a hairline-outlined transparent rectangle.",
+            "Chips on white bands: deep-navy text on a pale-lavender filled rectangle."
+          ],
+          "typography_rules": [
+            "Layer labels in Pretendard Bold, size large enough to read at the back of a video frame.",
+            "Chip text in Pretendard Regular small.",
+            "All text inside bands is left-aligned where possible."
+          ],
+          "component_rules": [
+            "All four bands are identical in height.",
+            "All chips share identical corner radius and padding.",
+            "All three inter-layer arrows are identical in stroke weight and arrowhead size."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": ["No tables."],
+          "icon_rules": [
+            "One icon per band, far-left position.",
+            "Single line weight, color follows the band's text color."
+          ],
+          "infographic_rules": [
+            "The layered stack is the only infographic on the slide.",
+            "Chips are not numbered — they are component names, not steps."
+          ],
+          "diagram_rules": [
+            "Arrows must be straight vertical, not diagonal.",
+            "Only one arrow per layer pair — no parallel/multiplexed arrows.",
+            "Arrows are filled triangle heads, not open chevrons."
+          ],
+          "imagery_rules": ["No photographs or illustrations."],
+          "anti_patterns_to_avoid": [
+            "Drawing each layer as a 3D 'pancake' (would break flat-design rule).",
+            "Adding a fifth 'security' or 'observability' layer not in the source proposal.",
+            "Color-coding chips for individual technologies (e.g., AWS orange).",
+            "Using more than three downward arrows.",
+            "Adding a side panel of 'AI Models' that floats outside the four bands."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "All four layer names",
+            "Key components per layer (as chips)",
+            "Top-to-bottom request flow arrows"
+          ],
+          "must_not_include": [
+            "Detailed configuration of any AWS service",
+            "Per-component code snippets",
+            "API rate limits"
+          ],
+          "evidence_to_use": [
+            "F5-architecture-4layer (the four-layer breakdown)",
+            "F8-models-frameworks (component-name chips)"
+          ],
+          "evidence_to_avoid": [
+            "F6 (per-agent process specs) — slide 8's territory.",
+            "F7 (RAG/MCP details) — slide 9's territory."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Build each band as a single grouped object so the slide can be re-flowed if the aspect ratio changes. Render chips as separate small rounded rectangles, grouped per band.",
+          "image_generation_note": "Render arrows with sharp filled triangle heads, not anti-aliased gradients.",
+          "fallback_if_content_is_sparse": "If a chip name is uncertain, default to a generic role label ('Vector Store', 'API Gateway') rather than fabricating a specific product name."
+        }
+      }
+    },
+    {
+      "slide_number": 8,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "Multi-Agent Design — Router and Four Domain Experts",
+      "layout_family": "process-hub-and-spoke",
+      "prompt": {
+        "objective": "Show the supervisor pattern: a Router agent classifies the query and delegates it to one of four specialized agents, each calling its own RAG and MCP resources.",
+        "narrative_function": "Second of three system-design slides. Zooms into Layer 2 of slide 7's architecture. Establishes the LangGraph justification for the rubric's 'appropriate usage of frameworks' sub-criterion.",
+        "visual_intent": "Asymmetric hub-and-spoke that is deliberately different from slide 5's symmetric quadrants. The Router lives on the left as a single hub; the four sub-agents stack on the right. The viewer should feel directional flow (Router → sub-agents), unlike slide 5's static four-domain map.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Multi-Agent Design'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'MULTI-AGENT DESIGN'.",
+            "placement_instruction": "Top-right.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'A supervisor pattern: the Router classifies queries' Line 2: 'and delegates to four domain experts.'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "diagram_flow",
+            "purpose": "Render Router-as-hub on the left and four sub-agent cards on the right with delegation arrows.",
+            "content_instruction": "Left third: a single deep-navy filled circle labeled 'Router Agent' in white. Inside or just below the circle, a small subtitle 'Classifies user query'. Right two-thirds: four sub-agent cards stacked vertically. Cards top to bottom: 'Policy Agent — Eligibility match (Static RAG + Ontongchungnyeon MCP).' / 'Job Agent — Posting match (WorkNet MCP + GitHub analysis).' / 'Resume Agent — Company-specific coaching (Dynamic RAG + DART MCP).' / 'Calendar Agent — Deadline aggregation across agents.' Four directional arrows fan out from the Router to each sub-agent card.",
+            "placement_instruction": "Router circle: vertically centered in the left third of the body zone. Sub-agent cards: right two-thirds, stacked vertically with even gaps.",
+            "style_instruction": "Router circle: deep navy filled, smaller than slide 5's central hub, no outer ring (this is a single-direction supervisor, not a balanced hub). Sub-agent cards: white fill with thin lavender-grey outline, identical size, each with a small domain icon top-right and a short tag listing the resources it calls. Arrows: deep navy with sharp filled triangle heads, single stroke weight."
+          },
+          {
+            "block_type": "icon_group",
+            "purpose": "Domain icons on each sub-agent card and a routing icon inside the Router.",
+            "content_instruction": "Sub-agents reuse the four icons from slides 3 and 5 (document, briefcase, pen, calendar). Router circle holds a small white outline branching-arrows icon centered below the 'Router Agent' label.",
+            "placement_instruction": "Sub-agent icons: top-right of each card. Router icon: inside the circle, below the label.",
+            "style_instruction": "Outline only, single line weight, deep-navy on white cards and white on the Router circle."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard page-number block.",
+            "content_instruction": "'08' with accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Asymmetric two-zone: left third (Router hub), right two-thirds (vertical card stack). Connector arrows fan from the hub to each card.",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Left: Router circle with label and routing icon. Right: vertical stack of four sub-agent cards. Four directional arrows from the Router to the cards.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title and kicker",
+            "Subtitle",
+            "Router circle (anchor)",
+            "Arrows fanning right",
+            "Sub-agent cards top-to-bottom"
+          ],
+          "alignment": "Router circle vertically centered against the card stack's vertical center. All four cards left-aligned to the same x-coordinate.",
+          "spacing": "Generous gap between Router and the leftmost edge of the card stack. Equal vertical gaps between cards.",
+          "density": "Medium.",
+          "body_slide_consistency": "Card style identical to slides 3, 4, 5, 6, 9, 10. Icon set on the four sub-agent cards is the same as on slide 5 — deliberate cross-slide reinforcement. Arrowhead style and stroke weight match slide 7's inter-layer arrows."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Router circle: deep navy filled, white text inside.",
+            "Sub-agent cards: white fill, lavender-grey outline.",
+            "Arrows: deep navy stroke + filled head."
+          ],
+          "typography_rules": [
+            "'Router Agent' label inside the circle in title case white Bold.",
+            "Sub-agent card heading in title case Bold deep navy.",
+            "Resource tags on cards in Regular medium blue-grey."
+          ],
+          "component_rules": [
+            "Sub-agent cards are identical in size, padding, badge, icon.",
+            "All four arrows have identical stroke weight; arrows differ only in length and angle as determined by card position."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": ["No tables."],
+          "icon_rules": [
+            "Reuse the four domain icons from slides 3 and 5 verbatim.",
+            "Router icon (branching arrows) is unique to this slide."
+          ],
+          "infographic_rules": [
+            "The supervisor diagram is the only infographic on the slide.",
+            "No additional 'how it works' breakdown beneath the diagram."
+          ],
+          "diagram_rules": [
+            "Arrows must clearly point from Router to each sub-agent (not reversed).",
+            "Arrows must be straight or very slightly curved to avoid overlap, but always single-segment.",
+            "No bidirectional arrows on this slide."
+          ],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Putting the Router at the center with sub-agents around it (would duplicate slide 5's geometry).",
+            "Adding return arrows from sub-agents to Router (the slide is about delegation; reply paths are implicit).",
+            "Adding pseudo-code or prompt text on the slide.",
+            "Using different card sizes for different sub-agents.",
+            "Adding a fifth sub-agent."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "Router agent name and one-line role",
+            "All four sub-agent names",
+            "A short resource tag per sub-agent (the RAG and/or MCP it calls)",
+            "Four directional arrows from Router to sub-agents"
+          ],
+          "must_not_include": [
+            "Full Router prompt text",
+            "Inter-agent communication protocol code",
+            "Error-handling paths",
+            "Agent state machines"
+          ],
+          "evidence_to_use": [
+            "F6-agent-design (Router and four sub-agents with their processes)"
+          ],
+          "evidence_to_avoid": [
+            "F7 (RAG/MCP strategy) — handled on slide 9.",
+            "F5 (full architecture) — handled on slide 7."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Group each arrow with its source/target endpoints so they remain attached if cards are nudged. Render the Router circle as a single shape, not a circle plus a stroke.",
+          "image_generation_note": "Keep arrowheads small and sharp, not balloon-like.",
+          "fallback_if_content_is_sparse": "If a sub-agent's resource tag is unclear, default to a single resource name rather than listing two uncertain ones."
+        }
+      }
+    },
+    {
+      "slide_number": 9,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "Hybrid RAG and MCP — A Two-Track Data Strategy",
+      "layout_family": "comparison-two-column-cards",
+      "prompt": {
+        "objective": "Justify two architectural choices simultaneously: Hybrid RAG (Static + Dynamic) on the left, MCP (five external APIs unified) on the right. Show why these together solve the LLM cutoff problem and information fragmentation.",
+        "narrative_function": "Third of three system-design slides. Zooms into Layer 3 of slide 7's architecture. Closes the system-design arc.",
+        "visual_intent": "Two equally weighted halves separated by a thin divider. The viewer should perceive 'two complementary strategies, one slide.'",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Hybrid RAG and MCP'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'DATA STRATEGY'.",
+            "placement_instruction": "Top-right.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'Static and Dynamic RAG split by update frequency,' Line 2: 'external APIs unified through MCP.'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "comparison",
+            "purpose": "Render the Hybrid RAG split as a 2x3 card grid (two columns, three rows).",
+            "content_instruction": "Two column headers: 'STATIC RAG' (left), 'DYNAMIC RAG' (right). Three rows beneath: Row 1 (Data) — left: 'Policy docs / Resumes / NCS'; right: 'DART filings'. Row 2 (Cadence) — left: 'Weekly to yearly'; right: 'Per-request, runtime'. Row 3 (Method) — left: 'Pre-indexed in Chroma (bge-m3)'; right: 'Indexed at request time, ephemeral'. Each cell is a small white card with thin lavender-grey outline.",
+            "placement_instruction": "Left ~50% of the body zone.",
+            "style_instruction": "Column headers: ALL CAPS Bold deep navy, small, with a small line icon to the left of each (Static = pin, Dynamic = circular arrows). Cards: white fill, lavender-grey outline, identical size, deep navy Regular text inside."
+          },
+          {
+            "block_type": "infographic",
+            "purpose": "Render the MCP block as a labeled cluster of five external-API chips.",
+            "content_instruction": "Large 'MCP' label at the top of the right column. Below it, five chips arranged in a tidy two-row cluster: 'Ontongchungnyeon', 'Public Data Portal', 'WorkNet', 'DART', 'Naver News'. Below the chips, a small caption: 'Standard tool-calling protocol — five external APIs unified.'",
+            "placement_instruction": "Right ~50% of the body zone.",
+            "style_instruction": "'MCP' label: very large Pretendard ExtraBold deep navy. Chips: identical size, pale-lavender fill with deep-navy Regular text, no icons inside chips. Caption: small medium blue-grey Regular."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "Single-line rationale for choosing RAG over fine-tuning.",
+            "content_instruction": "'RAG over fine-tuning: live data updates, source citation, $50 budget feasible.'",
+            "placement_instruction": "Bottom of the body zone, spanning the full width below both halves.",
+            "style_instruction": "Small Pretendard Regular deep navy, italic optional, left-aligned. No box around it — a quiet caption, not a callout box."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard page-number block.",
+            "content_instruction": "'09' with accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Two-column body zone separated by a thin vertical lavender-grey divider. Left: 2x3 RAG comparison grid. Right: MCP label + 5-chip cluster + caption.",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Left half: Hybrid RAG 2x3 grid with column headers 'STATIC RAG' and 'DYNAMIC RAG'. Right half: large 'MCP' label, 5-chip cluster, small caption. Bottom of body: single rationale sentence about RAG vs fine-tuning.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title and kicker",
+            "Subtitle",
+            "Left: column headers, then rows top-to-bottom",
+            "Right: 'MCP' label, then chips, then caption",
+            "Bottom: rationale sentence"
+          ],
+          "alignment": "Left-half column headers align with the right-half 'MCP' label baseline so the two halves feel level. All cards in the grid share identical size.",
+          "spacing": "Even spacing between rows on the left and between chips on the right.",
+          "density": "Medium-high.",
+          "body_slide_consistency": "Card style identical to slides 3, 4, 5, 6, 8, 10. Chip style here is the same chip style introduced on slide 7's L4 band — visual continuity for the 'component name' notion. The rationale caption is plain text without a callout box, matching the deck's restraint."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Cards: white fill, lavender-grey outline.",
+            "Chips: pale-lavender fill, deep-navy text.",
+            "Column headers and 'MCP' label: deep navy.",
+            "No new accent color anywhere on this slide."
+          ],
+          "typography_rules": [
+            "'MCP' label is the largest type element on the slide body.",
+            "Column headers in ALL CAPS Bold small with loosened tracking.",
+            "Chip text in Regular small."
+          ],
+          "component_rules": [
+            "All six grid cards on the left are identical in size, padding, outline.",
+            "All five chips on the right are identical in size, padding, fill."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": [
+            "The 2x3 layout on the left is a card grid, not a true table — it must read as cards, not as a bordered spreadsheet."
+          ],
+          "icon_rules": [
+            "One small line icon next to each column header on the left (Static = pin, Dynamic = circular arrows).",
+            "No icons inside chips on the right (would clutter the cluster)."
+          ],
+          "infographic_rules": [
+            "The two halves are visually parallel — neither dominates.",
+            "Vertical divider is a hairline, not a heavy rule."
+          ],
+          "diagram_rules": ["No connector lines on this slide."],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Drawing arrows between Static RAG and Dynamic RAG cells (they are categories, not stages).",
+            "Adding a colored border around the Dynamic RAG column to imply it is special.",
+            "Adding a stack of 'tool icons' inside each MCP chip.",
+            "Placing the rationale caption inside a colored callout box.",
+            "Using more than five MCP chips."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "Static vs Dynamic RAG split with data, cadence, and method per side",
+            "All five MCP servers as chips",
+            "A one-line rationale for RAG over fine-tuning"
+          ],
+          "must_not_include": [
+            "bge-m3 / Chroma installation details (mentioned only as a method label)",
+            "Code snippets for MCP tool registration",
+            "General theory of vector search"
+          ],
+          "evidence_to_use": [
+            "F7-rag-mcp-strategy (Static/Dynamic split, MCP server list, RAG vs fine-tuning rationale)",
+            "F8-models-frameworks (bge-m3, Chroma references)"
+          ],
+          "evidence_to_avoid": [
+            "F5 (full architecture) — slide 7's territory.",
+            "F6 (per-agent process) — slide 8's territory."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Build the left grid as six separate small rectangle cards arranged in a 2x3 grid, not as a native table — keeps the report-card visual feel.",
+          "image_generation_note": "Render chips with sharp 90-degree corners or a very small corner radius — no pill shapes.",
+          "fallback_if_content_is_sparse": "If the RAG vs fine-tuning rationale is unclear, default to 'Live data updates with source citation' rather than fabricate a budget figure."
+        }
+      }
+    },
+    {
+      "slide_number": 10,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "slide_title": "Dataset and Evaluation — A Dual-Track Plan",
+      "layout_family": "comparison-two-column-cards",
+      "prompt": {
+        "objective": "Show the seven datasets and the dual-track evaluation plan (quantitative + qualitative) that will verify the system before final submission.",
+        "narrative_function": "Earns the 15-point Dataset and Experiment Plan rubric. Sits immediately after the three system-design slides so 'how do we know it works?' arrives at the natural moment.",
+        "visual_intent": "Symmetric two-half composition: a reading-the-list table on the left, a reading-the-method card pair on the right. Both halves should feel equally weighted.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Dataset and Evaluation'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'DATASET & EVALUATION'.",
+            "placement_instruction": "Top-right.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'Seven open-license datasets,' Line 2: 'quantitative and qualitative dual-track evaluation.'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "table",
+            "purpose": "Seven-row dataset table.",
+            "content_instruction": "Header row: 'Dataset' / 'Source' / 'Use' / 'License'. Rows: 'Youth Policy' / 'Ontongchungnyeon API' / 'Static RAG' / 'KOGL'. 'Government Policy' / 'Public Data Portal' / 'Static RAG' / 'KOGL'. 'Job Postings' / 'WorkNet API' / 'Tool Use (live)' / 'KOGL'. 'Corporate Filings' / 'DART API' / 'Dynamic RAG' / 'Free, registered'. 'Accepted Resumes' / 'Public blog/community posts' / 'Static RAG' / 'Public'. 'NCS Standards' / 'NCS competency standards' / 'Static RAG' / 'KOGL'. 'Eval Q&A' / 'Built in-house, n=50' / 'Benchmark' / 'Internal'.",
+            "placement_instruction": "Left ~50% of the body zone.",
+            "style_instruction": "Header row: deep navy fill, white Bold ALL CAPS centered. Body: white background with thin lavender-grey horizontal grid only. Tight row height. Body text Regular deep navy left-aligned."
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "Two stacked evaluation method cards.",
+            "content_instruction": "Top card 'QUANTITATIVE': four numerical targets — 'Precision ≥ 0.85', 'Recall ≥ 0.80', 'Citation Accuracy ≥ 0.90', 'Response Time ≤ 5s'. Bottom card 'QUALITATIVE': three methods — 'User Survey (n=20)', 'LLM-as-Judge', 'Head-to-Head vs ChatGPT and Government24+JobKorea'.",
+            "placement_instruction": "Right ~50% of the body zone, vertically stacked.",
+            "style_instruction": "Top card has a deep-navy header strip across its top with white ALL CAPS 'QUANTITATIVE' Bold, and white-filled body listing the four targets in deep navy with small numerical highlights. Bottom card uses a white header with a deep-navy ALL CAPS 'QUALITATIVE' Bold, and the three methods listed below as a clean unordered list in deep navy. Both cards share the same outline weight and corner treatment."
+          },
+          {
+            "block_type": "icon_group",
+            "purpose": "Method-cue icon on each evaluation card.",
+            "content_instruction": "Top card (Quantitative) = chart-bars icon. Bottom card (Qualitative) = chat-bubble icon.",
+            "placement_instruction": "Top-right corner of each card.",
+            "style_instruction": "Outline only, single line weight, deep-navy color."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard page-number block.",
+            "content_instruction": "'10' with accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Two equal halves: left table, right two stacked cards.",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Left: 7-row dataset table. Right: top Quantitative card and bottom Qualitative card.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title and kicker",
+            "Subtitle",
+            "Table top-to-bottom",
+            "Quantitative card",
+            "Qualitative card"
+          ],
+          "alignment": "Table header row baseline aligns approximately with the top of the Quantitative card.",
+          "spacing": "Tight row height in the table. Modest gap between the two cards on the right.",
+          "density": "High (the table holds seven rows).",
+          "body_slide_consistency": "Table style identical to slide 6 and slide 11's Gantt header. Card style identical to slides 3–6, 9, 12. Numerical targets in the Quantitative card are visually emphasized but stay within Pretendard Bold deep navy — no green/red color coding."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Table header: deep navy fill with white text.",
+            "Table body: white background with very thin lavender-grey grid lines.",
+            "Quantitative card header: deep navy fill with white text.",
+            "Qualitative card header: white fill with deep navy text and lavender-grey outline.",
+            "No new colors."
+          ],
+          "typography_rules": [
+            "Quantitative threshold values are emphasized with a slightly larger Bold deep-navy treatment.",
+            "Qualitative method names in title case."
+          ],
+          "component_rules": [
+            "Both evaluation cards share identical width, padding, and outline weight.",
+            "Difference between the two cards is the header treatment only."
+          ],
+          "chart_rules": ["No charts (no actual results exist yet)."],
+          "table_rules": [
+            "Seven body rows plus header row. Tight row height to fit without crowding.",
+            "Only horizontal grid lines, no vertical grid."
+          ],
+          "icon_rules": [
+            "One icon per evaluation card, top-right corner.",
+            "No icons inside the table."
+          ],
+          "infographic_rules": [
+            "The two halves should feel equally weighted.",
+            "No decorative graphics between table and cards."
+          ],
+          "diagram_rules": ["No diagrams."],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Coloring the threshold values green to imply success (results don't exist yet).",
+            "Drawing a results bar chart with placeholder data (would be misleading).",
+            "Replacing the table with seven small cards (would push the slide off-balance).",
+            "Adding a 'data flow' diagram from datasets to evaluation methods."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "All seven datasets with source and license",
+            "All four quantitative targets with thresholds",
+            "All three qualitative methods"
+          ],
+          "must_not_include": [
+            "Per-category breakdown of the 50-question benchmark (appendix material)",
+            "BLEU/ROUGE formulas",
+            "Statistical significance tests"
+          ],
+          "evidence_to_use": [
+            "F9-dataset-evaluation"
+          ],
+          "evidence_to_avoid": [
+            "F12 (cost and risk) — slide 11's territory.",
+            "F13 (expected outcomes) — slide 12's territory."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Build the table as a native table object. Apply navy header shading and remove vertical borders.",
+          "image_generation_note": "Keep all grid lines hairline.",
+          "fallback_if_content_is_sparse": "If a dataset license is uncertain, write 'TBD' rather than fabricate a license name."
+        }
+      }
+    },
+    {
+      "slide_number": 11,
+      "slide_role": "roadmap",
+      "page_family": "body",
+      "slide_title": "Execution Plan — Team, Schedule, and Cost",
+      "layout_family": "data-gantt-table",
+      "prompt": {
+        "objective": "Compress feasibility (team + schedule + cost + risk) into a single visually anchored slide whose lead is a seven-week Gantt chart.",
+        "narrative_function": "Earns the 15-point Feasibility rubric. Single slide because a 7–10 minute video cannot afford four separate feasibility pages.",
+        "visual_intent": "The Gantt chart dominates the body zone (~60% of the height). Cost and risk are deliberately compressed into a quiet supporting block at the bottom (~40%). The visual hierarchy must read 'Gantt is the headline; cost and risk are the footnote.'",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Execution Plan'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'TEAM · SCHEDULE · COST'.",
+            "placement_instruction": "Top-right.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'Five domain experts, seven-week roadmap,' Line 2: 'total budget under $52.'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "timeline",
+            "purpose": "Seven-week Gantt chart with five workstream rows.",
+            "content_instruction": "Header row (deep navy fill with white text): 'Workstream' | 'W10' | 'W11' | 'W12' | 'W13' | 'W14' | 'W15' | 'W16'. Five body rows (one per team member's workstream): Row A 'Policy + Static RAG' (active W11–W14, peak W12); Row B 'Job + DART/MCP' (active W11–W14, peak W13); Row C 'Resume + Evaluation' (active W11–W15, peak W15); Row D 'Frontend + UX' (active W12–W15, peak W14); Row E 'Backend + LangGraph' (active W11–W15, peak W13–W14). Above the workstream rows or below them, also mark the major milestones: W10 'Proposal Talk', W11 'Data + RAG', W12 'Single-Agent Prototype', W13 '4-Agent Integration', W14 'FE/BE Integration', W15 'Evaluation Experiments', W16 'Final Demo'.",
+            "placement_instruction": "Top ~60% of the body zone.",
+            "style_instruction": "Header row: deep navy fill with white Bold ALL CAPS centered. Workstream labels left-aligned in deep navy Bold small. Bars: filled rectangles in varying lavender intensities (peak weeks at deepest navy, off-peak weeks at pale lavender, inactive weeks empty). Bar text inside bars in white or deep navy depending on the bar's intensity. Grid lines hairline lavender-grey, horizontal only."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "Compressed cost block.",
+            "content_instruction": "Headline: '~$52 total'. Breakdown: 'LUXIA $50 (course-provided) + GPT-4o-mini $2'. One supporting line: 'AWS Academy / open-source tooling at $0.'",
+            "placement_instruction": "Bottom ~40% of the body zone, left half.",
+            "style_instruction": "Plain text composition, no boxed callout. Headline in Pretendard ExtraBold large deep navy. Breakdown and supporting line in Regular small deep navy and medium blue-grey."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "Compressed risk card listing risk names only.",
+            "content_instruction": "Header: 'KEY RISKS'. Four short items with no descriptions: 'LUXIA credit exhaustion', 'DART filing size', 'Multi-agent debugging', 'Dataset licensing'.",
+            "placement_instruction": "Bottom ~40% of the body zone, right half.",
+            "style_instruction": "Single white card with thin lavender-grey outline. Header in deep navy ALL CAPS small Bold. Items as a tight list with deep-navy bullets, Regular small deep navy."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard page-number block.",
+            "content_instruction": "'11' with accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Body zone split top/bottom. Top ~60%: Gantt chart. Bottom ~40%: cost block (left) + risk card (right).",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Top: Gantt chart with header row of week labels and 5 workstream rows. Bottom: cost block on the left and risk card on the right.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title and kicker",
+            "Subtitle",
+            "Gantt chart: header row, then workstreams top-to-bottom",
+            "Cost block",
+            "Risk card"
+          ],
+          "alignment": "Workstream labels share the same x-coordinate. Week column widths are equal. Cost block and risk card share the same baseline.",
+          "spacing": "Tight row height in the Gantt to fit five workstreams comfortably. Modest gap between the Gantt and the bottom block.",
+          "density": "High.",
+          "body_slide_consistency": "Gantt header style is identical to slide 6 and slide 10's table headers — the same deep-navy fill with white centered ALL CAPS. Card style on the risk card matches slides 3–6, 9, 10. Cost block uses plain typography rather than a boxed callout, matching the deck's restraint."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Gantt bars: varying intensities of lavender and navy only — no other accent.",
+            "Cost block: plain text on canvas, no fill behind it.",
+            "Risk card: white fill, lavender-grey outline."
+          ],
+          "typography_rules": [
+            "Cost headline '~$52 total' is the largest type element in the bottom block.",
+            "Gantt bar text in Bold small (white or deep navy depending on bar intensity).",
+            "Risk items in Regular small."
+          ],
+          "component_rules": [
+            "All week columns are equal width.",
+            "All bar heights identical.",
+            "Risk card padding matches other cards in the deck."
+          ],
+          "chart_rules": [
+            "The Gantt is the only chart-like element. No additional charts.",
+            "Bar intensity should map to workload level — deeper navy = peak week, paler lavender = light involvement, blank = no involvement.",
+            "Do not add a percentage-complete shading inside bars."
+          ],
+          "table_rules": [
+            "Gantt body grid is horizontal-only hairlines.",
+            "Header row uses centered ALL CAPS Bold white text on deep navy fill."
+          ],
+          "icon_rules": [
+            "No icons on the Gantt chart.",
+            "No icons in the cost block.",
+            "No icon on the risk card (header text alone is sufficient)."
+          ],
+          "infographic_rules": [
+            "Gantt is the headline; cost and risk are subordinate.",
+            "Do not promote either bottom block visually above the Gantt."
+          ],
+          "diagram_rules": ["No diagrams on this slide."],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Adding milestone diamond markers in a third color (e.g., red) to the Gantt.",
+            "Drawing a budget pie chart for a $52 budget (would be silly).",
+            "Listing risk mitigations on the slide (those belong in the spoken script).",
+            "Adding a sixth workstream that doesn't exist in the team plan.",
+            "Using percentage-complete fills inside bars (the project hasn't started)."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "Week labels W10–W16",
+            "Five workstream rows with bars",
+            "Total cost ~$52 with the LUXIA+GPT-4o-mini breakdown",
+            "Four named risks"
+          ],
+          "must_not_include": [
+            "Detailed weekly task lists",
+            "Per-risk mitigation descriptions",
+            "The full Appendix C team-learning plan",
+            "Risk likelihood scores"
+          ],
+          "evidence_to_use": [
+            "F10-team-roles (workstream labels)",
+            "F11-milestone (Week 10–16 timeline)",
+            "F12-cost-risk (cost figures and risk names only)"
+          ],
+          "evidence_to_avoid": [
+            "F12's risk mitigations (handled verbally)."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Build the Gantt as a native table or as a stack of rectangles aligned to a 7-column grid. Either approach works as long as the bar geometry stays consistent.",
+          "image_generation_note": "Keep bar opacity consistent — do not anti-alias the bar edges into a gradient.",
+          "fallback_if_content_is_sparse": "If a workstream's exact week range is uncertain, default to a conservative range that aligns with the major milestones."
+        }
+      }
+    },
+    {
+      "slide_number": 12,
+      "slide_role": "summary",
+      "page_family": "body",
+      "slide_title": "Expected Outcomes and Roadmap",
+      "layout_family": "insight-claim-white-card",
+      "prompt": {
+        "objective": "Leave the audience with a strong final body-slide impression: an emphasized impact figure on the left, technical-outcome and future-roadmap content on the right.",
+        "narrative_function": "Final body slide, just before the closing. Mirrors the structure of slide 3 (left big number + right detail block) to create a 'bookend' between the problem and the outcome.",
+        "visual_intent": "Asymmetric two-zone composition. The viewer should feel 'this is what the project produces, and this is where it can grow.' The big '95%' figure on the left should land with quiet confidence, not as marketing exuberance.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Slide title.",
+            "content_instruction": "'Expected Outcomes'.",
+            "placement_instruction": "Top-left.",
+            "style_instruction": "Pretendard ExtraBold large deep navy title case left-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'EXPECTED OUTCOMES'.",
+            "placement_instruction": "Top-right.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Two-line right-aligned descriptive subtitle.",
+            "content_instruction": "Line 1: 'User impact and technical capability,' Line 2: 'extensible through a five-phase roadmap.'",
+            "placement_instruction": "Below kicker, right-aligned, two lines exactly.",
+            "style_instruction": "Small Regular medium blue-grey right-aligned."
+          },
+          {
+            "block_type": "metric_cards",
+            "purpose": "Headline impact figure on the left.",
+            "content_instruction": "Large numeral '95%'. Below it: small label 'Reduction in Information-Search Time'. Below that: a single line '2 hours → 5 minutes', and a final line '~12M Korean youth in scope'.",
+            "placement_instruction": "Left ~40% of the body zone, vertically centered.",
+            "style_instruction": "'95%' in Pretendard ExtraBold deep navy at roughly the same size as slide 3's '~12M' (visual rhyme). Label in ALL CAPS small Bold medium blue-grey. Supporting lines in Regular small deep navy."
+          },
+          {
+            "block_type": "callout",
+            "purpose": "Single technical-outcomes card on the upper right.",
+            "content_instruction": "Header: 'TECHNICAL OUTCOMES'. Three items: 'Integrated LLM + RAG + Multi-Agent + MCP system' / 'Hybrid RAG (Static + Dynamic) in practice' / 'Korean-domain LUXIA usage at production scale'.",
+            "placement_instruction": "Upper portion of the right ~60% of the body zone.",
+            "style_instruction": "White-fill card with thin lavender-grey outline. Header ALL CAPS small Bold deep navy. Items as a small unordered list with deep-navy bullets, Regular small deep navy."
+          },
+          {
+            "block_type": "infographic",
+            "purpose": "Five-phase future roadmap as a horizontal chip strip.",
+            "content_instruction": "Phase 2 'Multilingual' → Phase 3 'Voice (Whisper)' → Phase 4 'Mobile App' → Phase 5 'KakaoTalk Bot' → Phase 6 'Learning Recommendation'. A thin arrow or dotted line connects each chip to the next.",
+            "placement_instruction": "Lower portion of the right ~60% of the body zone.",
+            "style_instruction": "Five identical chips, pale-lavender fill with deep-navy text. Each chip has a small line icon below or above the label (multilingual = globe, voice = microphone, app = phone, KakaoTalk = speech bubble, learning = book). Arrow stroke matches the deck's connector style."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Standard page-number block.",
+            "content_instruction": "'12' with accent square.",
+            "placement_instruction": "Bottom-right.",
+            "style_instruction": "Small Pretendard Bold deep navy."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Asymmetric two-column body zone: left ~40% (big number block), right ~60% (technical-outcomes card stacked above the five-phase chip strip).",
+          "header_body_footer": {
+            "header": "Standard body-slide header.",
+            "body": "Left: '95%' headline + supporting lines. Right top: Technical Outcomes card. Right bottom: 5-chip roadmap strip.",
+            "footer": "Standard page-number block bottom-right."
+          },
+          "reading_order": [
+            "Title and kicker",
+            "Subtitle",
+            "Big '95%' (left)",
+            "Technical outcomes card (right top)",
+            "Roadmap chips left-to-right (right bottom)"
+          ],
+          "alignment": "Big number aligns to the left edge of the body zone. Right column items align to a single right-side x-coordinate.",
+          "spacing": "Generous spacing between the big number and supporting lines. Modest gap between the upper card and the lower chip strip.",
+          "density": "Medium.",
+          "body_slide_consistency": "Big-number visual rhymes with slide 3's '~12M'. Card style identical to slides 3–6, 9, 10. Chip style identical to slide 9's MCP chips. Connector arrow matches slide 7's inter-layer arrow style."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Big number is deep navy on the canvas — no fill behind it.",
+            "Technical Outcomes card: white fill with lavender-grey outline.",
+            "Chips: pale-lavender fill with deep-navy text.",
+            "Connector arrows in deep navy."
+          ],
+          "typography_rules": [
+            "'95%' is the largest type element on the slide body.",
+            "Card header in ALL CAPS small Bold.",
+            "Chip labels in title case Regular small."
+          ],
+          "component_rules": [
+            "All five chips are identical in size and padding.",
+            "Card outline weight matches all other cards in the deck."
+          ],
+          "chart_rules": ["No charts (no actual results)."],
+          "table_rules": ["No tables."],
+          "icon_rules": [
+            "One small line icon per roadmap chip.",
+            "No icons on the Technical Outcomes card.",
+            "Outline only, single line weight, deep-navy color."
+          ],
+          "infographic_rules": [
+            "Big-number block and right-side block carry equal visual weight.",
+            "Roadmap arrows must connect chips in left-to-right phase order — no cycles or branches."
+          ],
+          "diagram_rules": [
+            "Roadmap is linear — single path of five chips.",
+            "No vertical or branching diagram."
+          ],
+          "imagery_rules": ["No imagery."],
+          "anti_patterns_to_avoid": [
+            "Showing the '95%' as a pie chart or doughnut chart.",
+            "Adding a CTA like 'Try YouthPath today!' (this is a proposal, not a sales pitch).",
+            "Making the big number a different color than deep navy.",
+            "Adding more than five future phases.",
+            "Embedding a screenshot of a future product mockup."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "The 95% search-time reduction headline",
+            "The '2 hours → 5 minutes' delta",
+            "Reference to the ~12M user scope",
+            "All three technical outcomes",
+            "All five future phases in correct order"
+          ],
+          "must_not_include": [
+            "Phase 7 or later speculative items",
+            "Marketing language",
+            "Specific revenue projections"
+          ],
+          "evidence_to_use": [
+            "F13-expected-outcomes (user-side outcomes, technical outcomes, five-phase roadmap)"
+          ],
+          "evidence_to_avoid": [
+            "Self-assessment scoring (F14) — internal only."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Render '95%' as a single text element. Group the chip strip as a single object so it can be rescaled if the body zone shrinks.",
+          "image_generation_note": "Keep chip arrows identical in length where geometry allows.",
+          "fallback_if_content_is_sparse": "If a future phase's icon is unclear, prefer omitting the icon over inventing one."
+        }
+      }
+    },
+    {
+      "slide_number": 13,
+      "slide_role": "cta",
+      "page_family": "end",
+      "slide_title": "Thank You / Q&A",
+      "layout_family": "closing-end-page",
+      "prompt": {
+        "objective": "Provide a deliberate closing frame to the recorded video and an entry point to the May-7 online Q&A. Reuse the cover's diagonal overlay motif so the deck visibly starts and ends with the same visual gesture.",
+        "narrative_function": "Final slide. Signals end of presentation. Echoes the cover visually so the deck reads as a complete document rather than ending mid-thought.",
+        "visual_intent": "Quiet closing page. The viewer's last impression should be a tidy thank-you message and the team's affiliation. Background diagonal triangles return from slide 1 to close the visual loop.",
+        "content_blocks": [
+          {
+            "block_type": "title",
+            "purpose": "Closing message.",
+            "content_instruction": "Two lines: 'Thank You' (line 1, larger), 'for Your Attention' (line 2, smaller and lighter).",
+            "placement_instruction": "Center of the slide, vertically centered.",
+            "style_instruction": "Line 1 in Pretendard ExtraBold very large deep navy. Line 2 in Pretendard Light/Regular smaller deep navy. Both lines centered or left-aligned (designer's choice — must match cover's title alignment for visual rhyme)."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "ALL CAPS small subtitle below the closing message.",
+            "content_instruction": "'QUESTIONS AND DISCUSSION WELCOME'.",
+            "placement_instruction": "Directly below the closing message.",
+            "style_instruction": "ALL CAPS small Bold medium blue-grey, slightly loosened tracking, aligned with the closing message above."
+          },
+          {
+            "block_type": "subtitle",
+            "purpose": "Standard ALL CAPS section kicker.",
+            "content_instruction": "'Q&A'.",
+            "placement_instruction": "Top-right corner, just below the navy header bar.",
+            "style_instruction": "ALL CAPS small Bold deep navy right-aligned."
+          },
+          {
+            "block_type": "footer_note",
+            "purpose": "Three-column closing metadata strip.",
+            "content_instruction": "Left column: 'Hanyang University · Deep Learning Methods and Application · Five-Person Team'. Center column: representative team email (or 'Team contact: [email]' if no specific email is finalized). Right column: 'Online Q&A by May 7'.",
+            "placement_instruction": "Bottom of the slide, beneath a thin full-width lavender-grey divider. Three columns of equal width.",
+            "style_instruction": "Small Pretendard Regular deep navy. Left column left-aligned, center column centered, right column right-aligned."
+          },
+          {
+            "block_type": "image",
+            "purpose": "Reuse the cover's diagonal overlay motif as a background atmospheric element.",
+            "content_instruction": "Two or three asymmetric large triangles in pale lavender, mirrored from the cover. Position them in either the left third or the right third of the slide (the opposite side from the cover, to feel like a visual echo rather than a copy).",
+            "placement_instruction": "Background layer behind all text.",
+            "style_instruction": "Flat fills only, low contrast against the canvas. Always sit behind text."
+          }
+        ],
+        "layout_instructions": {
+          "structure": "Single composition with the closing message centered, a small subtitle beneath it, a three-column metadata strip at the bottom under a thin divider, and a diagonal overlay echo in the background.",
+          "header_body_footer": {
+            "header": "Thin deep-navy bar across the very top. ALL CAPS 'Q&A' kicker top-right. No slide title block (the closing message replaces it).",
+            "body": "Closing message centered with a small ALL CAPS subtitle directly beneath. Diagonal triangles in the background.",
+            "footer": "Full-width thin lavender-grey divider, then a three-column metadata strip."
+          },
+          "reading_order": [
+            "Top-right kicker 'Q&A'",
+            "Closing message lines",
+            "Subtitle 'QUESTIONS AND DISCUSSION WELCOME'",
+            "Metadata strip left-to-right"
+          ],
+          "alignment": "Closing message and subtitle share the same horizontal alignment. Metadata columns evenly spaced.",
+          "spacing": "Generous whitespace around the closing message.",
+          "density": "Low (closing pages should breathe).",
+          "body_slide_consistency": "The closing slide explicitly breaks out of the body-slide system (no two-line subtitle in the header zone, no left-aligned title). This is intentional and matches the cover's break from the body system. Page number is omitted (matching the cover) or rendered very small at the designer's discretion."
+        },
+        "design_constraints": {
+          "palette_rules": [
+            "Diagonal triangles in pale lavender — same swatch as slide 1.",
+            "Closing message in deep navy.",
+            "No new colors introduced on the closing page."
+          ],
+          "typography_rules": [
+            "'Thank You' line is the largest type element.",
+            "ALL CAPS subtitle uses loosened tracking.",
+            "Metadata strip in Regular small."
+          ],
+          "component_rules": [
+            "Lavender-grey divider is hairline weight.",
+            "Three-column metadata strip uses equal-width columns."
+          ],
+          "chart_rules": ["No charts."],
+          "table_rules": ["No tables."],
+          "icon_rules": ["No icons on the closing page."],
+          "infographic_rules": ["No infographic content."],
+          "diagram_rules": ["No diagrams."],
+          "imagery_rules": [
+            "Only the diagonal triangle overlay (background).",
+            "No team photo, no logo, no QR code."
+          ],
+          "anti_patterns_to_avoid": [
+            "Adding a 'next steps' bullet list.",
+            "Adding a QR code or social-media icon strip.",
+            "Adding a team photo.",
+            "Repeating the cover's title.",
+            "Inserting a celebratory illustration or graphic.",
+            "Showing a slide-deck miniaturization preview."
+          ]
+        },
+        "content_constraints": {
+          "must_include": [
+            "A thank-you message",
+            "Team affiliation (university and course)",
+            "Q&A note pointing to the May 7 deadline"
+          ],
+          "must_not_include": [
+            "A repeat of the project's value proposition",
+            "Bonus or appendix content announcements",
+            "Surprise data reveals"
+          ],
+          "evidence_to_use": [
+            "I1-no-end-page-in-reference (note that the closing page is design-system inference, not extracted from the original eight-slide reference)",
+            "G1-presentation-format (May 7 Q&A deadline)"
+          ],
+          "evidence_to_avoid": [
+            "Any source proposal content — the closing page is structural only."
+          ]
+        },
+        "generator_notes": {
+          "ppt_generation_note": "Mirror the cover's diagonal triangle composition by placing the triangles on the opposite side of the slide. Keep the overlay subtle.",
+          "image_generation_note": "Render the divider as a single horizontal hairline at full slide width.",
+          "fallback_if_content_is_sparse": "If a representative team email is not available, replace the center column with a placeholder 'Team contact: [team@hanyang.ac.kr]' rather than omit the column entirely."
+        }
+      }
+    }
+  ]
+}

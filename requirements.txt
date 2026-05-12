@@ -1,0 +1,10 @@
+langchain
+langchain-chroma
+langchain-huggingface
+chromadb
+sentence-transformers
+pypdf
+httpx
+python-dotenv
+ipykernel
+pytest
