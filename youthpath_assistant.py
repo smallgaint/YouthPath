@@ -40,7 +40,10 @@ def build_team_a_assistant_instruction() -> str:
 class SpecialistAgent(ABC):
     """모든 Specialist Agent에 공통으로 적용되는 추상 클래스."""
 
-    name: str
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """에이전트 식별자."""
 
     @abstractmethod
     def collect_and_match(self, user_query: str) -> dict[str, Any]:
@@ -48,28 +51,36 @@ class SpecialistAgent(ABC):
 
 
 class PolicyAgent(SpecialistAgent):
-    name = "policy"
+    @property
+    def name(self) -> str:
+        return "policy"
 
     def collect_and_match(self, user_query: str) -> dict[str, Any]:
         return {"agent": self.name, "matched": "정책", "query": user_query}
 
 
 class JobAgent(SpecialistAgent):
-    name = "job"
+    @property
+    def name(self) -> str:
+        return "job"
 
     def collect_and_match(self, user_query: str) -> dict[str, Any]:
         return {"agent": self.name, "matched": "채용", "query": user_query}
 
 
 class ResumeAgent(SpecialistAgent):
-    name = "resume"
+    @property
+    def name(self) -> str:
+        return "resume"
 
     def collect_and_match(self, user_query: str) -> dict[str, Any]:
         return {"agent": self.name, "matched": "자소서", "query": user_query}
 
 
 class CalendarAgent(SpecialistAgent):
-    name = "calendar"
+    @property
+    def name(self) -> str:
+        return "calendar"
 
     def collect_and_match(self, user_query: str) -> dict[str, Any]:
         return {"agent": self.name, "matched": "일정", "query": user_query}
