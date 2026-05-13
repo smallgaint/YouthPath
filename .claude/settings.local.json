@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./venv/Scripts/python.exe -c ' *)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe -c ' *)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ./venv/Scripts/python.exe scripts/index_policies.py)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ./venv/Scripts/python.exe -c ' *)",
+      "Bash(./venv/Scripts/pip.exe install *)",
+      "Bash(./venv/Scripts/python.exe -m pip install trafilatura)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 ./venv/Scripts/python.exe scripts/enrich_policies_html.py --sample 8)",
+      "WebSearch",
+      "WebFetch(domain:www.youthcenter.go.kr)"
+    ]
+  }
+}
