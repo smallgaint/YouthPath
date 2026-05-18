@@ -39,15 +39,15 @@ async def agents_orchestrator_node(state: GraphState) -> Dict[str, Any]:
         print("[System] Job Agent 작업 예약")
         pass
         
-    if "resume" in active_agents:
-        # tasks["resume_result"] = run_resume_agent(state["query"], state["user_profile"])
-        print("[System] Resume Agent 작업 예약")
-        pass
+    # if "resume" in active_agents:
+    #     # tasks["resume_result"] = run_resume_agent(state["query"], state["user_profile"])
+    #     print("[System] Resume Agent 작업 예약")
+    #     pass
         
-    if "calendar" in active_agents:
-        # tasks["calendar_result"] = run_calendar_agent(state["query"], state["user_profile"])
-        print("[System] Calendar Agent 작업 예약")
-        pass
+    # if "calendar" in active_agents:
+    #     # tasks["calendar_result"] = run_calendar_agent(state["query"], state["user_profile"])
+    #     print("[System] Calendar Agent 작업 예약")
+    #     pass
 
     # 호출할 에이전트가 있다면 병렬 실행 [cite: 68]
     updated_results = {}
@@ -70,7 +70,6 @@ async def agents_orchestrator_node(state: GraphState) -> Dict[str, Any]:
             updated_results[key] = None
             
     return updated_results
-
 
 # ---------------------------------------------------------
 # 2. 통합 LLM 노드 (최종 답변 생성 및 페르소나 주입)
