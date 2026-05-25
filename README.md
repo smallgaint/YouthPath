@@ -36,7 +36,7 @@ app.py
 12. Fetch latest news from Naver News API
 13. Save the final Resume Agent context as JSON
 ```
---
+
 # 3. Input / Output
 
 ## Test Input
@@ -101,7 +101,7 @@ Output format:
   "error": null
 }
 ```
---
+
 # 4. Environment Variables
 
 Create a local .env file based on .env.template.
@@ -116,7 +116,7 @@ CHROMA_COLLECTION_NAME=companies
 
 Do not commit .env.
 
--- 
+ 
 # 5. How to Run
 
 Activate virtual environment:
@@ -133,7 +133,7 @@ python app.py
 ```
 Important: use python app.py, not python3 app.py.
 
---
+
 # 6. Current Test Result
 
 Current tested company:
@@ -157,7 +157,7 @@ User Matching ✅
 Context Save ✅
 - Resume Agent context saved as JSON under agent_outputs/
 ```
--- 
+
 # 7. Current Limitations
 
 ## 1. Keyword quality still needs improvement
@@ -196,7 +196,7 @@ resume_agent.py
 → matching
 → context JSON return
 ```
---
+
 # 8. Files Should be ignored:
 ```text
 .env
@@ -208,7 +208,7 @@ __pycache__/
 *.pyc
 .DS_Store
 ```
---
+
 # 9. Suggested Next Tasks
 
 1. Split app.py into separate modules:
@@ -223,7 +223,6 @@ __pycache__/
 4. Decide shared agent output schema with other team members.
 5. Connect this agent output to the integrated LLM/router.
 
--- 
 # 10. Branch Status
 purpose: Resume agent 1st commit
 
