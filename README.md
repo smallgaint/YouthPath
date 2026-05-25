@@ -14,7 +14,6 @@ User profile
 ```
 The final natural-language response generation is delegated to the integrated LLM/router.
 
---
 # 2. Current Implementation Summary
 
 ## Main file:
