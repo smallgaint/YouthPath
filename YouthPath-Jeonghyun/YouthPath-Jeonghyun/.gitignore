@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+chroma.sqlite3
+chroma_db/
+agent_outputs/
+disclosure_data/
+docs_cache/
+*.pyc
+.DS_Store
