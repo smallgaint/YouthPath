@@ -1,0 +1,618 @@
+{
+  "deck_meta": {
+    "working_title": "YouthPath — A Multi-Agent Assistant for Youth Social Entry",
+    "deck_goal": "Win the proposal-stage evaluation (worth 20% of the course grade) for the Deep Learning Methods and Application course at Hanyang University. The deck must satisfy all five evaluation criteria (Problem Definition 20pt, Background 20pt, System Design 30pt, Evaluation 15pt, Feasibility 15pt) within a 7–10 minute YouTube video presentation, and convince the professor and peer students that the project is both worth doing and within the team's capability.",
+    "target_audience": "Hanyang University 'Deep Learning Methods and Application' course instructor (one professor) plus peer students. All viewers can be assumed to know the basic concepts of LLMs, RAG, and Agent systems, but none can be assumed to have prior knowledge of the project's specific domain (Korean youth policy, employment portals, resume coaching).",
+    "speaker_mode": "presented",
+    "tone": "Formal-academic, evidence-led, restrained. Research-report tone rather than marketing tone. Aligned with the navy editorial system extracted in DESIGN.md. Language: full English throughout the deck (per Week9 guideline 'The slide must be written in English').",
+    "target_length": {
+      "slides": 13,
+      "reasoning": "A 7–10 minute video implies roughly 40–50 seconds per slide. The 30-point System Design criterion gets 3 slides (architecture, multi-agent design, RAG/MCP). Each 20-point criterion gets 2 and 1 slides respectively. The two 15-point criteria get 1 slide each. Adding cover, contents, and closing yields 13 slides total."
+    }
+  },
+  "design_dependency": {
+    "design_system_name": "Navy Editorial Report — Cool Lavender + Deep Navy",
+    "body_slide_rule": "Every body page keeps the same header (top full-width navy bar + left-aligned large Title Case heading + right-aligned ALL CAPS section kicker + right-aligned 2-line subtitle description) and the same footer (bottom-right page number + small navy accent square). Only the body zone varies across the allowed layout families.",
+    "page_flow_rule": "Cover (diagonal lavender overlay + vertical 'PRESENTATION' label on the left) → Contents (left 1/3 lavender panel + right 2/3 numbered list) → multiple body slides (header is fixed; only the body zone varies) → closing (reuses the diagonal overlay motif from the cover, with a short message and presenter info).",
+    "allowed_layout_families": [
+      "cover",
+      "contents-left-panel",
+      "insight-claim-deep-navy-block",
+      "insight-claim-white-card",
+      "comparison-two-column-cards",
+      "process-hub-and-spoke",
+      "data-gantt-table",
+      "metric-numbered-card-grid",
+      "closing-end-page"
+    ],
+    "consistency_notes": [
+      "Color palette is fixed across the deck — deep navy + pale lavender + medium blue-grey + white only. No new accent colors are introduced.",
+      "Number badges (01, 02, 03 …) always render as a deep navy filled square with bold white numerals.",
+      "Diagram connector lines and arrows keep the same stroke weight and color across every page.",
+      "Icons live only in the top-right corner of cards, with a single line weight and a single color.",
+      "Title hierarchy is enforced through weight contrast (bold/extrabold for titles vs light/regular for body), not color contrast. English titles use Title Case for primary and ALL CAPS for the right-aligned kicker.",
+      "The diagonal lavender overlay appears only on the cover (slide 1) and the closing (slide 13), creating an opening-and-closing visual echo. Body pages stay clean.",
+      "Page numbers always sit bottom-right with a small navy accent square; the bottom-left corner is intentionally left empty."
+    ]
+  },
+  "content_inventory": [
+    {
+      "source_id": "F1-context-pain-points",
+      "source_type": "file",
+      "summary": "The proposal's problem-definition section, which states that youth career-entry information is scattered across 5–6 separate platforms (Government24, Ontongchungnyeon, WorkNet, JobKorea, Saramin, personal calendars) and that four structural pain points exist: information fragmentation, missing qualification matching, the cutoff limit of general-purpose LLMs, and missed application deadlines.",
+      "relevance": "high",
+      "usable_for": ["Slide 3 (Problem Definition)", "Slide 4 (Pain Points)"]
+    },
+    {
+      "source_id": "F2-target-users",
+      "source_type": "file",
+      "summary": "Target audience: Korean youth aged 19–34, approximately 12 million people. Social value framed as reducing information asymmetry, lowering administrative cost, and improving job-preparation efficiency.",
+      "relevance": "high",
+      "usable_for": ["Slide 3 (scale framing)"]
+    },
+    {
+      "source_id": "F3-solution-summary",
+      "source_type": "file",
+      "summary": "YouthPath is an LLM-based multi-agent system. Four specialized agents (Policy, Job, Resume, Calendar) consolidate fragmented information into a single interface. One-line value proposition plus the four agent responsibilities.",
+      "relevance": "high",
+      "usable_for": ["Slide 5 (Solution)"]
+    },
+    {
+      "source_id": "F4-differentiation-table",
+      "source_type": "file",
+      "summary": "Comparison of existing tools (Government24, JobKorea AI Match, ChatGPT, personal calendar apps) versus YouthPath, plus four technical differentiators: hybrid RAG, multi-agent orchestration, MCP integration, personalized matching.",
+      "relevance": "high",
+      "usable_for": ["Slide 6 (Differentiation)"]
+    },
+    {
+      "source_id": "F5-architecture-4layer",
+      "source_type": "file",
+      "summary": "Four-layer architecture: Frontend (Streamlit) → Multi-Agent Orchestration (LangGraph + Router + four sub-agents) → Data Layer (Static RAG + Dynamic RAG + five MCP servers) → Infrastructure (AWS EC2/S3 + LUXIA).",
+      "relevance": "high",
+      "usable_for": ["Slide 7 (System Architecture)"]
+    },
+    {
+      "source_id": "F6-agent-design",
+      "source_type": "file",
+      "summary": "Roles, inputs, outputs, and process of the Router agent and four specialized sub-agents (Policy, Job, Resume, Calendar). The Router classifies user queries and delegates to the appropriate sub-agent.",
+      "relevance": "high",
+      "usable_for": ["Slide 8 (Multi-Agent Design)"]
+    },
+    {
+      "source_id": "F7-rag-mcp-strategy",
+      "source_type": "file",
+      "summary": "Hybrid RAG = Static (policy documents, accepted resumes, NCS competency standards) + Dynamic (DART corporate filings). MCP standardizes five external APIs (Ontongchungnyeon, Public Data Portal, WorkNet, DART, Naver News). Four reasons for choosing RAG over fine-tuning.",
+      "relevance": "high",
+      "usable_for": ["Slide 9 (Hybrid RAG and MCP)"]
+    },
+    {
+      "source_id": "F8-models-frameworks",
+      "source_type": "file",
+      "summary": "Selection rationale for major models and frameworks: LUXIA (main LLM, Korean domain strength), Gemini 2.0 Flash (long-context summarization), GPT-4o-mini (evaluation judge), bge-m3 (embedding), Chroma (vector DB), LangGraph (agent framework), Streamlit (frontend), FastAPI (backend).",
+      "relevance": "medium",
+      "usable_for": ["Slide 7 supporting (Layer 4 chips)", "Slide 9 supporting (RAG tooling)"]
+    },
+    {
+      "source_id": "F9-dataset-evaluation",
+      "source_type": "file",
+      "summary": "Seven datasets under public-domain or Creative Commons licenses. Quantitative metrics (precision, recall, citation accuracy, response time, BLEU/ROUGE) and qualitative methods (n=20 user survey, LLM-as-judge, head-to-head comparison with existing tools). 50-question benchmark to be built in-house.",
+      "relevance": "high",
+      "usable_for": ["Slide 10 (Dataset and Evaluation)"]
+    },
+    {
+      "source_id": "F10-team-roles",
+      "source_type": "file",
+      "summary": "Five-person role assignment: A (Policy + Static RAG), B (Job + DART/MCP), C (Resume + evaluation), D (Frontend + UX), E (Backend + LangGraph). Each member is the team's domain expert in their area.",
+      "relevance": "high",
+      "usable_for": ["Slide 11 (Execution Plan)"]
+    },
+    {
+      "source_id": "F11-milestone",
+      "source_type": "file",
+      "summary": "Seven-week milestone plan from Week 10 to Week 16: proposal presentation → data collection and RAG indexing → single-agent prototype → four-agent integration → frontend/backend integration → evaluation experiments → final presentation.",
+      "relevance": "high",
+      "usable_for": ["Slide 11 (Gantt chart)"]
+    },
+    {
+      "source_id": "F12-cost-risk",
+      "source_type": "file",
+      "summary": "Total estimated cost ~$52 (LUXIA $50 credit + GPT-4o-mini $2). Five identified risks (LUXIA credit exhaustion, crawling ToS, DART document size, multi-agent debugging difficulty, dataset licensing) with mitigations.",
+      "relevance": "medium",
+      "usable_for": ["Slide 11 (cost and risk supporting block)"]
+    },
+    {
+      "source_id": "F13-expected-outcomes",
+      "source_type": "file",
+      "summary": "User-side outcomes (95% reduction in information-search time, no missed eligible policies, faster resume preparation) plus technical outcomes (integrated LLM/RAG/Agent/MCP experience, hybrid RAG in practice, Korean-domain LUXIA usage). Five-phase future roadmap (multilingual → voice → mobile app → KakaoTalk bot → learning recommendation).",
+      "relevance": "high",
+      "usable_for": ["Slide 12 (Expected Outcomes)"]
+    },
+    {
+      "source_id": "F14-evaluation-criteria-mapping",
+      "source_type": "file",
+      "summary": "Appendix B's self-assessment mapping (estimated 90/100). Maps the five evaluation criteria to specific sections of the proposal.",
+      "relevance": "low",
+      "usable_for": ["Reference only when balancing slide weight against scoring weight. Not shown to the audience because it is an internal self-check."]
+    },
+    {
+      "source_id": "G1-presentation-format",
+      "source_type": "file",
+      "summary": "Week 9 guideline: 7–10 minute video presentation (uploaded to YouTube as unlisted), plus the slide deck submitted by May 5. Online interactive Q&A session by May 7. The slides must be written in English. Evaluation rubric weights are 20+20+30+15+15 = 100.",
+      "relevance": "high",
+      "usable_for": ["Constrains total slide count and per-slide weight; informs the Q&A note on slide 13."]
+    },
+    {
+      "source_id": "I1-no-end-page-in-reference",
+      "source_type": "inference",
+      "summary": "When DESIGN.md was extracted, no closing page was directly observed in the eight reference slides. Marked as inferred. This deck explicitly adds a closing page on slide 13 that reuses the diagonal overlay motif from the cover.",
+      "relevance": "medium",
+      "usable_for": ["Slide 13 (closing) — to be flagged as design inference in slide_prompts.json."]
+    }
+  ],
+  "story_arc": {
+    "narrative_shape": "Problem (why solve this) → Solution (what we will build) → Differentiation (why us) → System Design (how we will build it, three slides) → Evaluation (how we will verify it) → Execution (who, when, how much) → Outcomes (the value created) → Closing. Slide allocation is proportional to the official rubric weights of 20+20+30+15+15.",
+    "why_this_order_is_persuasive": "This is the standard arc for a proposal-stage presentation, and the official rubric follows the same sequence. The audience (the professor) wants to answer two questions during the talk: (1) is this problem worth solving, and (2) is this team capable of solving it. The first 30% of the deck (slides 3–6) earns 'worth solving' through the problem, the solution, and the differentiation. The remaining 60% (slides 7–12) earns 'capable of solving' through architecture, evaluation, execution plan, and outcomes. Slides 1, 2, and 13 frame the entry, the map, and the exit."
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_role": "cover",
+      "page_family": "title",
+      "topic_group": "opening",
+      "continuation_of": null,
+      "working_title": "YouthPath — A Multi-Agent Assistant for Youth Social Entry",
+      "core_message": "A five-person team in the Deep Learning Methods and Application course proposes YouthPath, an LLM-based multi-agent assistant integrating LLM, RAG, multi-agent orchestration, and MCP to support Korean youth in their transition into society.",
+      "audience_takeaway": "Within one second of viewing, the audience grasps the topic, the team, the date, and the four core technologies.",
+      "header_body_footer_plan": {
+        "header": "Top full-width navy bar. Vertical 'PRESENTATION' label rotated 90 degrees on the left edge (DESIGN.md cover pattern from 01.png). Date '2026.05.05' in the top-right, small bold deep navy.",
+        "body": "Center-left, large two-line title: line one 'A Multi-Agent Assistant for' (light/regular weight), line two 'Youth Social Entry' (extrabold, larger). Below the title, an English subtitle 'YOUTHPATH — INITIAL PROPOSAL' in small grey-blue ALL CAPS. Asymmetric diagonal lavender triangular overlays sit in the right third of the page as background.",
+        "footer": "Bottom-right, three short lines of metadata: 'Hanyang University · Deep Learning Methods and Application / Five-Person Team / LLM · RAG · Multi-Agent · MCP'. Below the metadata, a small navy accent square (~4–6px). The cover does not display a page number."
+      },
+      "layout_placement_notes": [
+        "The title occupies roughly the left 1/2 to 2/3 of the slide width, kept to two lines maximum for legibility.",
+        "Diagonal overlays sit at low contrast in the background and never overlap the title text.",
+        "No page number on the cover (DESIGN.md cover convention)."
+      ],
+      "infographic_strategy": "None. The cover relies on typographic hierarchy and the diagonal overlay alone for visual impact.",
+      "icon_strategy": "None.",
+      "table_strategy": "None.",
+      "chart_strategy": "None.",
+      "supporting_context": ["Opening 0–20 seconds of the video", "Team intro and presentation start"],
+      "evidence_sources": ["F1-context-pain-points (project name alignment)", "G1-presentation-format (date, format)"],
+      "recommended_layout_family": "cover",
+      "why_here": "Slide 1 sets the tone and authority of the deck and tells the audience what they are about to hear. As the first frame of a recorded video, it must establish the navy editorial tone instantly.",
+      "must_include": ["Project name 'YouthPath'", "One-line English subtitle", "Team affiliation (course and team size)", "Submission date"],
+      "can_exclude": ["Logos", "Individual presenter names (this is a team submission, so only the team is named)", "Detailed technology explanations (saved for later slides)"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 2,
+      "slide_role": "context",
+      "page_family": "body",
+      "topic_group": "opening",
+      "continuation_of": null,
+      "working_title": "Contents",
+      "core_message": "The deck is organized into six sections, each mapped to one or more rubric criteria.",
+      "audience_takeaway": "A mental map of the talk so the evaluator knows in advance which slides answer which scoring criteria.",
+      "header_body_footer_plan": {
+        "header": "DESIGN.md body header structure: top navy bar + 'CONTENTS' ALL CAPS kicker on the right. Because this page uses the left-1/3 lavender-panel variant (02.png), the header connects naturally with the left panel.",
+        "body": "Left 1/3 panel: large 'Contents' title in extrabold deep navy + small grey-blue subtitle 'YOUTHPATH PROPOSAL'. Right 2/3: a six-row numbered list. Each row contains a deep navy square number badge (01–06), a bold English section name, and a small grey description sentence below.",
+        "footer": "Bottom-right page number '02' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "Left panel width is approximately 33% of the slide, in pale lavender (~#C9D1E5 approx).",
+        "All six number badges are the same size and share the same x-coordinate.",
+        "Vertical spacing between items is even and generous."
+      ],
+      "infographic_strategy": "Six number badges plus English labels. The most restrained version of DESIGN.md's numbered-card pattern.",
+      "icon_strategy": "None. Number badges carry all the visual cueing.",
+      "table_strategy": "None.",
+      "chart_strategy": "None.",
+      "supporting_context": ["The six items are: Problem Definition / Solution and Differentiation / System Design / Evaluation Plan / Execution Plan / Expected Outcomes."],
+      "evidence_sources": ["Section structure across F1–F13"],
+      "recommended_layout_family": "contents-left-panel",
+      "why_here": "If the audience does not know within the first 30 seconds what the talk will cover, attention drops. A contents page also helps the evaluator know exactly where to look for each scoring criterion.",
+      "must_include": ["Six section titles", "One-line description per section"],
+      "can_exclude": ["Per-slide page-number mapping (unnecessary detail)", "Estimated time per section (clutters the page)"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 3,
+      "slide_role": "problem",
+      "page_family": "body",
+      "topic_group": "problem-definition",
+      "continuation_of": null,
+      "working_title": "Problem Definition — A Fragmented Path into Society",
+      "core_message": "Roughly 12 million Korean youth must navigate 5–6 separate platforms to enter society, and none of those platforms offers qualification matching, real-time data, or unified deadline alerts.",
+      "audience_takeaway": "The problem is (a) large enough in scale (~12 million people) and (b) structurally unsolved by existing tools.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Problem Definition' in extrabold + right ALL CAPS kicker 'PROBLEM DEFINITION' + right-aligned 2-line subtitle: 'Youth career-entry information is fragmented, / and qualification matching, real-time data, and alerts are all missing.'",
+        "body": "Body split in two: (left, ~40%) a large emphasized number '~12M' with a supporting label 'Korean youth aged 19–34' and a single sentence 'Average information-search cost: 2 hours.' (right, ~60%) a 2x2 grid of four domain cards (Youth Policy / Job Postings / Resume and Interview / Schedule Management). Each card: domain label + existing platform names + one-line limitation.",
+        "footer": "Bottom-right page number '03' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "The big number '~12M' on the left is sized at roughly 25% of the page width — emphasized but not flashy, in keeping with DESIGN.md's restraint.",
+        "The four cards on the right are identical in size and outline weight.",
+        "Generous whitespace between the title and the body keeps the page at medium density."
+      ],
+      "infographic_strategy": "Left-side number emphasis plus right-side 4-card grid. A direct adaptation of DESIGN.md's white-card pattern.",
+      "icon_strategy": "Each card carries one line icon in the top-right corner (Policy = document, Jobs = briefcase, Resume = pen, Schedule = calendar). All icons share the same line weight and deep navy color.",
+      "table_strategy": "None — cards read better than a table for four parallel domains.",
+      "chart_strategy": "None.",
+      "supporting_context": ["F1's domain-by-domain limitation table is converted into card form.", "F2 supplies the 12 million figure."],
+      "evidence_sources": ["F1-context-pain-points", "F2-target-users"],
+      "recommended_layout_family": "insight-claim-white-card",
+      "why_here": "This slide answers all three sub-criteria of the 20-point Problem Definition rubric (clarity of problem statement, real-world relevance, justification of necessity) at once. It pairs with slide 4 to fully cover the rubric's first item.",
+      "must_include": ["The ~12M scale figure", "The four fragmented domains", "A one-line limitation per domain"],
+      "can_exclude": ["Per-platform user counts", "Welfare-coverage gap statistics not in the source proposal"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 4,
+      "slide_role": "problem",
+      "page_family": "body",
+      "topic_group": "problem-definition",
+      "continuation_of": 3,
+      "working_title": "Pain Points — Four Frictions a Single Tool Cannot Fix",
+      "core_message": "Information fragmentation, missing qualification matching, the LLM cutoff problem, and missed application deadlines compound on each other, which is why no single existing tool — search engine, LLM, or calendar — can resolve the issue.",
+      "audience_takeaway": "Four concrete reasons why ChatGPT or Government24 alone cannot solve this.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Pain Points' + right ALL CAPS kicker 'PAIN POINTS' + right-aligned 2-line subtitle.",
+        "body": "Body split into a 2x2 grid of four equal cards. Each card has a white background, a thin lavender-grey outline, a deep navy square number badge (01–04) tucked into the top-left corner, a bold English heading (e.g. 'Information Fragmentation'), a one-line description, and a small emphasized fact or quote (e.g. '5–6 sites visited per task' or '~2 hours per attempt').",
+        "footer": "Bottom-right page number '04' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "All four cards are identical in size, heading position, and text length to maintain visual rhythm.",
+        "Number badges sit slightly outside the card's top-left corner, mirroring the 03.png card pattern.",
+        "Inter-card spacing is roughly 8–10% of the card width."
+      ],
+      "infographic_strategy": "DESIGN.md's signature pattern — number badge + heading + body card grid — used at its most direct. Four pain points sit at the same hierarchical level, so a 2x2 grid is the natural shape.",
+      "icon_strategy": "Optional. If used, each card gets a small line icon in the top-right corner (Fragmentation = scattered dots, No Matching = question mark, Cutoff = clock, Missed Deadline = bell), all at the same size. May be omitted if the text is sufficient on its own.",
+      "table_strategy": "None.",
+      "chart_strategy": "None.",
+      "supporting_context": ["F1's four pain points become the four cards verbatim."],
+      "evidence_sources": ["F1-context-pain-points"],
+      "recommended_layout_family": "metric-numbered-card-grid",
+      "why_here": "Slide 3 covers the macro view (scale and domains). Slide 4 zooms into the micro view (the user's lived friction). Combining them onto a single slide would overcrowd it; splitting them lets each carry its own argument.",
+      "must_include": ["All four pain points", "A short emphasized fact or figure per card"],
+      "can_exclude": ["User-interview quotes (none exist in the source)", "A fifth or sixth pain point (would dilute the message)"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 5,
+      "slide_role": "insight",
+      "page_family": "body",
+      "topic_group": "solution",
+      "continuation_of": null,
+      "working_title": "Solution — One Profile, Four Domains, One Interface",
+      "core_message": "YouthPath is an LLM-based multi-agent assistant that takes a single profile entry and unifies the policy, job, resume, and calendar domains into one interface.",
+      "audience_takeaway": "The solution's value proposition and its four-agent shape are visible in one frame.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Solution' + right ALL CAPS kicker 'SOLUTION OVERVIEW' + right-aligned 2-line subtitle: 'One profile entry, four domains. / A single interface replaces five to six platform visits.'",
+        "body": "DESIGN.md's hub-and-spoke pattern (04.png). At the page center, a large deep navy circle with a pale lavender outer ring; inside the circle, white ALL CAPS text 'YOUTHPATH'. Around the circle, four agent cards arranged in a 2x2 quadrant pattern (Policy Agent, Job Agent, Resume Agent, Calendar Agent). Each card: number badge (01–04) + bold agent name + one-line responsibility. Thin lines or arrows connect each card to the central circle.",
+        "footer": "Bottom-right page number '05' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "The central circle's diameter is approximately 45–55% of the slide height.",
+        "The four cards are placed symmetrically in the four quadrants of the circle.",
+        "All connector lines from the circle to the cards share the same stroke weight and color.",
+        "To differentiate from slide 8 (which also uses hub-and-spoke), slide 5 emphasizes 'four parallel responsibilities' (symmetric quadrants) while slide 8 emphasizes 'router delegation flow' (left hub plus right stack)."
+      ],
+      "infographic_strategy": "Direct reuse of DESIGN.md's central-circle-plus-four-cards pattern from 04.png to create visual familiarity and reinforce the four-agent shape.",
+      "icon_strategy": "Each agent card has a domain line icon in the top-right corner (Policy = document, Jobs = briefcase, Resume = pen, Calendar = calendar). Same line weight and color across all four.",
+      "table_strategy": "None.",
+      "chart_strategy": "None.",
+      "supporting_context": ["The four problem domains in slides 3 and 4 map 1:1 to the four agents shown here, so the solution's 'shape' visually mirrors the problem's 'shape'."],
+      "evidence_sources": ["F3-solution-summary"],
+      "recommended_layout_family": "process-hub-and-spoke",
+      "why_here": "Because slides 3 and 4 already established four problem domains, mirroring them as four agents in a symmetrical diagram lowers the audience's cognitive load: the shape of the solution echoes the shape of the problem.",
+      "must_include": ["YouthPath one-line value proposition", "All four agent names and their core responsibilities"],
+      "can_exclude": ["Detailed tech stack (slide 7)", "Router agent (introduced fully in slide 8)"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 6,
+      "slide_role": "comparison",
+      "page_family": "body",
+      "topic_group": "background",
+      "continuation_of": null,
+      "working_title": "Differentiation — Why Existing Tools Fall Short",
+      "core_message": "Government24, JobKorea AI Match, ChatGPT, and personal calendar apps each cover only part of one domain. YouthPath integrates all four through hybrid RAG, multi-agent orchestration, MCP, and personalized matching.",
+      "audience_takeaway": "The audience can see in one table where each existing tool stops and where YouthPath continues.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Differentiation' + right ALL CAPS kicker 'DIFFERENTIATION' + right-aligned 2-line subtitle.",
+        "body": "Body split left/right. (left, ~60%) a comparison table — header row: 'Existing Tool / Limitation / YouthPath Differentiator'. Four rows: Government24, JobKorea AI Match, ChatGPT, personal calendar. Header row in deep navy fill with white text; body rows on white with thin lavender grid. (right, ~40%) four small stacked differentiator cards: Hybrid RAG, Multi-Agent Orchestration, MCP Integration, Personalized Matching. Each card: number badge + bold heading + one-line explanation.",
+        "footer": "Bottom-right page number '06' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "Four-row table — kept short to maintain medium density.",
+        "Right-side cards stacked vertically with even spacing.",
+        "A thin vertical divider separates the table from the cards."
+      ],
+      "infographic_strategy": "Hybrid of table (comparison) and cards (differentiators). Combines two DESIGN.md patterns on a single page.",
+      "icon_strategy": "Each of the four right-side cards carries a small line icon in the top-right corner (RAG = book + magnifier, Multi-Agent = connected nodes, MCP = plug, Personalized = silhouette).",
+      "table_strategy": "Four-row comparison table on the left following DESIGN.md's table style: deep navy filled header with white text, body rows with thin lavender grid lines.",
+      "chart_strategy": "None.",
+      "supporting_context": ["F4's comparison table and the four technical differentiators are unified into a single view."],
+      "evidence_sources": ["F4-differentiation-table"],
+      "recommended_layout_family": "comparison-two-column-cards",
+      "why_here": "Answers both sub-criteria of the 20-point Background and Related Work rubric (understanding of relevant tools + improvement over current offerings) on a single slide. Placing it after the solution slide is essential — the audience can only judge 'why new' once they have seen 'what new'.",
+      "must_include": ["Four existing tools and their limitations", "YouthPath's four technical differentiators"],
+      "can_exclude": ["User counts or revenue of existing tools", "Implementation details of the differentiators (covered in slides 7–9)"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 7,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "topic_group": "system-design",
+      "continuation_of": null,
+      "working_title": "System Architecture — A Four-Layer Design",
+      "core_message": "Frontend (Streamlit) → Multi-Agent Orchestration (LangGraph) → Data Layer (RAG + MCP) → Infrastructure (AWS). Responsibilities are separated by layer and joined by standard protocols (MCP and HTTP).",
+      "audience_takeaway": "In one minute, the audience grasps the whole system and where each component lives.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'System Architecture' + right ALL CAPS kicker 'SYSTEM ARCHITECTURE' + right-aligned 2-line subtitle: 'A four-layer design where each layer / is joined by standard protocols.'",
+        "body": "Body stacks four horizontal bands, top to bottom: L1 Frontend → L2 Multi-Agent Orchestration → L3 Data Layer → L4 Infrastructure. Each band has a layer label on the left (e.g. 'L1 / Frontend') and component chips on the right (e.g. 'Streamlit' / 'LangGraph + Router + 4 Agents' / 'Static RAG + Dynamic RAG + 5 MCP Servers' / 'AWS EC2 + S3 + LUXIA').",
+        "footer": "Bottom-right page number '07' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "All four band heights are equal.",
+        "A single downward arrow connects each layer to the next, indicating request flow.",
+        "Component chips are short (1–3 words) to avoid text overflow.",
+        "L2 (Multi-Agent) and L3 (Data) may use a slightly darker tone for emphasis, while remaining within the DESIGN.md palette."
+      ],
+      "infographic_strategy": "A horizontal layered architecture diagram, adapted from DESIGN.md's deep-navy-block pattern (03.png) — using four stacked bands instead of a single block.",
+      "icon_strategy": "Each layer carries one line icon on the far left expressing its character (L1 = screen, L2 = node, L3 = database, L4 = cloud). All icons share the same line weight.",
+      "table_strategy": "None — a diagram fits this content better than a table.",
+      "chart_strategy": "None.",
+      "supporting_context": ["The original ASCII architecture sketch in the proposal is rendered visually within the DESIGN.md system."],
+      "evidence_sources": ["F5-architecture-4layer", "F8-models-frameworks"],
+      "recommended_layout_family": "insight-claim-deep-navy-block",
+      "why_here": "Directly answers the 30-point System Design rubric: 'Planned system architecture and components (LLM, Prompting, RAG, Agent, FE, BE).' Because this is the highest-weighted criterion, system design gets three slides; this is the first, establishing the big picture.",
+      "must_include": ["All four layer names", "Key components in each layer", "Inter-layer flow arrow"],
+      "can_exclude": ["Detailed configuration options of each component", "AWS service-level specifications"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 8,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "topic_group": "system-design",
+      "continuation_of": 7,
+      "working_title": "Multi-Agent Design — Router and Four Domain Experts",
+      "core_message": "A supervisor pattern in which a Router agent classifies the user query and delegates it to one of four specialized agents (Policy, Job, Resume, Calendar). Each agent calls only the RAG and MCP resources for its own domain.",
+      "audience_takeaway": "The audience can see how a request actually moves through the system: user → Router → sub-agent → result.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Multi-Agent Design' + right ALL CAPS kicker 'MULTI-AGENT DESIGN' + right-aligned 2-line subtitle.",
+        "body": "Variant of DESIGN.md's hub-and-spoke pattern, deliberately different from slide 5's symmetric quadrants. A large deep navy 'Router Agent' circle on the left side, four sub-agent cards stacked vertically on the right. Four arrows fan out from the Router to each sub-agent. Each sub-agent card: agent name (bold) + one or two lines naming the RAG and MCP resources it calls.",
+        "footer": "Bottom-right page number '08' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "The Router circle sits in the vertical center of the left third of the page.",
+        "The four sub-agent cards stack vertically in the right two-thirds, all the same size.",
+        "Arrows from the Router to each sub-agent share the same stroke weight.",
+        "Visual differentiation from slide 5: slide 5 = '4 parallel responsibilities' (quadrant symmetry); slide 8 = 'router delegation' (left hub + right stack)."
+      ],
+      "infographic_strategy": "A unidirectional supervisor diagram (1 Router → 4 sub-agents), respecting DESIGN.md's diagram family and arrow rules.",
+      "icon_strategy": "Each sub-agent card carries its domain icon. The Router circle holds a routing icon (branching arrows or a node).",
+      "table_strategy": "None.",
+      "chart_strategy": "None.",
+      "supporting_context": ["F6's full Router prompt is not shown on the slide — it would overcrowd the page. The presenter mentions it in the spoken script."],
+      "evidence_sources": ["F6-agent-design"],
+      "recommended_layout_family": "process-hub-and-spoke",
+      "why_here": "After slide 7 establishes the four-layer big picture, this slide zooms into Layer 2 (the multi-agent layer). It also establishes the justification for using LangGraph, which the rubric rewards under 'appropriate usage of deep learning models and frameworks'.",
+      "must_include": ["Router agent's role", "Four sub-agent names and their dependencies", "Visual delegation direction (Router → sub-agents)"],
+      "can_exclude": ["Full Router prompt text", "Inter-agent communication protocol code", "Error-handling logic"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 9,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "topic_group": "system-design",
+      "continuation_of": 8,
+      "working_title": "Hybrid RAG and MCP — A Two-Track Data Strategy",
+      "core_message": "Static RAG handles slow-changing sources (policy documents, accepted resumes, NCS competency standards). Dynamic RAG handles large fast-changing sources (DART corporate filings). MCP unifies five external APIs behind a standard protocol, simultaneously solving the LLM cutoff problem and information fragmentation.",
+      "audience_takeaway": "The audience leaves with the rationale for two specific architectural choices: RAG over fine-tuning, and MCP over ad hoc tool calls.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Hybrid RAG and MCP' + right ALL CAPS kicker 'DATA STRATEGY' + right-aligned 2-line subtitle.",
+        "body": "Body split left/right. (left) Hybrid RAG block — two columns headed 'STATIC RAG' and 'DYNAMIC RAG'. Beneath each, three small cards covering data type, refresh cadence, and indexing approach (a 2x3 grid total). (right) MCP block — a large 'MCP' label with five API chips arranged below (Ontongchungnyeon, Public Data Portal, WorkNet, DART, Naver News). A thin vertical divider runs between the two halves. A small caption near the bottom states the rationale for choosing RAG over fine-tuning in 1–2 lines.",
+        "footer": "Bottom-right page number '09' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "Static and Dynamic cards on the left are identical in size and outline.",
+        "The five MCP chips on the right are uniformly styled.",
+        "The fine-tuning rationale appears as a small caption rather than a separate card, to avoid pulling focus."
+      ],
+      "infographic_strategy": "Left: 2x3 card grid (Static/Dynamic × type/cadence/method). Right: a row or grid of API chips.",
+      "icon_strategy": "Small line icon next to each RAG header (Static = pin, Dynamic = circular arrows). MCP API chips remain text-only to avoid noise.",
+      "table_strategy": "A small Static-vs-Dynamic table is also viable, but cards align better with the rest of the deck. Tables are reserved for slide 11 (Gantt).",
+      "chart_strategy": "None.",
+      "supporting_context": ["F7's hybrid RAG strategy plus the four-point justification for RAG over fine-tuning, condensed onto one page."],
+      "evidence_sources": ["F7-rag-mcp-strategy", "F8-models-frameworks"],
+      "recommended_layout_family": "comparison-two-column-cards",
+      "why_here": "Slides 7 → 8 → 9 progressively zoom in: whole architecture → multi-agent layer → data layer. RAG and MCP are the project's largest technical differentiators (foreshadowed on slide 6), so a dedicated page is required.",
+      "must_include": ["The Static vs Dynamic RAG split", "All five MCP servers", "1–2 lines justifying RAG over fine-tuning"],
+      "can_exclude": ["Specific tool selection details (bge-m3, Chroma — already noted on slide 7)", "General RAG theory (the audience is assumed to know it)"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 10,
+      "slide_role": "evidence",
+      "page_family": "body",
+      "topic_group": "evaluation",
+      "continuation_of": null,
+      "working_title": "Dataset and Evaluation — A Dual-Track Plan",
+      "core_message": "Seven datasets under public-domain or Creative Commons licenses, plus an in-house 50-question benchmark. Evaluation runs on both quantitative metrics (precision, recall, citation accuracy, response time) and qualitative methods (n=20 user survey, LLM-as-judge, head-to-head comparison with existing tools).",
+      "audience_takeaway": "This project does not stop at 'it works' — it commits to numerical and qualitative verification before final submission.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Dataset and Evaluation' + right ALL CAPS kicker 'DATASET & EVALUATION' + right-aligned 2-line subtitle.",
+        "body": "Body split left/right. (left, ~50%) a seven-row dataset table with four columns: Dataset / Source / Use / License. (right, ~50%) two stacked metric cards. Top card 'Quantitative' lists the four numerical targets (Precision ≥ 0.85, Recall ≥ 0.80, Citation Accuracy ≥ 0.90, Response Time ≤ 5s). Bottom card 'Qualitative' lists three methods (User Survey n=20, LLM-as-judge, Head-to-Head Comparison).",
+        "footer": "Bottom-right page number '10' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "Seven table rows are kept tight in row height to avoid overcrowding.",
+        "The two metric cards on the right are differentiated by tone — Quantitative gets a deep navy header strip, Qualitative gets a white header with an outline.",
+        "Numerical targets are emphasized as small numerical highlights inside the Quantitative card."
+      ],
+      "infographic_strategy": "Table on the left, metric cards on the right — DESIGN.md's table system and card system coexist on the same page.",
+      "icon_strategy": "Small icons on the right cards only (Quantitative = chart bars, Qualitative = chat bubble). The table on the left stays icon-free.",
+      "table_strategy": "Seven-row dataset table on the left in DESIGN.md's table style: deep navy filled header with white text, body rows with thin lavender grid.",
+      "chart_strategy": "None — there are no actual results yet, so a results chart would be misleading at the proposal stage.",
+      "supporting_context": ["F9's dataset list and evaluation methodology consolidated onto one page."],
+      "evidence_sources": ["F9-dataset-evaluation"],
+      "recommended_layout_family": "comparison-two-column-cards",
+      "why_here": "Answers the 15-point 'Dataset and experiment plan' rubric. Placed immediately after the three system-design slides so that 'how do we know it works?' is the first natural question to be answered next.",
+      "must_include": ["All seven datasets and their licenses", "Four quantitative targets with thresholds", "All three qualitative methods"],
+      "can_exclude": ["Per-category breakdown of the 50-question benchmark (appendix candidate)", "BLEU/ROUGE formulas"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 11,
+      "slide_role": "roadmap",
+      "page_family": "body",
+      "topic_group": "feasibility",
+      "continuation_of": null,
+      "working_title": "Execution Plan — Team, Schedule, and Cost",
+      "core_message": "Five team members are assigned by domain, a seven-week roadmap (Week 10 → Week 16) covers proposal to final demo, and the total budget stays under $52.",
+      "audience_takeaway": "A concrete answer to 'is this team capable?' along three dimensions: who, when, and how much.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Execution Plan' + right ALL CAPS kicker 'TEAM · SCHEDULE · COST' + right-aligned 2-line subtitle.",
+        "body": "Body split top/bottom. (top, ~60%) a seven-week Gantt chart — header row: Week 10 to Week 16; body rows: the five members' workstreams (A through E). Each row uses navy and lavender bars at varying intensities to indicate active work periods. (bottom, ~40%) a left-side cost block (LUXIA $50 + GPT-4o-mini $2 ≈ $52) and a right-side compressed risk card listing the four major risks (LUXIA credit, DART size, multi-agent debugging, licensing) by name only.",
+        "footer": "Bottom-right page number '11' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "The Gantt chart faithfully follows DESIGN.md's 07.png pattern: deep navy header row with white text, thin lavender body grid, and bars in varying navy/lavender intensities.",
+        "The cost and risk blocks at the bottom are visually subordinate to the Gantt — the Gantt remains the visual lead.",
+        "The risk card lists risk names only; mitigations stay in the spoken script to avoid clutter."
+      ],
+      "infographic_strategy": "DESIGN.md's Gantt chart pattern (07.png) at the top, with a small supporting block below for cost and risk.",
+      "icon_strategy": "None — the Gantt chart already carries dense visual information.",
+      "table_strategy": "The Gantt chart at the top is a table; five-person role assignments are absorbed into the row labels rather than presented as a separate table.",
+      "chart_strategy": "None — a single-item cost would not warrant a chart.",
+      "supporting_context": ["Compresses F10, F11, and F12 onto one page; per-person role names sit on the Gantt row labels."],
+      "evidence_sources": ["F10-team-roles", "F11-milestone", "F12-cost-risk"],
+      "recommended_layout_family": "data-gantt-table",
+      "why_here": "Answers the 15-point 'Feasibility and Team Planning' rubric. Compressed into one slide because the 7–10 minute video budget cannot afford four pages for a 15-point criterion.",
+      "must_include": ["Week 10–16 Gantt chart", "Five-person role split", "Total cost ~$52", "Top one or two risks by name"],
+      "can_exclude": ["Detailed weekly task lists", "Per-risk mitigation details (kept in the spoken script)", "The full Appendix C team-learning plan"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 12,
+      "slide_role": "summary",
+      "page_family": "body",
+      "topic_group": "outcomes",
+      "continuation_of": null,
+      "working_title": "Expected Outcomes and Roadmap",
+      "core_message": "User-side: a 95% reduction in information-search time across roughly 12 million potential users. Technical: integrated experience with LLM, RAG, multi-agent, and MCP, plus hybrid RAG in practice. Future: a five-phase roadmap that extends from multilingual support to a KakaoTalk bot and learning recommendations.",
+      "audience_takeaway": "The audience leaves with a clear sense of both the immediate value (impact + capability) and the future trajectory.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + left title 'Expected Outcomes' + right ALL CAPS kicker 'EXPECTED OUTCOMES' + right-aligned 2-line subtitle.",
+        "body": "Body split left/right. (left, ~40%) headline impact: a large '95%' (search-time reduction), a supporting label '2 hours → 5 minutes', and a one-liner '~12M Korean youth in scope'. (right, ~60%) one larger 'Technical Outcomes' card (integrated LLM/RAG/Agent/MCP, hybrid RAG, Korean-domain LUXIA), plus a horizontal row of five small phase chips (Multilingual → Voice → Mobile App → KakaoTalk Bot → Learning Recommendation).",
+        "footer": "Bottom-right page number '12' with a small navy accent square."
+      },
+      "layout_placement_notes": [
+        "The big '95%' on the left echoes the '~12M' on slide 3 in tone (emphasized but restrained).",
+        "The five phase chips on the right are connected by a thin arrow or dotted line, flowing left to right.",
+        "Left and right sides carry equal visual weight."
+      ],
+      "infographic_strategy": "Left-side big number plus right-side phased roadmap chips. Two distinct visual hierarchies separate 'present value' from 'future value' for the audience.",
+      "icon_strategy": "One small line icon per future-phase chip (Multilingual = globe, Voice = microphone, App = phone, KakaoTalk = speech bubble, Learning = book). Same line weight throughout.",
+      "table_strategy": "None.",
+      "chart_strategy": "None.",
+      "supporting_context": ["F13's user/technical outcomes plus the five-phase roadmap, condensed onto one page."],
+      "evidence_sources": ["F13-expected-outcomes"],
+      "recommended_layout_family": "insight-claim-white-card",
+      "why_here": "The final body slide leaves the strongest closing impression. It must answer 'what does this project actually produce' as crisply as possible.",
+      "must_include": ["The 95% search-time reduction", "Integrated LLM/RAG/Agent/MCP outcome", "All five future phases"],
+      "can_exclude": ["Qualitative descriptions of social impact (appendix candidate)", "Phase 7+ long-term vision (too speculative)"],
+      "priority": "must"
+    },
+    {
+      "slide_number": 13,
+      "slide_role": "cta",
+      "page_family": "end",
+      "topic_group": "closing",
+      "continuation_of": null,
+      "working_title": "Thank You / Q&A",
+      "core_message": "The presentation concludes; questions and discussion are welcomed.",
+      "audience_takeaway": "Clear signal that the talk has ended, plus a path to Q&A and presenter contact.",
+      "header_body_footer_plan": {
+        "header": "Top navy bar + 'THANK YOU' or 'Q&A' ALL CAPS kicker on the right.",
+        "body": "Reuses the diagonal lavender overlay motif from the cover (slide 1). Center of the page: large two-line message 'Thank You / for Your Attention' (extrabold, deep navy). Below it, a small ALL CAPS subtitle 'QUESTIONS AND DISCUSSION WELCOME'.",
+        "footer": "Full-width thin divider near the bottom + a three-column row beneath it: left (team affiliation: Hanyang University · Deep Learning Methods and Application · Five-Person Team) / center (representative email contact) / right (Q&A note: 'Online Q&A by May 7')."
+      },
+      "layout_placement_notes": [
+        "Closing pages are an inferred element in DESIGN.md (the eight-slide reference deck did not include one), so this slide explicitly reuses the cover's diagonal motif. The slide_prompts.json stage will note this inference.",
+        "Page number is shown small or omitted at the presenter's discretion.",
+        "Reusing the diagonal overlay creates a deliberate visual rhyme between the opening and closing of the deck."
+      ],
+      "infographic_strategy": "None. The closing page relies on typographic hierarchy and the diagonal overlay.",
+      "icon_strategy": "None.",
+      "table_strategy": "None.",
+      "chart_strategy": "None.",
+      "supporting_context": ["The final video frame plus the entry point to the interactive Q&A session."],
+      "evidence_sources": ["I1-no-end-page-in-reference", "G1-presentation-format"],
+      "recommended_layout_family": "closing-end-page",
+      "why_here": "Without a deliberate closing page, a recorded video presentation ends abruptly. Reusing the cover's diagonal motif creates a visual frame around the deck.",
+      "must_include": ["Thank-you message", "Team affiliation", "Q&A or contact information"],
+      "can_exclude": ["Surprise additional content", "Bonus slide announcements"],
+      "priority": "must"
+    }
+  ],
+  "ordering_notes": {
+    "page_flow": {
+      "title_page_strategy": "Slide 1 follows DESIGN.md's 01.png cover pattern faithfully: vertical 'PRESENTATION' label on the left edge, date in the top-right, large two-line title on the center-left, English subtitle below the title, presenter info in the bottom-right, and asymmetric diagonal lavender overlays in the background. No page number on the cover. Presenter information appears only as a brief footer block in the bottom-right.",
+      "body_page_strategy": "Slides 2 through 12 keep an identical header (navy bar + left Title Case heading + right ALL CAPS kicker + right-aligned two-line subtitle) and an identical footer (bottom-right page number with a small navy accent square). Only the body zone varies across the nine layout families. Slides 5 and 8 both use the hub-and-spoke family but are visually differentiated: slide 5 uses a symmetric four-quadrant arrangement to convey 'four parallel responsibilities,' while slide 8 uses a left-hub-plus-right-stack arrangement to convey 'router delegation flow.'",
+      "end_page_strategy": "Slide 13 reuses the diagonal lavender overlay motif from the cover to create an opening-and-closing visual echo. The page contains a large thank-you message, a small ALL CAPS subtitle, and a three-column footer with team affiliation, contact, and Q&A note. Because closing pages are inferred from DESIGN.md (no closing page existed in the eight-slide reference deck), the slide_prompts.json stage will explicitly mark slide 13's elements that derive from inference rather than direct observation."
+    },
+    "split_topics": [
+      {
+        "topic": "Problem Definition",
+        "slides": [3, 4],
+        "why_split": "Slide 3 covers the macro view (scale and the four fragmented domains, ~12 million people). Slide 4 covers the micro view (the four lived pain points). Combining them onto a single page would force eight cards plus a large number into one frame, hurting legibility. The cognitive flow 'macro → micro' is also more natural for the audience.",
+        "what_changes_between_slides": "Slide 3 cards are domain cards (outside-in framing). Slide 4 cards are pain-point cards (inside-out framing). The card-grid system is identical, but the type of information inside each card shifts.",
+        "what_stays_consistent": "Header, footer, card outline weight, number-badge style, and color palette."
+      },
+      {
+        "topic": "System Design",
+        "slides": [7, 8, 9],
+        "why_split": "This is the highest-weighted criterion (30 points). The progression 'whole architecture (slide 7) → Layer 2 zoom (slide 8) → Layer 3 zoom (slide 9)' lets the audience build understanding gradually. Compressing all three into one page would overload the visual; expanding to one slide only would underweight the rubric's largest item.",
+        "what_changes_between_slides": "Slide 7 uses a horizontal layered diagram. Slide 8 uses a supervisor diagram. Slide 9 uses a two-column comparison plus a chip cluster. The visual form changes each time, creating variety within the unified topic.",
+        "what_stays_consistent": "Header, footer, color palette, diagram-connector stroke weight, and icon line weight."
+      }
+    ],
+    "merged_topics": [
+      {
+        "topic": "Team + Schedule + Cost + Risk",
+        "merged_into_slide": 11,
+        "why_merged": "The original proposal devotes four sub-sections (6.1 roles, 6.2 milestones, 6.3 cost, 6.4 risks) to feasibility. Splitting them across four slides for a 15-point rubric item would over-allocate slide budget within a 7–10 minute video. The Gantt chart serves as the visual lead, with cost and risk absorbed into a small footer block."
+      },
+      {
+        "topic": "Solution one-liner + four-agent responsibilities",
+        "merged_into_slide": 5,
+        "why_merged": "The proposal's section 1.3 (solution) and the responsibility portion of section 4.2 (agent details) are unified. Per-agent process specifics are deferred to slide 8 (Multi-Agent Design), so slide 5 only carries the responsibility mapping."
+      },
+      {
+        "topic": "Expected Outcomes + Roadmap",
+        "merged_into_slide": 12,
+        "why_merged": "Sections 7.1 (outcomes) and 7.2 (future direction) both belong to the 'future value' category, so they live on a single slide as left (present impact) + right (future roadmap)."
+      }
+    ],
+    "deferred_topics": [
+      "Appendix B's self-assessment scoring map (F14): an internal self-check; inappropriate to show the audience.",
+      "Appendix C's per-member learning plan and study-share session: internal team operations, outside the rubric scope.",
+      "The full Router Agent prompt text (F6's prompt example): would clutter the slide; covered in the spoken script."
+    ],
+    "appendix_candidates": [
+      "Per-category breakdown of the 50-question benchmark (Policy Matching 20 / Job Recommendation 15 / Resume Coaching 10 / Schedule 5)",
+      "Detailed risk-mitigation table from F12",
+      "Full Appendix C team learning assignments and recommended materials",
+      "Tech stack summary from Appendix A",
+      "Full Router Agent prompt and per-sub-agent prompt patterns",
+      "DART filing chunking and indexing parameter details",
+      "Frontend-Backend API specification"
+    ]
+  }
+}
