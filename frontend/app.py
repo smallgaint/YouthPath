@@ -22,7 +22,63 @@ if "response_data" not in st.session_state:
 if "saved_events" not in st.session_state:
     st.session_state.saved_events = []
 
+API_BASE_URL = "http://127.0.0.1:8000"
+
+def agent_items(data, agent_name):
+    result = data.get(agent_name)
+    if isinstance(result, dict):
+        return result.get("items", [])
+    if isinstance(result, list):
+        return result
+    return []
+
+def agent_error(data, agent_name):
+    result = data.get(agent_name)
+    if isinstance(result, dict):
+        return result.get("error")
+    return None
+
+def criterion_text(criteria):
+    labels = []
+    for criterion in criteria or []:
+        label = criterion.get("label", "조건")
+        required = criterion.get("required", "")
+        user_value = criterion.get("user_value", "")
+        labels.append(f"{label}: {user_value} / {required}")
+    return ", ".join(labels) if labels else "없음"
+
+def event_from_policy(item):
+    return {
+        "title": item.get("title", "정책 마감"),
+        "date": item.get("deadline"),
+        "type": "정책",
+        "source": "policy",
+        "link": item.get("link") or ""
+    }
+
+def event_from_job(item):
+    return {
+        "title": f"{item.get('company', '')} {item.get('title', '')}".strip(),
+        "date": item.get("deadline"),
+        "type": "채용",
+        "source": "job",
+        "link": item.get("url") or item.get("link") or ""
+    }
+
+def event_from_calendar(item):
+    return {
+        "title": item.get("title", "마감 일정"),
+        "date": item.get("deadline") or item.get("date"),
+        "type": "일정",
+        "source": item.get("source", "calendar"),
+        "link": item.get("link") or ""
+    }
+
 def add_event_to_calendar(event):
+    if not event.get("date"):
+        st.warning("마감일이 없는 항목은 캘린더에 추가할 수 없습니다.")
+        return
+
     exists = any(
         saved_event["title"] == event["title"]
         and saved_event["date"] == event["date"]
@@ -153,26 +209,31 @@ if st.session_state.page == "home":
 
     if st.button("🔍 질문하기"):
 
-        response = requests.post(
-            "http://127.0.0.1:8000/ask",
-            json={
-                "query": query,
-                "profile": {
-                    "age": age,
-                    "region": region,
-                    "income": income,
-                    "education": education,
-                    "skills": skills,
-                    "experience": experience,
-                    "target_role": target_role,
-                    "target_company": target_company
-                }
-            }
-        )
-
-        st.session_state.response_data = response.json()
-        st.session_state.page = "output"
-        st.rerun()
+        try:
+            response = requests.post(
+                f"{API_BASE_URL}/ask",
+                json={
+                    "query": query,
+                    "profile": {
+                        "age": age,
+                        "region": region,
+                        "income": income,
+                        "education": education,
+                        "skills": skills,
+                        "experience": experience,
+                        "target_role": target_role,
+                        "target_company": target_company
+                    }
+                },
+                timeout=20
+            )
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            st.error(f"백엔드 연결에 실패했습니다: {exc}")
+        else:
+            st.session_state.response_data = response.json()
+            st.session_state.page = "output"
+            st.rerun()
 
     st.markdown("### 💡 예시 질문")
 
@@ -199,8 +260,17 @@ if st.session_state.page == "home":
 elif st.session_state.page == "output":
     if st.session_state.response_data:
         data = st.session_state.response_data
+        policy_items = agent_items(data, "policy")
+        job_items = agent_items(data, "job")
+        resume_items = agent_items(data, "resume")
+        calendar_items = agent_items(data, "calendar")
+        called_agents = data.get("called_agents", [])
+
         st.title("📤 결과")
-        st.success("Router가 Policy + Job Agent를 선택했습니다.")
+        if called_agents:
+            st.success(f"Router가 호출한 Agent: {', '.join(called_agents)}")
+        else:
+            st.success("Router가 Policy + Job Agent를 선택했습니다.")
         st.subheader("💬 답변")
         st.write(data["answer"])
 
@@ -210,23 +280,30 @@ elif st.session_state.page == "output":
 
         st.subheader("📋 정책 결과")
 
-        for item in data["policy"]:
+        if agent_error(data, "policy"):
+            st.warning(agent_error(data, "policy"))
+
+        for item in policy_items:
 
             with st.container(border=True):
 
                 st.markdown(f"### {item['title']}")
                 st.caption(f"마감: {item['deadline']}")
 
-                st.write(item["description"])
+                st.write(item.get("summary") or item.get("description") or "")
 
-                st.success(f"조건 일치: {item['match']}")
+                matched = criterion_text(item.get("matched_criteria"))
+                unmatched = criterion_text(item.get("unmatched_criteria"))
+                st.success(f"충족: {matched}")
+                if unmatched != "없음":
+                    st.warning(f"확인 필요: {unmatched}")
 
                 col1, col2 = st.columns(2)
 
                 with col1:
                     st.link_button(
                         "해당 사이트 가기",
-                        item["link"]
+                        item.get("link") or "https://youth.seoul.go.kr"
                     )
 
                 with col2:
@@ -234,13 +311,7 @@ elif st.session_state.page == "output":
                         "📅 캘린더 추가하기",
                         key=f"policy_calendar_{item['title']}"
                     ):
-                        add_event_to_calendar({
-                            "title": item["title"],
-                            "date": item["deadline"],
-                            "type": "정책",
-                            "source": "policy",
-                            "link": item["link"]
-                        })
+                        add_event_to_calendar(event_from_policy(item))
 
         # =========================
         # 채용 결과
@@ -248,21 +319,28 @@ elif st.session_state.page == "output":
 
         st.subheader("💼 채용 결과")
 
-        for item in data["job"]:
+        if agent_error(data, "job"):
+            st.warning(agent_error(data, "job"))
+
+        for item in job_items:
 
             with st.container(border=True):
 
                 st.markdown(f"### {item['company']}")
                 st.write(item["title"])
 
-                st.warning(item["deadline"])
+                fit_score = item.get("fit_score")
+                deadline = item.get("deadline") or item.get("date", "")
+                if fit_score is not None:
+                    st.caption(f"적합도 {int(float(fit_score) * 100)}% · {item.get('location', '')} · 마감 {deadline}")
+                st.warning(f"D-{item.get('days_remaining')}" if item.get("days_remaining") is not None else deadline)
 
                 col1, col2 = st.columns(2)
 
                 with col1:
                     st.link_button(
                         "해당 사이트 가기",
-                        item["link"]
+                        item.get("url") or item.get("link") or "https://www.work.go.kr"
                         )
 
                 with col2:
@@ -270,13 +348,79 @@ elif st.session_state.page == "output":
                         "📅 캘린더 추가하기",
                         key=f"job_calendar_{item['company']}_{item['title']}"
                     ):
-                        add_event_to_calendar({
-                            "title": f"{item['company']} {item['title']}",
-                            "date": item["date"],
-                            "type": "채용",
-                            "source": "job",
-                            "link": item["link"]
-                        })
+                        add_event_to_calendar(event_from_job(item))
+
+        # =========================
+        # 자소서 결과
+        # =========================
+
+        if resume_items or agent_error(data, "resume"):
+            st.subheader("✍ 자소서 가이드")
+
+            if agent_error(data, "resume"):
+                st.warning(agent_error(data, "resume"))
+
+            for item in resume_items:
+                with st.container(border=True):
+                    st.markdown(f"### {item.get('company', '기업')} 자소서 가이드")
+
+                    keywords = item.get("emphasize_keywords", [])
+                    keyword_text = ", ".join(
+                        keyword.get("keyword", str(keyword))
+                        for keyword in keywords
+                    )
+                    st.write(f"강조 키워드: {keyword_text or '없음'}")
+
+                    matching_points = item.get("matching_points", [])
+                    if matching_points:
+                        st.caption("매칭 포인트")
+                        for point in matching_points:
+                            st.write(
+                                f"- {point.get('user_skill')} ↔ {point.get('company_keyword')} "
+                                f"({int(float(point.get('fit_score', 0)) * 100)}%)"
+                            )
+
+                    gaps = item.get("evidence_gaps", [])
+                    st.write(f"보강 제안: {', '.join(gaps) if gaps else '없음'}")
+
+                    angles = item.get("story_angles", [])
+                    if angles:
+                        st.caption("Story Angle")
+                        for angle in angles:
+                            st.write(f"- {angle}")
+
+        # =========================
+        # 마감 일정
+        # =========================
+
+        if calendar_items or agent_error(data, "calendar"):
+            st.subheader("📅 마감 일정")
+
+            if agent_error(data, "calendar"):
+                st.warning(agent_error(data, "calendar"))
+
+            for item in calendar_items:
+                with st.container(border=True):
+                    deadline = item.get("deadline") or item.get("date", "")
+                    days_remaining = item.get("days_remaining")
+                    st.markdown(f"### {item.get('title', '마감 일정')}")
+                    st.caption(f"마감: {deadline}")
+                    if days_remaining is not None:
+                        st.warning(f"D-{days_remaining}" if days_remaining >= 0 else f"D+{abs(days_remaining)}")
+
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.link_button(
+                            "해당 사이트 가기",
+                            item.get("link") or "https://www.youthcenter.go.kr"
+                        )
+                    with col2:
+                        if st.button(
+                            "📅 캘린더 추가하기",
+                            key=f"calendar_add_{item.get('event_id', item.get('title', 'event'))}"
+                        ):
+                            add_event_to_calendar(event_from_calendar(item))
+
         if st.button("🏠 홈으로 돌아가기"):
             st.session_state.page = "home"
             st.rerun()
