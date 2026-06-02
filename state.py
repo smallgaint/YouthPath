@@ -20,4 +20,3 @@ class GraphState(TypedDict):
     
     # 4. 통합 LLM의 최종 자연어 응답
     final_answer: Optional[str]
-    
