@@ -21,10 +21,14 @@ python -m Router.main
 
 ```env
 YOUTHPATH_LLM_PROVIDER=luxia
-LUXIA_API_URL=https://.../v1/chat/completions
+LUXIA_API_URL=https://bridge.luxiacloud.com/luxia/v1/chat
 LUXIA_API_KEY=...
-LUXIA_MODEL=luxia
+LUXIA_MODEL=luxia3-llm-32b-0731
+LUXIA_TIMEOUT=60
 LUXIA_REQUEST_FORMAT=openai
+LUXIA_AUTH_HEADER=apikey
+LUXIA_AUTH_SCHEME=
+LUXIA_INCLUDE_GENERATION_PARAMS=false
 LUXIA_FALLBACK_TO_MOCK=true
 ```
 

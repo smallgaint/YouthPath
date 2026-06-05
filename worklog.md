@@ -213,3 +213,81 @@ For full E2E, prefer a temporary script file instead of one-liner due to quoting
 3. Validate in small steps:
    - import -> route call -> single-agent -> multi-agent merge -> frontend render.
 4. If runtime import fails, check sys.path and package working directory before code edits.
+
+## 11) Module Import Fix (2026-06-02)
+
+### Issue
+When running FastAPI backend from `YouthPath-jaewon/YouthPath-jaewon/` subdirectory, uvicorn failed with:
+```
+ModuleNotFoundError: No module named 'Router'
+```
+
+The issue occurred because `main.py` imports `from Router.router import YouthPathRouter`, but the `Router/` package is at the project root, not relative to the script's working directory.
+
+### Fix Applied
+Updated `YouthPath-jaewon/YouthPath-jaewon/main.py`:
+- Added `sys.path` manipulation at module import time to include project root.
+- Located project root dynamically using `Path(__file__).parent.parent.parent`.
+- This ensures `Router` module is discoverable regardless of launch directory.
+
+**Change:**
+```python
+import sys
+from pathlib import Path
+
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from Router.router import YouthPathRouter
+```
+
+### Verification
+Ran FastAPI backend via the recommended setup:
+```powershell
+cd YouthPath-jaewon\YouthPath-jaewon
+..\..\.venv\Scripts\python.exe -m uvicorn main:app --reload
+```
+
+**Result:**
+```
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [42484] using WatchFiles
+INFO:     Started server process [33672]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+Server is now running and ready for FastAPI requests.
+
+## 12) LUXIA `.env` Loading Fix (2026-06-02)
+
+### Issue
+FastAPI was commonly launched from `YouthPath-jaewon/YouthPath-jaewon/`, while `Router/llm_provider.py` only loaded:
+```python
+Path.cwd() / ".env"
+```
+
+Because the real `.env` file is at the project root, `YOUTHPATH_LLM_PROVIDER`, `LUXIA_API_URL`, and `LUXIA_API_KEY` were not loaded in that launch mode. As a result, `get_llm_provider()` selected `MockLuxiaProvider`, and API output showed:
+```json
+"llm_provider": "MockLuxiaProvider"
+```
+
+### Fix Applied
+Updated `Router/llm_provider.py` so `_load_env_file()` checks both:
+- current working directory `.env`
+- project root `.env` resolved relative to `Router/llm_provider.py`
+
+### Verification
+From `YouthPath-jaewon/YouthPath-jaewon/`, importing the real FastAPI entrypoint now selects:
+```text
+LuxiaProvider
+True
+luxia3-llm-32b-0731
+```
+
+This confirms the provider selection now sees the root `.env`. Full live LUXIA response verification is still separate because it requires making a real API request.

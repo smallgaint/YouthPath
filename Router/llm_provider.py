@@ -49,10 +49,13 @@ class LuxiaProvider(LLMProvider):
         self.api_url = api_url or os.getenv("LUXIA_API_URL", "").strip()
         self.api_key = api_key or os.getenv("LUXIA_API_KEY", "").strip()
         self.model = model or os.getenv("LUXIA_MODEL", "luxia").strip()
-        self.timeout = timeout or float(os.getenv("LUXIA_TIMEOUT", "30"))
+        self.timeout = timeout or float(os.getenv("LUXIA_TIMEOUT", "60"))
         self.request_format = os.getenv("LUXIA_REQUEST_FORMAT", "openai").strip().lower()
-        self.auth_header = os.getenv("LUXIA_AUTH_HEADER", "Authorization").strip()
-        self.auth_scheme = os.getenv("LUXIA_AUTH_SCHEME", "Bearer").strip()
+        self.auth_header = os.getenv("LUXIA_AUTH_HEADER", "apikey").strip()
+        self.auth_scheme = os.getenv("LUXIA_AUTH_SCHEME", "").strip()
+        self.include_generation_params = (
+            os.getenv("LUXIA_INCLUDE_GENERATION_PARAMS", "false").strip().lower() == "true"
+        )
         self.fallback_to_mock = os.getenv("LUXIA_FALLBACK_TO_MOCK", "true").strip().lower() != "false"
         self.fallback_provider = fallback_provider or MockLuxiaProvider()
 
@@ -90,7 +93,7 @@ class LuxiaProvider(LLMProvider):
                 "metadata": {"purpose": purpose},
             }
 
-        return {
+        payload = {
             "model": self.model,
             "messages": [
                 {
@@ -99,9 +102,12 @@ class LuxiaProvider(LLMProvider):
                 },
                 {"role": "user", "content": prompt},
             ],
-            "temperature": temperature,
-            "max_tokens": max_tokens,
+            "stream": False,
         }
+        if self.include_generation_params:
+            payload["temperature"] = temperature
+            payload["max_tokens"] = max_tokens
+        return payload
 
     def _build_headers(self) -> dict[str, str]:
         auth_value = self.api_key
@@ -173,8 +179,12 @@ class MockLuxiaProvider(LLMProvider):
 
 
 def _load_env_file() -> None:
-    env_path = Path.cwd() / ".env"
-    if not env_path.exists():
+    candidates = [
+        Path.cwd() / ".env",
+        Path(__file__).resolve().parent.parent / ".env",
+    ]
+    env_path = next((path for path in candidates if path.exists()), None)
+    if env_path is None:
         return
     try:
         for line in env_path.read_text(encoding="utf-8").splitlines():
