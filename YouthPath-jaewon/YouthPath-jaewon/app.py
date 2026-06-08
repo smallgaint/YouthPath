@@ -2,7 +2,12 @@ import streamlit as st
 import requests
 import pandas as pd
 import calendar
+import difflib
+import re
+import xml.etree.ElementTree as ET
 from datetime import datetime
+from pathlib import Path
+from zipfile import ZipFile
 
 st.set_page_config(
     page_title="YouthPath",
@@ -22,7 +27,275 @@ if "response_data" not in st.session_state:
 if "saved_events" not in st.session_state:
     st.session_state.saved_events = []
 
+if "selected_skills" not in st.session_state:
+    st.session_state.selected_skills = ["Python"]
+
+if "selected_roles" not in st.session_state:
+    st.session_state.selected_roles = ["데이터 분석가"]
+
+ADMIN_REGION_XLSX_CANDIDATES = [
+    Path(__file__).resolve().parents[2] / "전국 시군구 행정구역 목록.xlsx",
+    Path(__file__).resolve().parent / "전국 시군구 행정구역 목록.xlsx",
+    Path.home() / "OneDrive" / "바탕 화면" / "전국 시군구 행정구역 목록.xlsx",
+    Path.home() / "Desktop" / "전국 시군구 행정구역 목록.xlsx",
+]
+
+SKILL_XLSX_CANDIDATES = [
+    Path(__file__).resolve().parents[2] / "보유 기술.xlsx",
+    Path(__file__).resolve().parent / "보유 기술.xlsx",
+    Path.home() / "OneDrive" / "바탕 화면" / "보유 기술.xlsx",
+    Path.home() / "Desktop" / "보유 기술.xlsx",
+]
+
+ROLE_XLSX_CANDIDATES = [
+    Path(__file__).resolve().parents[2] / "희망직무.xlsx",
+    Path(__file__).resolve().parent / "희망직무.xlsx",
+    Path.home() / "OneDrive" / "바탕 화면" / "희망직무.xlsx",
+    Path.home() / "Desktop" / "희망직무.xlsx",
+]
+
+SIDO_SHORT_NAMES = {
+    "서울특별시": "서울",
+    "부산광역시": "부산",
+    "대구광역시": "대구",
+    "인천광역시": "인천",
+    "광주광역시": "광주",
+    "대전광역시": "대전",
+    "울산광역시": "울산",
+    "세종특별자치시": "세종",
+    "경기도": "경기",
+    "강원특별자치도": "강원",
+    "강원도": "강원",
+    "충청북도": "충북",
+    "충청남도": "충남",
+    "전북특별자치도": "전북",
+    "전라북도": "전북",
+    "전라남도": "전남",
+    "경상북도": "경북",
+    "경상남도": "경남",
+    "제주특별자치도": "제주",
+}
+
+def normalize_region_text(value):
+    return re.sub(r"[\s,·/()]+", "", str(value or "")).lower()
+
+@st.cache_data(show_spinner=False)
+def load_admin_regions():
+    xlsx_path = next((path for path in ADMIN_REGION_XLSX_CANDIDATES if path.exists()), None)
+    if not xlsx_path:
+        return []
+
+    ns = {"a": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+    with ZipFile(xlsx_path) as archive:
+        shared_root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
+        shared_strings = []
+        for item in shared_root.findall("a:si", ns):
+            shared_strings.append("".join(text.text or "" for text in item.findall(".//a:t", ns)))
+
+        sheet = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+        regions = []
+        seen = set()
+
+        for row in sheet.findall(".//a:row", ns):
+            values = []
+            for cell in row.findall("a:c", ns):
+                value_node = cell.find("a:v", ns)
+                value = "" if value_node is None else value_node.text or ""
+                if cell.get("t") == "s" and value:
+                    value = shared_strings[int(value)]
+                values.append(value.strip())
+
+            if len(values) < 4 or values[0] in ("", "대분류", "전국행정동리스트"):
+                continue
+
+            sido, sigun, gu, dong = (values + ["", "", "", ""])[:4]
+            parts = [part for part in [sido, sigun, gu, dong] if part]
+            full_name = " ".join(parts)
+            key = normalize_region_text(full_name)
+            if not full_name or key in seen:
+                continue
+            seen.add(key)
+            regions.append({
+                "sido": sido,
+                "sido_short": SIDO_SHORT_NAMES.get(sido, sido),
+                "sigun": sigun,
+                "gu": gu,
+                "dong": dong,
+                "full_name": full_name,
+                "search_key": key,
+            })
+
+    return regions
+
+def find_admin_region(user_input):
+    regions = load_admin_regions()
+    query = normalize_region_text(user_input)
+    if not query or not regions:
+        return None
+
+    for region_item in regions:
+        if query == region_item["search_key"] or query in region_item["search_key"]:
+            return region_item
+
+    choices = {region_item["search_key"]: region_item for region_item in regions}
+    match = difflib.get_close_matches(query, choices.keys(), n=1, cutoff=0.55)
+    return choices[match[0]] if match else None
+
+def normalize_skill_text(value):
+    return re.sub(r"[\s,·/_()+#.-]+", "", str(value or "")).lower()
+
+@st.cache_data(show_spinner=False)
+def load_skill_keywords():
+    xlsx_path = next((path for path in SKILL_XLSX_CANDIDATES if path.exists()), None)
+    if not xlsx_path:
+        return ["Python", "SQL", "React", "Java", "Excel"]
+
+    ns = {"a": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+    with ZipFile(xlsx_path) as archive:
+        shared_strings = []
+        if "xl/sharedStrings.xml" in archive.namelist():
+            shared_root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
+            for item in shared_root.findall("a:si", ns):
+                shared_strings.append("".join(text.text or "" for text in item.findall(".//a:t", ns)))
+
+        sheet = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+        skills = []
+        seen = set()
+
+        for row in sheet.findall(".//a:row", ns):
+            for cell in row.findall("a:c", ns):
+                value_node = cell.find("a:v", ns)
+                value = "" if value_node is None else value_node.text or ""
+                if cell.get("t") == "s" and value:
+                    value = shared_strings[int(value)]
+                value = value.strip()
+                if not value or value in ("보유기술/자격증/툴 키워드", "보유 기술"):
+                    continue
+                key = normalize_skill_text(value)
+                if key and key not in seen:
+                    seen.add(key)
+                    skills.append(value)
+
+    return skills
+
+def find_skill_suggestions(user_input, limit=8):
+    skills = load_skill_keywords()
+    query = normalize_skill_text(user_input)
+    if not query:
+        return []
+
+    contains = [
+        skill for skill in skills
+        if query in normalize_skill_text(skill)
+    ]
+    if contains:
+        return contains[:limit]
+
+    choices = {normalize_skill_text(skill): skill for skill in skills}
+    matches = difflib.get_close_matches(query, choices.keys(), n=limit, cutoff=0.45)
+    return [choices[match] for match in matches]
+
+@st.cache_data(show_spinner=False)
+def load_role_keywords():
+    xlsx_path = next((path for path in ROLE_XLSX_CANDIDATES if path.exists()), None)
+    if not xlsx_path:
+        return ["데이터 분석가", "백엔드 개발자", "프론트엔드 개발자", "기획", "마케팅"]
+
+    ns = {"a": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+    with ZipFile(xlsx_path) as archive:
+        shared_strings = []
+        if "xl/sharedStrings.xml" in archive.namelist():
+            shared_root = ET.fromstring(archive.read("xl/sharedStrings.xml"))
+            for item in shared_root.findall("a:si", ns):
+                shared_strings.append("".join(text.text or "" for text in item.findall(".//a:t", ns)))
+
+        sheet = ET.fromstring(archive.read("xl/worksheets/sheet1.xml"))
+        roles = []
+        seen = set()
+
+        for row in sheet.findall(".//a:row", ns):
+            for cell in row.findall("a:c", ns):
+                value_node = cell.find("a:v", ns)
+                value = "" if value_node is None else value_node.text or ""
+                if cell.get("t") == "s" and value:
+                    value = shared_strings[int(value)]
+                value = value.strip()
+                if not value or value in ("희망 직무", "희망직무"):
+                    continue
+                key = normalize_skill_text(value)
+                if key and key not in seen:
+                    seen.add(key)
+                    roles.append(value)
+
+    return roles
+
+def find_role_suggestions(user_input, limit=8):
+    roles = load_role_keywords()
+    query = normalize_skill_text(user_input)
+    if not query:
+        return []
+
+    contains = [
+        role for role in roles
+        if query in normalize_skill_text(role)
+    ]
+    if contains:
+        return contains[:limit]
+
+    choices = {normalize_skill_text(role): role for role in roles}
+    matches = difflib.get_close_matches(query, choices.keys(), n=limit, cutoff=0.45)
+    return [choices[match] for match in matches]
+
+def parse_experience_text(text):
+    text = str(text or "").strip().lower()
+    if not text:
+        return {"years": 0, "months": 0, "label": "신입"}
+
+    if any(token in text for token in ["신입", "없음", "무경력", "경력없", "0년", "0개월"]):
+        return {"years": 0, "months": 0, "label": "신입"}
+
+    years = 0
+    months = 0
+
+    year_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:년|year|years|yr)", text)
+    month_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:개월|달|month|months|mo)", text)
+
+    if year_match:
+        years = float(year_match.group(1))
+    if month_match:
+        months = int(round(float(month_match.group(1))))
+
+    if not year_match and not month_match:
+        number_match = re.search(r"\d+(?:\.\d+)?", text)
+        if number_match:
+            years = float(number_match.group(0))
+
+    total_months = int(round(years * 12)) + months
+    normalized_years = total_months // 12
+    remaining_months = total_months % 12
+
+    if total_months == 0:
+        label = "신입"
+    elif normalized_years and remaining_months:
+        label = f"{normalized_years}년 {remaining_months}개월"
+    elif normalized_years:
+        label = f"{normalized_years}년"
+    else:
+        label = f"{remaining_months}개월"
+
+    return {
+        "years": normalized_years,
+        "months": total_months,
+        "label": label,
+    }
+
 def add_event_to_calendar(event):
+    try:
+        event_date = datetime.strptime(event["date"], "%Y-%m-%d")
+    except (KeyError, TypeError, ValueError):
+        st.warning("마감일이 있는 항목만 캘린더에 추가할 수 있습니다.")
+        return
+
     exists = any(
         saved_event["title"] == event["title"]
         and saved_event["date"] == event["date"]
@@ -32,6 +305,9 @@ def add_event_to_calendar(event):
     if not exists:
         st.session_state.saved_events.append(event)
 
+    st.session_state.calendar_year = event_date.year
+    st.session_state.calendar_month = event_date.month
+    st.session_state.selected_day = event_date.day
     st.session_state.page = "mypage"
     st.rerun()
 
@@ -47,6 +323,41 @@ def delete_event_from_calendar(event):
     ]
 
     st.rerun()
+
+def get_event_color(event):
+    if event.get("source") == "policy":
+        return "#c92a2a"
+    if event.get("source") == "job":
+        return "#4263eb"
+    return "#ae3ec9"
+
+def render_calendar_event_bar(event):
+    title = event.get("title", "일정")
+    color = get_event_color(event)
+    return f"""
+    <div style="
+        margin-top: 4px;
+        padding: 3px 6px;
+        border-radius: 4px;
+        background: {color};
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;">
+        {title}
+    </div>
+    """
+
+def normalize_link(link):
+    link = (link or "").strip()
+    if not link:
+        return "https://www.youthcenter.go.kr"
+    if link.startswith(("http://", "https://")):
+        return link
+    return f"https://{link}"
 
 # =========================
 # Sidebar
@@ -67,10 +378,21 @@ with st.sidebar:
         index=8
     )
 
-    region = st.selectbox(
+    region_input = st.text_input(
         "거주지",
-        ["서울", "경기", "인천", "부산", "대구"]
+        value="서울",
+        placeholder="예: 서울 강남구 역삼동"
     )
+
+    matched_region = find_admin_region(region_input)
+    if matched_region:
+        region = matched_region["sido_short"]
+        region_full = matched_region["full_name"]
+        st.caption(f"인식된 거주지: {region_full}")
+    else:
+        region = region_input.strip() or "서울"
+        region_full = region
+        st.caption("행정구역 목록에서 정확히 찾지 못해 입력값을 그대로 사용합니다.")
 
     income = st.selectbox(
         "소득 구간",
@@ -91,44 +413,135 @@ with st.sidebar:
         ]
     )
 
-    skills = st.multiselect(
-        "보유 기술",
-        [
-            "Python",
-            "SQL",
-            "React",
-            "Java",
-            "Excel"
-        ],
-        default=["Python", "SQL"]
+    st.markdown("보유 기술")
+    skill_query = st.text_input(
+        "보유 기술 검색",
+        placeholder="예: 파이썬, SQL, 정보처리기사",
+        label_visibility="collapsed",
+        key="skill_query"
     )
+    skill_suggestions = find_skill_suggestions(skill_query)
 
-    experience = st.selectbox(
-        "경력(년)",
-        [0,1,2,3,4,5]
-    )
+    if skill_suggestions:
+        selected_skill_candidate = st.selectbox(
+            "연관검색어",
+            skill_suggestions,
+            label_visibility="collapsed",
+            key="skill_candidate"
+        )
+        if st.button("기술 추가", key="add_skill_button"):
+            if selected_skill_candidate not in st.session_state.selected_skills:
+                st.session_state.selected_skills.append(selected_skill_candidate)
+            st.rerun()
+    elif skill_query:
+        st.caption("연관 기술을 찾지 못했습니다.")
 
-    target_role = st.selectbox(
-        "희망 직무",
-        [
-            "데이터 분석가",
-            "백엔드 개발자",
-            "프론트엔드 개발자",
-            "기획",
-            "마케팅"
-        ]
+    if st.session_state.selected_skills:
+        st.markdown("선택된 보유 기술")
+        for idx, selected_skill in enumerate(list(st.session_state.selected_skills)):
+            col_skill, col_remove = st.columns([4, 1])
+            with col_skill:
+                st.markdown(
+                    f"""
+                    <div style="
+                        display: inline-block;
+                        margin-bottom: 6px;
+                        padding: 6px 10px;
+                        border-radius: 8px;
+                        background: #ffe3e3;
+                        color: #c92a2a;
+                        font-weight: 700;">
+                        {selected_skill}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            with col_remove:
+                if st.button("×", key=f"remove_skill_{idx}_{selected_skill}"):
+                    st.session_state.selected_skills.remove(selected_skill)
+                    st.rerun()
+
+    skills = st.session_state.selected_skills
+
+    experience_input = st.text_input(
+        "경력",
+        value="신입",
+        placeholder="예: 신입, 6개월, 1년 3개월, 2년"
     )
+    parsed_experience = parse_experience_text(experience_input)
+    experience = parsed_experience["years"]
+    experience_months = parsed_experience["months"]
+    st.caption(f"인식된 경력: {parsed_experience['label']}")
+
+    st.markdown("희망 직무")
+    role_query = st.text_input(
+        "희망 직무 검색",
+        placeholder="예: 데이터 분석가, 백엔드 개발자",
+        label_visibility="collapsed",
+        key="role_query"
+    )
+    role_suggestions = find_role_suggestions(role_query)
+
+    if role_suggestions:
+        selected_role_candidate = st.selectbox(
+            "직무 연관검색어",
+            role_suggestions,
+            label_visibility="collapsed",
+            key="role_candidate"
+        )
+        if st.button("직무 추가", key="add_role_button"):
+            if selected_role_candidate not in st.session_state.selected_roles:
+                st.session_state.selected_roles.append(selected_role_candidate)
+            st.rerun()
+    elif role_query:
+        st.caption("연관 직무를 찾지 못했습니다.")
+
+    if st.session_state.selected_roles:
+        st.markdown("선택된 희망 직무")
+        for idx, selected_role in enumerate(list(st.session_state.selected_roles)):
+            col_role, col_remove = st.columns([4, 1])
+            with col_role:
+                st.markdown(
+                    f"""
+                    <div style="
+                        display: inline-block;
+                        margin-bottom: 6px;
+                        padding: 6px 10px;
+                        border-radius: 8px;
+                        background: #e7f5ff;
+                        color: #1864ab;
+                        font-weight: 700;">
+                        {selected_role}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            with col_remove:
+                if st.button("×", key=f"remove_role_{idx}_{selected_role}"):
+                    st.session_state.selected_roles.remove(selected_role)
+                    st.rerun()
+
+    target_roles = st.session_state.selected_roles
+    target_role = target_roles[0] if target_roles else ""
 
     target_company = st.selectbox(
         "관심 기업",
         [
             "네이버",
             "카카오",
-            "삼성",
+            "삼성전자",
+            "LG전자",
+            "SK하이닉스",
+            "현대자동차",
+            "기아",
             "쿠팡",
-            "토스"
+            "토스",
+            "라인",
+            "배달의민족",
+            "선택 안 함"
         ]
     )
+    target_company = "" if target_company == "선택 안 함" else target_company
 
     st.divider()
 
@@ -160,11 +573,16 @@ if st.session_state.page == "home":
                 "profile": {
                     "age": age,
                     "region": region,
+                    "region_full": region_full,
                     "income": income,
                     "education": education,
                     "skills": skills,
                     "experience": experience,
+                    "experience_months": experience_months,
+                    "experience_text": experience_input,
+                    "experience_label": parsed_experience["label"],
                     "target_role": target_role,
+                    "target_roles": target_roles,
                     "target_company": target_company
                 }
             }
@@ -210,36 +628,57 @@ elif st.session_state.page == "output":
 
         st.subheader("📋 정책 결과")
 
-        for item in data["policy"]:
+        policy_data = data.get("policy", [])
+        policy_items = policy_data.get("items", []) if isinstance(policy_data, dict) else policy_data
+
+        for item in policy_items:
 
             with st.container(border=True):
 
-                st.markdown(f"### {item['title']}")
-                st.caption(f"마감: {item['deadline']}")
+                title = item.get("title", "정책")
+                deadline = item.get("deadline") or item.get("date") or "미정"
+                link = item.get("link") or item.get("url") or "https://www.youthcenter.go.kr"
 
-                st.write(item["description"])
+                st.markdown(f"### {title}")
+                st.caption(f"마감: {deadline}")
 
-                st.success(f"조건 일치: {item['match']}")
+                st.write(
+                    item.get("description")
+                    or item.get("summary")
+                    or item.get("benefit")
+                    or "정책 설명이 제공되지 않았습니다."
+                )
+
+                matched_criteria = item.get("matched_criteria", [])
+                if matched_criteria:
+                    matched_text = ", ".join(
+                        f"{criterion.get('label', '조건')} {criterion.get('user_value', '')}".strip()
+                        for criterion in matched_criteria
+                    )
+                else:
+                    matched_text = item.get("match", "조건 확인 필요")
+
+                st.success(f"조건 일치: {matched_text}")
 
                 col1, col2 = st.columns(2)
 
                 with col1:
                     st.link_button(
                         "해당 사이트 가기",
-                        item["link"]
+                        link
                     )
 
                 with col2:
                     if st.button(
                         "📅 캘린더 추가하기",
-                        key=f"policy_calendar_{item['title']}"
+                        key=f"policy_calendar_{title}"
                     ):
                         add_event_to_calendar({
-                            "title": item["title"],
-                            "date": item["deadline"],
+                            "title": title,
+                            "date": deadline,
                             "type": "정책",
                             "source": "policy",
-                            "link": item["link"]
+                            "link": link
                         })
 
         # =========================
@@ -248,34 +687,45 @@ elif st.session_state.page == "output":
 
         st.subheader("💼 채용 결과")
 
-        for item in data["job"]:
+        job_data = data.get("job", [])
+        job_items = job_data.get("items", []) if isinstance(job_data, dict) else job_data
+
+        for item in job_items:
 
             with st.container(border=True):
 
-                st.markdown(f"### {item['company']}")
-                st.write(item["title"])
+                company = item.get("company", "회사")
+                title = item.get("title", "채용공고")
+                deadline = item.get("deadline") or item.get("date") or "미정"
+                link = item.get("url") or item.get("link") or "https://www.work.go.kr"
 
-                st.warning(item["deadline"])
+                st.markdown(f"### {company}")
+                st.write(title)
+
+                if item.get("days_remaining") is not None:
+                    st.warning(f"D-{item['days_remaining']}")
+                else:
+                    st.warning(deadline)
 
                 col1, col2 = st.columns(2)
 
                 with col1:
                     st.link_button(
                         "해당 사이트 가기",
-                        item["link"]
+                        link
                         )
 
                 with col2:
                     if st.button(
                         "📅 캘린더 추가하기",
-                        key=f"job_calendar_{item['company']}_{item['title']}"
+                        key=f"job_calendar_{company}_{title}"
                     ):
                         add_event_to_calendar({
-                            "title": f"{item['company']} {item['title']}",
-                            "date": item["date"],
+                            "title": f"{company} {title}",
+                            "date": deadline,
                             "type": "채용",
                             "source": "job",
-                            "link": item["link"]
+                            "link": link
                         })
         if st.button("🏠 홈으로 돌아가기"):
             st.session_state.page = "home"
@@ -381,6 +831,20 @@ elif st.session_state.page == "mypage":
     # =========================
     with left:
 
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stVerticalBlock"] div[data-testid="stButton"] button {
+                min-height: 38px;
+            }
+            div[data-testid="stVerticalBlock"] div[data-testid="stButton"] {
+                margin-bottom: -8px;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
         weekdays = ["일", "월", "화", "수", "목", "금", "토"]
 
         # calendar.monthcalendar는 월요일 시작이라, 일요일 시작으로 바꿔줌
@@ -406,7 +870,7 @@ elif st.session_state.page == "mypage":
                         st.markdown(
                             """
                             <div style="
-                                height: 95px;
+                                min-height: 118px;
                                 border: 1px solid #eeeeee;
                                 border-radius: 4px;
                                 background-color: #fafafa;">
@@ -419,25 +883,48 @@ elif st.session_state.page == "mypage":
                         is_selected = day == st.session_state.selected_day
                         has_events = day in events_by_day
 
-                        border_color = "#ff4b4b" if is_selected else "#eeeeee"
-                        bg_color = "#fff3f3" if is_selected else "white"
-
                         # 날짜 선택 버튼
                         if st.button(str(day), key=f"day_{day}"):
                             st.session_state.selected_day = day
                             st.rerun()
 
                         # 이벤트 표시
-                        if has_events:
-                            for event in events_by_day[day]:
-                                if event["source"] == "policy":
-                                    st.markdown("🔴 정책")
-                                elif event["source"] == "job":
-                                    st.markdown("🔵 채용")
-                                else:
-                                    st.markdown("⚪ 일정")
+                        cell_bg = "#eef4ff" if is_selected else "#ffffff"
+                        cell_border = "#1c3f77" if is_selected else "#e5e7eb"
+                        event_bars = ""
 
-        st.caption("🔴 정책 마감  |  🔵 채용 마감  |  ⚪ 직접 추가")
+                        if has_events:
+                            event_bars = "".join(
+                                render_calendar_event_bar(event)
+                                for event in events_by_day[day][:3]
+                            )
+                            if len(events_by_day[day]) > 3:
+                                event_bars += f"""
+                                <div style="
+                                    margin-top: 4px;
+                                    color: #868e96;
+                                    font-size: 11px;">
+                                    +{len(events_by_day[day]) - 3}개 더
+                                </div>
+                                """
+
+                        st.markdown(
+                            f"""
+                            <div style="
+                                min-height: 86px;
+                                margin-top: -4px;
+                                margin-bottom: 18px;
+                                padding: 4px;
+                                border: 2px solid {cell_border};
+                                border-radius: 6px;
+                                background: {cell_bg};">
+                                {event_bars}
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+        st.caption("🔴 정책 마감  |  🔵 채용 마감  |  🟣 직접 추가")
 
     # =========================
     # 오른쪽: 선택 날짜 패널
@@ -446,8 +933,6 @@ elif st.session_state.page == "mypage":
 
         selected_day = st.session_state.selected_day
         selected_events = events_by_day.get(selected_day, [])
-
-        st.error(f"📅 선택: {year}-{month:02d}-{selected_day:02d}")
 
         with st.container(border=True):
             st.markdown("### ➕ 직접 일정 추가")
@@ -473,7 +958,7 @@ elif st.session_state.page == "mypage":
                     "date": custom_date.strftime("%Y-%m-%d"),
                     "type": "직접 추가",
                     "source": "manual",
-                    "link": custom_link
+                    "link": normalize_link(custom_link)
                 })
 
         with st.container(border=True):
@@ -486,7 +971,7 @@ elif st.session_state.page == "mypage":
 
                     c1, c2 = st.columns([2, 1])
                     with c1:
-                        st.link_button("해당 사이트로 가기 →", event["link"])
+                        st.link_button("해당 사이트로 가기 →", normalize_link(event.get("link")))
                     with c2:
                         if st.button(
                             "삭제",
@@ -508,32 +993,15 @@ elif st.session_state.page == "mypage":
                     가장 임박: {events[0]['title']} ({events[0]['d_day']})  
                     가장 먼 일정: {events[-1]['title']} ({events[-1]['d_day']})
                     """
-                )   
+                )
             else:
                 st.info(
                     """
                     📘 이번 달 요약
-    
+
                     아직 추가된 일정이 없습니다.  
                     결과 화면에서 '캘린더 추가하기'를 눌러 일정을 모아보세요.
                     """
-                )
-
-        with st.container(border=True):
-            st.markdown("### 📌 이번 달 이벤트 리스트")
-
-            for event in events:
-                if event["source"] == "policy":
-                    color = "🟥"
-                elif event["source"] == "job":
-                    color = "🟦"
-                else:
-                    color = "⬜"
-
-                st.markdown(
-                    f"{color} **{event['title']}** "
-                    f"<span style='float:right'>{event['d_day']}</span>",
-                    unsafe_allow_html=True
                 )
 
     st.divider()
