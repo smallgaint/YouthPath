@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from datetime import date, datetime
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -9,15 +10,44 @@ import requests
 from Router.schemas import AgentResult
 
 
+def _load_env_file() -> None:
+    candidates = [
+        Path.cwd() / ".env",
+        Path(__file__).resolve().parent.parent / ".env",
+    ]
+    env_path = next((path for path in candidates if path.exists()), None)
+    if env_path is None:
+        return
+    try:
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
+    except Exception:
+        return
+
+
+def _worknet_key(env_name: str) -> str:
+    return (os.getenv(env_name) or os.getenv("WORKNET_API_KEY") or "").strip()
+
+
+_load_env_file()
+
 WORKNET_KEYS = {
-    "채용정보": os.getenv("WORKNET_RECRUIT_API_KEY", "060d63ed-85c9-4184-bde0-24d4125579ec"),
-    "강소기업": os.getenv("WORKNET_SME_API_KEY", "5cf54e8f-c200-47b8-baf1-cf5a26b80119"),
-    "직무정보": os.getenv("WORKNET_JOB_INFO_API_KEY", "3de286d2-e3ac-4116-ba47-3d99013f9cde"),
-    "공통코드": os.getenv("WORKNET_COMMON_CODE_API_KEY", "88af74aa-4b74-4eb8-964d-61a8c1194b02"),
-    "직업정보": os.getenv("WORKNET_OCCUPATION_API_KEY", "62d1a8f5-201f-4210-9839-48c9226d2fdc"),
+    "채용정보": _worknet_key("WORKNET_RECRUIT_API_KEY"),
+    "강소기업": _worknet_key("WORKNET_SME_API_KEY"),
+    "직무정보": _worknet_key("WORKNET_JOB_INFO_API_KEY"),
+    "공통코드": _worknet_key("WORKNET_COMMON_CODE_API_KEY"),
+    "직업정보": _worknet_key("WORKNET_OCCUPATION_API_KEY"),
 }
 
 WORKNET_BASE = os.getenv("WORKNET_BASE_URL", "https://www.work24.go.kr/cm/openApi/call")
+WORKNET_TIMEOUT = float(os.getenv("WORKNET_TIMEOUT", "6"))
 WORKNET_PATHS = {
     "채용정보": os.getenv("WORKNET_RECRUIT_PATH", "/wk/callOpenApiSvcInfo210L01.do"),
     "강소기업": os.getenv("WORKNET_SME_PATH", "/wk/callOpenApiSmeList.do"),
@@ -154,6 +184,9 @@ def run_job_agent(profile: dict[str, Any], query: str) -> dict[str, Any]:
 
 
 def _search_worknet_jobs(profile: dict[str, Any], query: str) -> list[dict[str, Any]]:
+    if not WORKNET_KEYS["채용정보"]:
+        raise ValueError("WORKNET_RECRUIT_API_KEY or WORKNET_API_KEY is required for Worknet live search.")
+
     params = {
         "authKey": WORKNET_KEYS["채용정보"],
         "returnType": "JSON",
@@ -173,7 +206,7 @@ def _search_worknet_jobs(profile: dict[str, Any], query: str) -> list[dict[str, 
     response = requests.get(
         f"{WORKNET_BASE}{WORKNET_PATHS['채용정보']}",
         params=params,
-        timeout=6,
+        timeout=WORKNET_TIMEOUT,
     )
     response.raise_for_status()
     data = response.json()
@@ -204,6 +237,8 @@ def _extract_job_rows(data: Any) -> list[dict[str, Any]]:
 def _get_job_skills(job_code: str, profile: dict[str, Any], query: str, *, backend: str) -> dict[str, list[str]]:
     fallback = MOCK_JOB_SKILLS.get(job_code) or _infer_job_skills(profile.get("target_role") or query)
     if backend != "worknet" or not job_code:
+        return fallback
+    if not WORKNET_KEYS["직무정보"]:
         return fallback
 
     try:

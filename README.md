@@ -50,6 +50,21 @@ ONTONG_API_KEY=...
 # LUXIA_FALLBACK_TO_MOCK=true
 ```
 
+워크넷 Job Agent는 아래 환경변수를 읽습니다. 워크넷에서 받은 `authKey`가 모든 endpoint에 공통으로 쓰이는 형태라면 `WORKNET_API_KEY` 하나만 채우면 됩니다. endpoint별 키가 따로 발급된 경우에는 개별 키를 채우세요.
+
+```env
+WORKNET_API_KEY=발급받은_워크넷_authKey
+
+# endpoint별 키를 따로 받은 경우에만 사용
+WORKNET_RECRUIT_API_KEY=채용정보_authKey
+WORKNET_JOB_INFO_API_KEY=직무정보_authKey
+WORKNET_SME_API_KEY=강소기업_authKey
+WORKNET_COMMON_CODE_API_KEY=공통코드_authKey
+WORKNET_OCCUPATION_API_KEY=직업정보_authKey
+
+WORKNET_TIMEOUT=6
+```
+
 ## E2E 검증
 
 프로젝트 루트에서 실행합니다.
