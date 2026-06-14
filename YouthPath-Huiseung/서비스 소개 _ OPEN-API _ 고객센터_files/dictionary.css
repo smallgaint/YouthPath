@@ -1,0 +1,384 @@
+.dictionary_popup {
+    position: fixed;
+    bottom: 271px;
+    z-index: 1;
+}
+
+.dictionary_popup .flex_row {
+    overflow: hidden;
+    position: relative;
+    width: 360px;
+    height: 580px;
+    background-color: var(--col_white);
+    border-radius: 12px;
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.16);
+}
+
+.dictionary_popup .flex_con {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-top: 16px;
+}
+
+.dictionary_popup .dc_loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 100%;
+    padding: 0 40px;
+    opacity: 1;
+    background-color: var(--col_white);
+    transition: opacity .3s 2.5s;
+}
+
+.dictionary_popup .dc_loading .title {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 34px;
+    letter-spacing: -0.48px;
+}
+
+.dictionary_popup .dc_loading .imgset {
+    display: block;
+    margin-top: 16px;
+}
+
+.dictionary_popup .dc_loading .st {
+    margin-top: 8px;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.32px;
+}
+
+.dictionary_popup .dc_loading .gt {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: -0.28px;
+    text-align: center;
+}
+
+.dictionary_popup .dc_loading.trans {
+    opacity: 0;
+}
+
+.dictionary_popup .dc_loading.hide {
+    display: none;
+}
+
+.dictionary_popup .dc_header .hd_tns {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding-left: 20px;
+    outline-offset: -2px;
+    cursor: pointer
+}
+
+.dictionary_popup .dc_header .hd_tns .title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--col_h);
+    letter-spacing: -0.36px;
+}
+
+.dictionary_popup .dc_header .hd_tns .icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: 0 10px 0 4px;
+    background: url("/cm/static/images/icon/24/ico24_drag.svg") no-repeat;
+}
+
+.dictionary_popup .dc_header .hd_tns .hover {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 24px;
+    margin-left: 2px;
+    padding: 0 6px;
+    font-size: 12px;
+    color: var(--col_white);
+    background-color: #007899;
+    border-radius: 6px;
+    box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.16);
+    opacity: 0;
+    transition: margin-left .2s, opacity .2s;
+}
+
+.dictionary_popup .dc_header .hd_tns .hover::before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -6px;
+    top: 7px;
+    width: 7px;
+    height: 10px;
+    background: url("/cm/static/images/main_new/img_dc_p.svg") no-repeat;
+}
+
+.dictionary_popup .dc_header .hd_tns.add_hover .hover {
+    margin-left: 0;
+    opacity: 1;
+}
+
+.dictionary_popup .dc_header .hd_tns.remove_hover .hover {
+    margin-left: 4px;
+    opacity: 0;
+}
+
+.dictionary_popup .dc_search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 20px;
+    background-color: var(--col_box_bg);
+}
+
+.dictionary_popup .dc_search .input_btn {
+    flex: 1;
+    position: relative;
+}
+
+.dictionary_popup .dc_search .input_btn input[type=text] {
+    display: block;
+    width: 100%;
+    height: 40px;
+    padding: 0 30px 0 16px;
+    border: 1px solid var(--col_gray);
+    background-color: var(--col_white);
+    border-radius: 4px;
+}
+
+.dictionary_popup .dc_search .input_btn input[type=text]:disabled {
+    background-color: var(--col_bg);
+}
+
+.dictionary_popup .dc_search .input_btn input[type=text]:disabled +.delete {
+    display: none;
+}
+
+.dictionary_popup .dc_search .input_btn .delete {
+    display: none;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    margin-top: -12px;
+    padding: 4px;
+}
+
+.dictionary_popup .dc_search .input_btn .delete .icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    background: url("/cm/static/images/icon/16/ico16_close.svg") no-repeat;
+}
+
+.dictionary_popup .dc_search .rtn {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 12px;
+    color: var(--col_white);
+    background-color: var(--col_blue);
+    border-radius: 4px;
+}
+
+.dictionary_popup .dc_group {
+    overflow: hidden;
+    flex: 1;
+    padding: 16px 20px;
+}
+
+.dictionary_popup .dc_con {
+    display: flex;
+    gap: 8px;
+    height: 100%;
+}
+
+.dictionary_popup .dc_se {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    padding-right: 2px;
+}
+
+.dictionary_popup .dc_se::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dictionary_popup .dc_se::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 3px;
+}
+
+.dictionary_popup .dc_se::-webkit-scrollbar-track {
+    background: var(--col_btn);
+    border-radius: 3px;
+}
+
+.dictionary_popup .de_set {
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--col_h);
+    line-height: 30px;
+    letter-spacing: -0.4px;
+}
+
+.dictionary_popup .de_set strong {
+    color: var(--col_blue);
+}
+
+.dictionary_popup .dc_list li {
+    margin-bottom: 8px;
+    padding: 16px;
+    border: 1px solid var(--col_btn);
+    border-radius: 12px;
+}
+
+.dictionary_popup .dc_list li .title {
+    font-size: 16px;
+    color: var(--col_h);
+    line-height: 28px;
+}
+
+.dictionary_popup .dc_list li .title strong {
+    color: var(--col_blue);
+}
+
+.dictionary_popup .dc_list li .text {
+    margin-top: 8px;
+    padding: 16px;
+    line-height: 24px;
+    letter-spacing: -0.28px;
+    background-color: var(--col_box_bg);
+    border-radius: 8px;
+}
+
+.dictionary_popup .dc_list li.active {
+    border-color: var(--col_blue);
+}
+
+.dictionary_popup .dc_list li.active .title strong {
+    color: var(--col_blue);
+}
+
+.dictionary_popup .dc_list li.empth {
+    padding: 96px 0 40px;
+    font-size: 14px;
+    text-align: center;
+    background: url(/cm/static/images/main_new/img_dc_empth.svg) no-repeat center top 40px;
+    border-radius: 8px;}
+
+
+.dictionary_popup .dc_empty .line {
+    padding: 40px 8px;
+    border: 1px solid var(--col_btn);
+    border-radius: 8px;
+}
+
+.dictionary_popup .dc_empty .imgset img {
+    display: block;
+    margin: 0 auto;
+    vertical-align: top;
+}
+
+.dictionary_popup .dc_empty .box_list_area {
+    margin-top: 16px;
+}
+
+.dictionary_popup .dc_empty .txt_list {
+    font-size: 14px;
+    letter-spacing: -0.28px;
+}
+
+.dictionary_popup .dc_empty .dc_tns {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.dictionary_popup .dc_btns {
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 32px;
+}
+
+.dictionary_popup .dc_btns .gp {
+    padding: 4px 0;
+    background-color: var(--col_bg);
+    border-radius: 4px;
+}
+
+.dictionary_popup .dc_btns .ph {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+    font-size: 14px;
+}
+
+.dictionary_popup .dc_btns .ph[title=선택됨] {
+    color: var(--col_white);
+    background-color: var(--col_blue);
+    border-radius: 4px;
+}
+
+.dictionary_popup .dc_more {
+    margin-left: 4px;
+    font-weight: 600;
+    color: var(--col_blue);
+    text-decoration: underline;
+}
+
+.quick_top {
+    right: 50%;
+    z-index: 995;
+    margin-right: -709px;
+}
+
+.tn_quick_dictionary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 24px;
+    border-radius: 50%;
+    color: var(--col_white);
+    background-color: var(--col_blue);
+    font-weight: 600;
+}
+
+.tn_quick_dictionary .icon {
+    width: 32px;
+    height: 32px;
+    background: url(/cm/static/images/icon/32/ico32_dc_close.svg) no-repeat center;
+}
+
+@media (max-width: 1930px) {
+    .dictionary_popup {
+        right: 20px;
+    }
+}
+
+@media (max-width: 1446px) {
+    .quick_top {
+        right: 20px;
+        margin-right: 0;
+    }
+}

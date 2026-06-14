@@ -1,0 +1,104 @@
+// define(['jquery'], function ($) {
+define([], function () {
+
+    var wncbConst = {
+        text: {
+            ajaxErrorMsg: "<div aria-label='응답: 챗봇 서버의 응답이 너무 늦습니다. 서버가 일시적으로 사용할 수 없거나 너무 많은 접속이 몰리는 상태일 수 있습니다. 잠시 후에 다시 시도해 보시기 바랍니다.'>챗봇 서버의 응답이 너무 늦습니다. 서버가 일시적으로 사용할 수 없거나 너무 많은 접속이 몰리는 상태일 수 있습니다. 잠시 후에 다시 시도해 보시기 바랍니다.</div>",
+            unknownDataErrorMsg: "<div  aria-label='응답: 서버에서 받은 데이터를 해석할 수 없습니다.'>서버에서 받은 데이터를 해석할 수 없습니다.</div>",
+            helpEventText: "챗봇_도움말_view",
+            helpEventText2: "구직신청_도움말_view",
+            youthPolicyCounseling: "청년정책상담",
+            //menuText: [ "처음으로", "고용24 로그인", "도움말" ]
+			menuText: [ "처음으로", "도움말" ]
+        },
+        event: {
+            dataUnknown: "WNCB_EVT_ERROR_DATA_UNKOWN"
+        },
+        ssid: {
+            start: "WNCB_SSID_CB_START",
+            show: "WNCB_SSID_CB_SHOW",
+            msgid: "WNCB_SSID_CB_MSG_",
+            position: "WNCB_SSID_CB_WINDOW_POSITION",
+            size: "WNCB_SSID_CB_WINDOW_SIZE",
+            login: "WNCB_SSID_CB_LOGIN_STATUS",
+            session_id: "WNCB_SSID_CB_SESSION_ID",
+            help_status: "WNCB_SSID_CB_HELP_STATUS",
+            minimum_status: "WNCB_SSID_CB_MINIMUM_STATUS"
+        },
+        setting: {
+            // cbRoot: "http://127.0.0.1:8080",
+            // agent: 'http://work.wepubl.co.kr/g24hp/chat'  // 외부
+            // agent: '/g24hp/chat/'  // 외부
+
+            agent_local: 'http://127.0.0.1:8080/chatbot/g24hp/chat', // local
+            agent_server: '/chatbot/g24hp/chat' // 배포 (위퍼블 서버, KEIS)
+        },
+        chatCmd: {
+            // start: "g24_web_temp_01"
+            // start: "시작하기"
+            start: "처음으로"
+        }
+    };
+
+    // uuid
+    var generateUUID = function () {
+        var lut = [];
+        if (lut.length == 0) {
+            for (var i = 0; i < 256; i++) {
+                lut[i] = (i < 16 ? '0' : '') + (i).toString(16);
+            }
+        }
+        var d0 = Math.random() * 0xffffffff | 0;
+        var d1 = Math.random() * 0xffffffff | 0;
+        var d2 = Math.random() * 0xffffffff | 0;
+        var d3 = Math.random() * 0xffffffff | 0;
+        return lut[d0 & 0xff] + lut[d0 >> 8 & 0xff] + lut[d0 >> 16 & 0xff] + lut[d0 >> 24 & 0xff] + '-' +
+            lut[d1 & 0xff] + lut[d1 >> 8 & 0xff] + '-' + lut[d1 >> 16 & 0x0f | 0x40] + lut[d1 >> 24 & 0xff] + '-' +
+            lut[d2 & 0x3f | 0x80] + lut[d2 >> 8 & 0xff] + '-' + lut[d2 >> 16 & 0xff] + lut[d2 >> 24 & 0xff] +
+            lut[d3 & 0xff] + lut[d3 >> 8 & 0xff] + lut[d3 >> 16 & 0xff] + lut[d3 >> 24 & 0xff];
+    }
+
+    var makeSafeText = function (src) {
+        var p = document.createElement("p");
+        p.textContent = src;
+        return p.innerHTML;
+    };
+
+    var getFileAsStringFromUrl = function (url, gfasfu_callback) {
+        $.ajax({
+            url: url,
+            xhrFields: {
+                withCredentials: true
+            }, // CORS 해결용
+            success: function (data) {
+                gfasfu_callback(data);
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+    }
+
+    var detectMob = function() {
+        if (navigator.userAgent.match(/Android/i) ||
+            navigator.userAgent.match(/webOS/i) ||
+            navigator.userAgent.match(/iPhone/i) ||
+            navigator.userAgent.match(/iPad/i) ||
+            navigator.userAgent.match(/iPod/i) ||
+            navigator.userAgent.match(/BlackBerry/i) ||
+            navigator.userAgent.match(/Windows Phone/i)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    return {
+        wncbConst: wncbConst,
+        generateUUID: generateUUID,
+        makeSafeText: makeSafeText,
+        getFileAsStringFromUrl: getFileAsStringFromUrl,
+        detectMob: detectMob
+    };
+});

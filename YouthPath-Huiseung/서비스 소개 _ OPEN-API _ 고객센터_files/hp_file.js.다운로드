@@ -1,0 +1,2074 @@
+var ComFileLib = {};
+
+
+$.views.helpers({
+	formatFileSize : function(val){
+		return $.blueimp.fileupload.prototype._formatFileSize(val);
+	}
+})
+
+
+/**
+ * 전체파일 삭제 (일반, 공공마이데이터 포함)
+ */
+ComFileLib.fn_deleteAllFiles = function(_this){
+	var _cvplFomtFile = $(_this).data("cvplFomtFile");
+	var _selector = $(_this).closest("[id^=filePapr_]");
+
+	if(_selector.length == 0){
+		_selector = $(_this).closest("[id^=fileGroup]");
+	}
+
+//	var athflMdulId = _id.split("_")[0];
+//	var atchPaprId = _id.split("_")[1];
+
+	if(confirm("전체 파일을 삭제하시겠습니까?")) {
+		/* 공공마이데이터 삭제 START */
+		if(_selector.find('[id^="fileContainer"] ul li.mydata').length > 0){
+			_selector.find('[id^="fileContainer"] ul li.mydata').each(function(){
+				if($(this).find("[id^=file-cvplRqutRcno]").val() != ""){
+					var fileInfo = {"mdtDlngSeq":$(this).find("[id^=file-mdtDlngSeq]").val(), "cvplRqutRcno": $(this).find("[id^=file-cvplRqutRcno]").val(), "athflSeq": $(this).find("[id^=file-athflSeq]").val(), "atchFsno": $(this).find("[id^=file-atchFsno]").val()};
+
+					if(_cvplFomtFile.delImmediate == "N"){
+						_cvplFomtFile.delAttachList.push(fileInfo);
+					}else{
+						ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileForm.do", fileInfo, false);
+					}
+				}
+			});
+
+			_selector.find('[id^="fileContainer"] ul li.mydata').remove();
+
+			$("[id^=addMyData_]").show();
+			$("[id^=chkMyData_]").hide();
+
+		}
+		/* 공공마이데이터 삭제 END */
+
+		/* 일반 파일 삭제 START */
+		_selector.find('[id^="fileContainer_"] li.atchfile').each(function(){
+			if($(this).find("[id^=file-ncmnNo]").length > 0){
+				var fileInfo = {"ncmnNo": $(this).find("[id^=file-ncmnNo]").val(), "cvplRqutRcno": $(this).find("[id^=file-cvplRqutRcno]").val(), "athflSeq": $(this).find("[id^=file-athflSeq]").val(), "atchFsno": $(this).find("[id^=file-atchFsno]").val()};
+
+				if(_cvplFomtFile.delImmediate == "N"){
+					_cvplFomtFile.delAttachList.push(fileInfo);
+				}else{
+					ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileForm.do", fileInfo, false);
+				}
+
+				$(this).closest("ul").empty();
+			}else{
+				$(this).find("button.delbtn.cancel").trigger("click");
+			}
+		});
+		/* 일반 파일 삭제  END */
+
+
+		/* 전자증명신청 파일 삭제 START */
+		_selector.find('[id^="fileContainer_"] li.elctCrtf').each(function(){
+			var d = $(this).find("button[name=btn_del_elct]");
+
+			var spData = $(d).data("seq");
+			if(spData != null && spData != ""){
+				var sp = $(d).data("seq").split('-');
+				if(sp[1] != null && sp[1] != ""){
+					var delInfo = {"athflSeq":sp[0], "atchFsno":sp[1],"ecidData.docPackageId":sp[2]};
+
+					if(_cvplFomtFile.delImmediate == "N"){
+						_cvplFomtFile.delAttachList.push(delInfo);
+					}else{
+						ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileEcidForm.do", delInfo, false);
+					}
+				}
+			}
+			$(this).remove();
+		});
+
+		$(_selector).find("[id^=btn_file_]").each(function(){
+			var _id = $(this).attr("id").replace("btn_file_", "");
+
+			$(this).off().on("click", function() {
+				$("input[name="+"files_dummy_"+_id+"]").click();
+			}).find("span").text("첨부파일 등록");
+		});
+
+		$(_selector).find("[id^=btn_reqEcid_]").show();
+
+		//$("[id^='fileupload_dummy_"+_id+"']").fileupload("option", "dropZone", _selector.find("[id^=fileContainer_]"));
+
+
+//		if(_me.mobileYn == "Y"){
+//			$(_me.base+"#"+"btn_"+tempId).on("click", function() {
+//				$("input[name="+"files_dummy_"+tempId+"]").click();
+//			});
+//
+//			$(_me.base+"#btn_reqEcid_"+tempId).show();
+//		}
+//		else{
+//			var elctProfDocKndCd = $(d).data("elctprofdockndcd");
+//			$(_me.base+"#"+"ecidArea_"+tempId).hide();
+//			$(_me.base+"#"+"dropZone_"+tempId).show();
+//			$(_me.base+"#chkEcid_"+tempId).attr("disabled",false);
+//			$(_me.base+"#chkEcid_"+tempId).attr("checked",false);
+//			$(_me.base+"#"+"btn_reqEcid_"+elctProfDocKndCd).hide();
+//		}
+
+		/* 전자증명신청 파일 삭제  END */
+
+
+		ComFileLib.fn_fileSync();
+		//첨부파일등록버튼으로 포커스 이동
+		fileDelFocus(_this);
+	}
+}
+
+/*
+ * 서식코드로 파일 업로드 셋팅
+ */
+ComFileLib.cvplFomtFile = function(o) {
+	var _me = this;
+
+    var pathArray = location.href.split('/');
+    this.cmUrl = pathArray[0]+"//"+pathArray[2]+"/cm";
+
+	this.base;
+	this.callback = "Y";
+
+	this.cvplRqutRcno =o["cvplRqutRcno"];
+	this.systemId = o["systemId"];
+	this.cvplFomtCd = o["cvplFomtCd"];
+	this.fieldName = o["fieldName"];
+	this.filepolicy = o["filepolicy"];
+	this.prgmId = o["prgmId"];
+	this.athflMdulId =o["athflMdulId"];
+	this._el;
+	this._upperForm;
+	this._checkEtc = {"currentCnt":0};
+	this.delFn = o["delFn"];
+	this.uploadFn = o["uploadFn"];
+	this.mobileYn = o["mobileYn"];
+	this.viewMode = o["viewMode"];
+	this.encAthflSeq = o["encAthflSeq"];
+	this.otpbScpeSecd = (o["otpbScpeSecd"] == null || o["otpbScpeSecd"] == "") ? 'ERU02' : o["otpbScpeSecd"];
+	this._retUpload;
+	this.uploadCnt = 0;
+	this.uploadTmpCnt = 0;
+	this.retAthflSeq = "";
+	this.uploadComplate = "N";
+	this.useEcid = "Y";
+	this.addEcidLayer;
+	this.ecidListLayer;
+	this.fileGroupCnt=0;
+
+	this.deviceId;
+	this.delImmediate = o["delImmediate"];
+	this.auth = o["auth"];
+	this.delAttachList = new Array();
+	this.valid = (o["valid"] == null || o["valid"] == "") ? 'Y' : o["valid"];
+	this._fileInfo;
+	this.loadComplateFn = o["loadComplateFn"];
+	this.ncmnNos = o["ncmnNos"];
+
+	this._uploadModeList = [];
+
+	this.getDeviceId = function(){
+		var ret = "";
+
+		if(ComLib.env == "app"){
+			ret = ComLib.deviceInfo.UniqueId;
+		}else{
+			alert("고용24 어플리케이션에서만 사용 할 수 있는 기능입니다. 스토어에서 고용24 앱을 설치 해주세요");
+		}
+
+//		var ret = "3959f0ec-4b4e-1bbb-3959-f0ec4b4e1ccc";
+
+		return ret;
+	};
+	this.getFileGroupCnt = function(){
+		return _me.fileGroupCnt;
+	};
+	this.clear = function(o){
+		if(o !=null && o != ""){
+			$('[id^=fileupload_dummy_'+o+']').remove();
+			$('[data-prgmid='+o+']').remove();
+		}else if(_me.athflMdulId != null && _me.athflMdulId != ""){
+			$('[id^=fileupload_dummy_'+_me.athflMdulId+']').remove();
+		}
+		$("#cvplFomtFileLayout_"+_me._el.prop("id")).empty();
+		return _me;
+	};
+	this.setEl = function(el){
+        this._el = el;
+        this._upperForm = el.closest('form');
+        $(document).on('drop dragover',function(e){
+			e.preventDefault();
+		});
+		this.base = "#"+_me._el.prop("id")+" ";
+		_me._el.append($.render.cvplFomtFile_layout({"useEcid":_me.useEcid, "id":_me._el.prop("id")}));
+		_me._el.data("cvplFomtFile", _me);
+        return _me;
+    }
+    this.setElMyData = function(ret){
+        _me._el.prepend($("#cvplFomtFile_myDatalayout").render(ret));
+        return _me;
+    }
+    this.refresh = function(){
+		_me._retUpload = [];
+		_me._fileInfo = [];
+
+		var contextPath = "";
+	    if(typeof _contextPath === 'undefined'){
+	        var url = location.href;
+	        var pathArray = url.split('/');
+	        contextPath = "/"+pathArray[3];
+	    } else {
+	        contextPath = _contextPath;
+	    }
+
+		var retUrl = "/cm/z/z/9992/selectUploadForm.do";
+		if(_me.auth == "any"){
+			retUrl = "/cm/z/z/9992/selectUploadFormNx.do";
+		} else if(_me.auth == "ep"){
+			retUrl = "/cm/z/z/9992/selectUploadFormEp.do";
+		}
+
+		var request = ComLib.ajaxReqObj(retUrl, {"athflMdulId":this.athflMdulId, "cvplRqutRcno":this.cvplRqutRcno, "systemId":this.systemId, "cvplFomtCd":this.cvplFomtCd, "prgmId":this.prgmId,"encAthflSeq":this.encAthflSeq,"ncmnNos":this.ncmnNos}, false);
+        request.done(function(responseObj, statusText, xhr) {
+			//prgmId cvplFomtCd
+			var profile = responseObj.profile;
+			_me.prgmId = responseObj.HPCMZZ9992VO.prgmId;
+			_me.cvplFomtCd = responseObj.HPCMZZ9992VO.cvplFomtCd;
+
+			//해당 프로그램에 연관된 첨부파일 양식 조회
+			var retList = JsonLib.parse(responseObj.HPCMZZ9992VO.retCvplFomtList);
+			//해당 민원에 연관된 첨부파일 목록 조회
+			var retFileList = JsonLib.parse(responseObj.HPCMZZ9992VO.cvplRqutRcnoUploadForm);
+			_me.fileGroupCnt = retList.length;
+
+			//첨부파일 템플릿을 구현한다.
+			$(retList).each(function(idx,data){
+				var ret = data;
+				ret["fieldName"] = _me.fieldName;
+
+				// 모듈의 구분코드로 파일을 그룹할껀지 확인
+				var tempId = ret["athflMdulId"];
+				if(ret["athflStupSecd"] == "ERT02"){
+					tempId = ret["athflMdulId"]+"_"+ret["atchPaprId"];
+				}
+
+				ret["fileGroupId"] = tempId;
+
+//				if(ret["athflStupSecd"] == "ERT01"){
+//					ret["fileGroupId"] = ret["athflMdulId"];
+//				}else{
+//					ret["fileGroupId"] = ret["athflMdulId"]+"_"+ret["atchPaprId"];
+//				}
+
+				var tempId = ret["athflMdulId"];
+				if(ret["athflStupSecd"] == "ERT02"){
+					tempId = ret["athflMdulId"]+"_"+ret["atchPaprId"];
+				}
+
+				ret["fileContainer"] = "fileContainer_"+tempId;
+
+				_me._fileInfo.push(ret);
+
+				// 파일 모듈별 그룹 DIV 생성
+				if($("#cvplFomtFileLayout_"+_me._el.prop("id")+" #fileGroup_"+ret["athflMdulId"]).length < 1){
+					$("#cvplFomtFileLayout_"+_me._el.prop("id")).append($.render.fileGroup(ret));
+					$("#cvplFomtFileLayout_"+_me._el.prop("id")+" #fileGroup_"+ret["athflMdulId"]).append($.render.paprGroup(ret));
+				}
+
+				var groupDiv = $("#cvplFomtFileLayout_"+_me._el.prop("id")+" #fileGroup_"+ret['athflMdulId']);
+				var paprGroupDiv = groupDiv.find("#paprGroup_"+ret["athflMdulId"]);
+				ret["idx"] = paprGroupDiv.children("div").length+1;
+
+//				if(ret["etc"] != "Y"){
+					$.extend(_me._checkEtc, ret);
+					$.extend(ret, {"useEcid":_me.useEcid, "env" : ComLib.env, "viewMode": _me.viewMode, "profile" : profile});
+					if(_me.viewMode == 'view'){
+						paprGroupDiv.append($.render.fileBody_template_view(ret));
+					}else{
+						paprGroupDiv.append($.render.filePapr(ret));
+
+						if(!ComLib.isEmpty(ret["inFileCnt"]) && ret["inFileCnt"] > 0){
+							if(ret["athflStupSecd"] == "ERT01"){
+								if(groupDiv.find("#div_fileArea").length < 1){
+									groupDiv.append($.render.file_area(ret));
+									groupDiv.find("#btn_deleteAll").data("cvplFomtFile", _me);
+								}
+							}else{
+								paprGroupDiv.children(":last").append($.render.file_area(ret));
+								paprGroupDiv.find("[id=btn_deleteAll]:last").data("cvplFomtFile", _me);
+							}
+						}
+					}
+//				}
+
+//				else{
+//					$.extend(_me._checkEtc, ret);
+//					$.extend(ret, {"useEcid":_me.useEcid, "env" : ComLib.env});
+//					ret["currentCnt"] = _me._checkEtc.currentCnt;
+//					$("#cvplFomtFileLayout_"+_me._el.prop("id")).append($("#fileBody_template_etc_subject").render(ret));
+//					if(_me.viewMode == 'view'){
+//						$("#cvplFomtFileLayout_"+_me._el.prop("id")).append($("#fileBody_template_etc_view").render(ret));
+//					}else{
+//						$("#cvplFomtFileLayout_"+_me._el.prop("id")).append($("#fileBody_template_etc").render(ret));
+//					}
+//					tempId = tempId+"_etc_"+ret["currentCnt"];
+//				}
+
+				_me.makeFileUploadTemplate(tempId, ret);
+
+				if(groupDiv.find(".filePolicy").length < 1){
+					groupDiv.prepend($.render.filePolicy(ret));
+				}
+
+				if(_me.viewMode == 'view'){
+					var w = $("#btn_file_"+tempId).text();
+					//log(w);
+					if(w=="파일찾기"){
+						$(_me.base+"#btn_file_"+tempId).hide();
+					}else{
+						$(_me.base+"#btn_file_"+tempId).show();
+					}
+				} else {
+					ComFileLib.fn_fileSync();
+				}
+//
+			});
+
+			var areLostedFiles = false;
+			var lostedListMsgNew = "";
+			var lostedListMsgBackAndNew = "";
+
+			var fileEx = true;
+			for(var o in retFileList){
+
+				_me.retAthflSeq = retFileList[o][0]["encAthflSeq"];
+
+				var ret = {};
+				var cnt = retFileList[o].length;
+
+				var etcYn = retFileList[o][0]["etc"];
+				var athflMdulId = retFileList[o][0]["athflMdulId"]
+				var tempId = athflMdulId+"_"+o;
+
+
+				var athflStupSecd;
+				if($(_me.base+"#"+"fileContainer_"+athflMdulId).length > 0){
+					fileuploadId = athflMdulId;
+					athflStupSecd = "ERT01";
+				}else{
+					fileuploadId = tempId;
+					athflStupSecd = "ERT02";
+				}
+
+				if(cnt > 0){
+					ret.files = retFileList[o];
+
+					ret["fieldName"] = _me.fieldName;
+					for(var y in retFileList[o]){
+						var file = retFileList[o][y];
+
+						file["fieldName"] = _me.fieldName;
+						file["athflStupSecd"] = athflStupSecd;
+
+						if("F" == file["deltYn"]) {
+							areLostedFiles = true;
+							if( ComLib.isEmpty( file["cvplPrssStcd"]) ) {
+								lostedListMsgNew += file["orgnlFlnm"]+"\r\n";
+							} else {
+								if( "A0500" == file["cvplPrssStcd"] ) {
+									lostedListMsgNew += file["o0rgnlFlnm"]+"\r\n";
+								} else {
+									lostedListMsgBackAndNew += file["orgnlFlnm"]+"\r\n";
+								}
+							}
+						}
+
+						if(etcYn == 'Y'){
+							file.atchPaprCn = (file.atchPaprCn==null||file.atchPaprCn=="")?"":file.atchPaprCn;
+							file.etc = etcYn;
+						}
+
+						//일반 첨부파일인 경우 처리(전자증명서, 공공마이데이터 제외)
+						if(file.elctCrtfPstnYn != "Y" && file.mdtPstnYn != "Y"){
+							var result = $.render.download_file(file);
+
+							if(_me.viewMode == 'view'){
+								result = $.render.download_file_view(file);
+							}
+
+							$(_me.base+"#"+"fileContainer_"+fileuploadId).show();
+							$(_me.base+"#"+"fileContainer_"+fileuploadId+" ul").append(result);
+						} else {
+							if(file.elctCrtfPstnYn == "Y") {
+								$(_me.base+"[id^=btn_reqEcid_][data-id='"+tempId+"']").hide()
+
+								var temp0001 = _me.retAthflSeq+"-"+file.atchFsno+"-"+file.elctProfDocPckgId;
+
+								file.seq = temp0001;
+
+								var result = $.render.download_elctCrtf(file);
+
+								if(_me.viewMode == 'view'){
+									result = $.render.download_elctCrtf_view(file);
+								}
+								$(_me.base+"#"+"fileContainer_"+fileuploadId).show();
+								$(_me.base+"#"+"fileContainer_"+fileuploadId+" ul").append(result);
+
+								if(_me.useEcid =="Y" && _me.mobileYn == "Y" && file.elctProfDocPckgId != null && file.elctProfDocPckgId != ""){
+									$(_me.base+"#btn_file_"+tempId).off('click').find("span").text("전자증명서 제출 완료");
+//									$(_me.base+"#btn_reqEcid_"+file.elctProfDocKndCd).off('click').text("전자증명서 삭제");
+								} else if( _me.mobileYn != "Y" && file.elctProfDocPckgId != null && file.elctProfDocPckgId != ""){
+									$(_me.base+"#btn_file_"+tempId).off('click').find("span").text("전자증명서 제출 완료");
+//									$(_me.base+"#chkEcid_"+tempId).attr("checked",true);
+//									$(_me.base+"#chkEcid_"+tempId).attr("disabled",true);
+//									$(_me.base+"#ecidArea_"+tempId).show();
+//									$(_me.base+"#btn_reqEcid_"+file.elctProfDocKndCd).show();
+//									$(_me.base+"#"+"dropZone_"+tempId).hide();
+								} else if( _me.mobileYn != "Y" && (file.elctProfDocPckgId == null || file.elctProfDocPckgId == "")){
+//									$(_me.base+"#chkEcid_"+tempId).attr("disabled",false);
+//									$(_me.base+"#chkEcid_"+tempId).attr("checked",false);
+//									$(_me.base+"#"+"dropZone_"+tempId).hide();
+									$(_me.base+"#btn_reqEcid_"+file.elctProfDocKndCd).hide();
+									if(_me.viewMode == 'view'){
+										$(_me.base+"#chkEcid_"+tempId).attr("disabled",true);
+									}
+								} else if( _me.mobileYn == "Y" && (file.elctProfDocPckgId == null || file.elctProfDocPckgId == "")){
+									$(_me.base+"#btn_file_"+tempId).off('click').find("span").text("전자증명서 제출 예정");
+								}
+								if(file.elctCrtfPstnYn == "Y"){
+									$(_me.base+"#btn_reqEcid_"+file.elctProfDocKndCd).attr("data-seq",temp0001);
+//									$(_me.base+"#chkEcid_"+tempId).attr("checked",true);
+//									$(_me.base+"#chkEcid_"+tempId).attr("data-seq",temp0001);
+								}
+
+								//$("[name=files_dummy_"+tempId+"]").closest("[id^='fileupload_dummy_']").fileupload("option", "dropZone", $("#filePapr_"+tempId+" [id^=dropZone_]").not($("button:contains('전자증명서 제출 완료')").closest($("[id^=dropZone_]"))));
+
+								$("[name='btn_del_elct']").off().on("click", function(){
+									_me.fn_delEcidData(this);
+								});
+
+
+							} else if(file.mdtPstnYn == "Y") {
+								$(_me.base+"#addMyData_"+tempId).hide();
+								$(_me.base+"#chkMyData_"+tempId).show();
+
+								file.mdtDlngSeq = file.mdtDlngSeq2;
+								file.bndlId = file.bndlId2;
+								file.bndlFomtCn = file.bndlFomtCn2;
+
+								var result = $.render.download_mydata(file);
+
+								if(_me.viewMode == 'view'){
+									result = $.render.download_mydata_view(file);
+								}
+								$(_me.base+"#"+"fileContainer_"+fileuploadId).show();
+								$(_me.base+"#"+"fileContainer_"+fileuploadId+" ul").append(result);
+							}
+						}
+
+					}
+				}
+
+				/* 이제 안써요
+				else if(cnt > 0 && etcYn == 'Y'){
+					$(retFileList[o]).each(function(idx,data){
+//						var ret = {};
+//						ret.files = [data];
+
+
+						var file = data;
+						file.fieldName = _me.fieldName;
+
+						for(var y in ret.files[o]){
+							if("F" == ret.files[y]["deltYn"]) {
+								areLostedFiles = true;
+								if( ComLib.isEmpty( ret.files[y]["cvplPrssStcd"]) ) {
+									lostedListMsgNew += ret.files[y]["orgnlFlnm"]+"\r\n";
+								} else {
+									if( "A0500" == ret.files[y]["cvplPrssStcd"] ) {
+										lostedListMsgNew += ret.files[y]["orgnlFlnm"]+"\r\n";
+									} else {
+										lostedListMsgBackAndNew += ret.files[y]["orgnlFlnm"]+"\r\n";
+									}
+								}
+
+							}
+						}
+
+
+						var result = $.render.download_file(file);
+						if(_me.viewMode == 'view'){
+							var result = $.render.download_file_view(file);
+						}
+
+						$(_me.base+"#"+"fileContainer_"+fileuploadId+" ul").append(result);
+					});
+				}
+
+				*/
+				fileEx = false;
+				if(_me.viewMode == 'view'){
+					var w = $("#btn_file_"+tempId).text();
+					log(w);
+					if(w=="파일찾기"){
+						$(_me.base+"#btn_file_"+tempId).hide();
+					}else{
+						$(_me.base+"#btn_file_"+tempId).show();
+					}
+				}
+
+				ComFileLib.fn_fileSync();
+			}
+
+			//파일 소실시 안내
+			if ( areLostedFiles ){
+				if( lostedListMsgNew != ""){
+					lostedListMsgNew = "아래 파일들이 존재하지 않습니다.\r\n해당 파일을 삭제하시고 신규로 등록부탁드립니다.\r\n\r\n" + lostedListMsgNew;
+				}
+				if( lostedListMsgBackAndNew != ""){
+					lostedListMsgBackAndNew = "아래 파일들이 존재하지 않습니다.\r\n해당 파일을 삭제하시고 신규로 등록부탁드립니다.\r\n\r\n" + lostedListMsgBackAndNew;
+				}
+				//최종확인
+				alert(lostedListMsgNew+lostedListMsgBackAndNew);
+			}
+
+			if(_me.viewMode == 'view' && fileEx){
+                _me._el.empty();
+            }
+
+			if(_me.loadComplateFn && _me.loadComplateFn != null && _me.loadComplateFn != ""){
+				_me.loadComplateFn(responseObj.HPCMZZ9992VO);
+			}
+
+//			if(_me.viewMode == 'view'){
+				//$(_me.base+ "[id^=fileContainer_]:not(:has(li))").closest("[id^=fileGroup_]").hide();
+
+//				$(_me.base+ " [id^='fileGroup_']:has(:visible)").each(function(idx){
+//					$(this).find(".fileIndex").text(idx+1);
+//				});
+//            }
+        });
+
+        //툴팁 이벤트 실행
+        _me.addTooltip();
+		//전자증명서
+        _me.addEventLayer();
+        //공공마이데이터
+        _me.addMyDataEventLayer();
+
+
+        return _me;
+	}
+
+	this.addTooltip = function(o){
+		$(_me.base).find(".box_tooltip [class*='btn']").attr('aria-expanded', 'false');
+		$(_me.base).find(".box_tooltip [class*='btn']").click(function(){
+			$lastBtn = $(this);
+			var tooltip = $(this).next('.box_help-data').hasClass('active');
+			if(tooltip){
+				$(this).attr('aria-expanded', 'false').next('.box_help-data').removeClass('active');
+			}else{
+				$('.btn_help').next('.box_help-data').removeClass('active');
+				$(this).attr('aria-expanded', 'true').next('.box_help-data').addClass('active');
+			}
+		});
+		$(_me.base).find('.tooltip_close').click(function(){
+			$(this).parent('.box_help-data').removeClass('active').siblings("[class*='btn']").attr('aria-expanded', 'false');
+			$lastBtn.focus();
+		});
+
+
+		// 모바일용 툴팁
+		$(_me.base).find('.ui-layer').on('click', function() {
+			const $this = $(this);
+			const myLayer = $(this).next();
+
+			const dimmed = $('.dimmed');
+			const thisPoint = $(window).scrollTop();
+
+			// 툴립 속성 추가
+			if($this.hasClass('btn_tooltip')) {
+				$this.attr('aria-expanded', 'true');
+			}
+
+			if (myLayer.length && dimmed.length) {
+				myLayer.find('.layer_contents').removeAttr('style');
+
+				if ($this.closest('.popup_full,.popup_allmenu').length > 0) {
+					dimmed.css('z-index', '130').show();
+					myLayer.css('z-index', '140').show();
+				} else {
+
+					dimmed.css('z-index', '130').show();
+					myLayer.css('z-index', '140').show().focus();
+				}
+				util.scrollStop(thisPoint);
+				const layerSize = myLayer.outerHeight();
+				const gap = (+(myLayer.css('padding-top').replace('px', '')) + +(myLayer.find('.title').innerHeight()));
+
+	            ComLib.cutMobileLayerHidden(myLayer);
+
+				const x = myLayer.find('.layer_close');
+
+				myLayer.find(".title").attr("tabindex", "0").focus();
+
+				const tmAreaSize = myLayer.find('.today_message').length ? $('.today_message').innerHeight() : 0;
+				const btnSize = myLayer.find('.btn_group.bottom_btn_group').length ? myLayer.find('.btn_group.bottom_btn_group').innerHeight() : 0;
+
+				myLayer.find('.layer_contents').css('height', ((layerSize - gap) - (tmAreaSize + btnSize)) + 'px');
+
+				x.off('click').on('click', function() {
+					$('.btn_tooltip').attr('aria-expanded', 'false'); // 툴립 속성 제거
+
+					myLayer.hide();
+					dimmed.hide();
+
+					// 2025.02.06 팝업 중복 스크롤 이슈 수정 - HI
+					if ($(".popup_full:visible").length == 0) {
+						util.scrollClear(thisPoint);
+					}
+
+					$this.focus();
+					dimmed.css('z-index', '');
+					myLayer.css('z-index', '');
+					myLayer.find(".title").removeAttr("tabindex");
+
+					ComLib.cutMobileLayerHidden(myLayer);
+				});
+			}
+		});
+	}
+
+	this.addEventLayer = function(o){
+		var _btnAddEcid;
+		$(_me.base+"[name^=addEcid_]").click(function(e) {
+			e.preventDefault();
+			_btnAddEcid = this;
+
+			if(ComLib.isEmpty(_me.getDeviceId())) {
+				return false;
+			} else {
+				var data ={ "deviceId": _me.getDeviceId()};
+				var request = ComLib.ajaxReqObj("/cm/z/z/9992/verifyIndiECDW.do", data, false);
+				request.done(function (responseObj, statusText, xhr) {
+					if(responseObj.verifyIndiECDW.ecdwTyCode == "1"){
+						var id= $(_btnAddEcid).data("value");
+						_me.addEcidLayer = new ComFnLib.fn_m_openLayerPopup($("#addEcidLayer"), "/cm/z/z/9992/req"+id+"Layer.do?deviceId="+_me.getDeviceId(), {"fieldName":_me.fieldName} , "").refresh();
+					}else if(responseObj.verifyIndiECDW.ecdwTyCode == "5"){
+						log(responseObj.verifyIndiECDW);
+						log(responseObj.inquireIndiStipAgree);
+						if(responseObj.inquireIndiStipAgree.agrmnts != null){
+							//전자지갑 약관
+							$("#pop_inquireAgree1").append(responseObj.inquireIndiStipAgree.agrmnts[0].agrmntCn);
+							//통합_이용약관
+							$("#pop_inquireAgree2").append(responseObj.inquireIndiStipAgree.agrmnts[1].agrmntCn);
+							$("#pop_inquireIndiStipAgree").show();
+						}
+					}else if(responseObj.verifyIndiECDW.ecdwTyCode == "2"){
+						if(confirm("전자지갑을 생성 하시겠습니까?")){
+							_me.addEcidLayer = new ComFnLib.fn_m_openLayerPopup($("#addEcidLayer"), "/cm/z/z/9992/req00000000000Layer.do?deviceId="+_me.getDeviceId(), {"fieldName":_me.fieldName, "inquireIndiStipAgree1" :responseObj.inquireIndiStipAgree.agrmnts[0].agrmntCn, "inquireIndiStipAgree2" :responseObj.inquireIndiStipAgree.agrmnts[1].agrmntCn} , "").refresh();
+						}
+					}
+				});
+			}
+
+		});
+
+		$(_me.base+"[id^=btn_reqEcid_]").click(function(e) {
+			e.preventDefault();
+			var _btn_reqEcid = this;
+//			if($(this).text() =="전자증명서 삭제"){
+//				if(!confirm("전자증명서를 삭제 하세겠습니까?")){
+//					return false;
+//				}
+//				_me.fn_delEcidData(_btn_reqEcid);
+//				return;
+//			}
+			_me.fn_ecidListLayer(_btn_reqEcid);
+		});
+
+		$(_me.base+"[id^=chkEcid_]").click(function(e) {
+			var _chkEcid = this;
+			if(!$(this).prop("checked")){
+				_me.fn_delEcidCheckData(_chkEcid);
+				$("#"+"dropZone_"+$(_chkEcid).data("id")).show();
+			}else{
+				if($("#fileupload_dummy_"+$(_chkEcid).data("id") ).data() != null){
+					var fileCnt = $("#fileupload_dummy_"+$(_chkEcid).data("id") ).data().blueimpFileupload.options.getNumberOfFiles();
+					if(fileCnt > 0){
+						alert("첨부파일이 존재 합니다.\n전자증명으로 제출하기 위해서는 \n파일을 삭제 후 진행 하시기 바랍니다.");
+						$(this).prop("checked",false);
+						return;
+					}
+				}
+				$("#"+"dropZone_"+$(_chkEcid).data("id")).hide();
+			}
+		});
+
+		$(_me.base+"[name^=btn_smplAthflDownloadUrl]").click(function(e) {
+			e.preventDefault();
+			var url = $(this).data("smplathfldownloadurl");
+			gfn_downloadAttFile(url);
+		});
+	};
+	this.addMyDataEventLayer = function(o){
+		var _btnAddMyData;
+		$(_me.base+"[name^=addMyData_]").click(function(e) {
+			e.preventDefault();
+			_btnAddMyData = this;
+			var sp = _btnAddMyData.id.split('_');
+			var data = { };
+			data.athflMdulId = sp[1];
+			data.atchPaprId =  sp[2];
+			data.bndlId =  $("#"+_btnAddMyData.id).data("value");
+			data.bndlFomtCd =  $("#"+_btnAddMyData.id).data("bndlfomtcd");
+			data.mdtGdsn =  $("#"+_btnAddMyData.id).data("mdtGdsn");
+			data.mdtGodsTycd =  $("#"+_btnAddMyData.id).data("mdtGodsTycd");
+
+			window["myDataTarget"] = _me;
+
+			var platform = chkOs();
+
+			if(platform == "app") {
+				ComFnLib.fn_openNextPopup('publicMyDataPopup', '/cm/z/z/9993/selectPublicMyDataAgree.do', data, 'fn_callBack');
+			} else {
+				_me.ecidListLayer = new ComFnLib.fn_m_Layer("addEcidLayer", "/cm/z/z/9993/selectPublicMyDataAgree.do", data , "").refresh();
+			}
+
+		});
+
+		var _btnViewMyData;
+		$(_me.base+"[name^=viewMyData_]").click(function(e) {
+			e.preventDefault();
+			_btnViewMyData = this;
+			var sp = _btnViewMyData.id.split('_');
+			var data = { };
+			data.athflMdulId = sp[1];
+			data.atchPaprId =  sp[2];
+			data.bndlId =  $("#"+_btnViewMyData.id).data("value");
+			data.bndlFomtCd =  $("#"+_btnViewMyData.id).data("bndlfomtcd");
+
+			var platform = chkOs();
+			if(platform == "app") {
+				ComFnLib.fn_openNextPopup('publicMyDataPopup', '/cm/z/z/9993/selectPublicMyDataFomtListPost.do', data, 'fn_callBack');
+			} else {
+				_me.ecidListLayer = new ComFnLib.fn_m_Layer("addEcidLayer", "/cm/z/z/9993/selectPublicMyDataFomtListPost.do", data , "").refresh();
+			}
+		});
+
+		$(_me.base+"[name^=chkMyData_]").click(function(e) {
+			e.preventDefault();
+
+			var myDataObj = $(_me.base+'[id^="fileContainer"] ul li.mydata a.btn_filelist_name').map(function(){
+			    return $(this).data();
+			}).get();
+
+			var sp = this.id.split('_');
+			var data = {};
+			data.transKey = myDataObj.map(item => item.transkey).join("|");
+			data.mdtDlngBndlId = myDataObj.map(item => item.mdtdlngbndlid).join("|");
+			data.mdtDlngFomtList = myDataObj.map(item => item.mdtdlngfomtlist).join("|");
+			data.athflMdulId = sp[1];
+			data.atchPaprId =  sp[2];
+
+			var platform = chkOs();
+			if(platform == "app") {
+				ComFnLib.fn_openNextPopup('myDataPopup', '/cm/z/z/9993/selectMyDataInfo.do', data, 'fn_callBack');
+			} else {
+				_me.ecidListLayer = new ComFnLib.fn_m_Layer("addEcidLayer", "/cm/z/z/9993/selectMyDataInfo.do", data , "").refresh();
+			}
+		});
+	};
+	this.fn_ecidListLayer = function(_btn){
+		var id = $(_btn).attr("id").replace("btn_reqEcid_", "").split("_");
+		var athflMdulId = id[0];
+		var atchPaprId = id[1];
+
+		var fileCnt = $(_btn).closest("[id^=fileGroup_]").find("[id^=fileContainer_] ul li[data-athfl-mdul-id='"+athflMdulId+"'][data-atch-papr-id='"+atchPaprId+"']").length
+		if(fileCnt > 0){
+			alert("첨부파일이 존재 합니다.\n전자증명으로 제출하기 위해서는 \n파일을 삭제 후 진행 하시기 바랍니다.");
+			return;
+		}
+
+		var data ={ "deviceId": _me.getDeviceId()};
+
+		var request = ComLib.ajaxReqObj("/cm/z/z/9992/verifyIndiECDW.do", data, false);
+		request.done(function (responseObj, statusText, xhr) {
+
+			if(responseObj.verifyIndiECDW.ecdwTyCode == "1"){
+				window["myDataTarget"] = _me;
+
+				_me.ecidListLayer = new ComFnLib.fn_m_openLayerPopup($("#addEcidLayer"), "/cm/z/z/9992/eCDApplyListInquireLayer.do", {"deviceId":_me.getDeviceId(),"fieldName":_me.fieldName, "docKndCode":$(_btn).data("value").split('-')[0],"utlNo":$(_btn).data("value")} , "").refresh();
+			}else if(responseObj.verifyIndiECDW.ecdwTyCode == "5"){
+				log(responseObj.verifyIndiECDW);
+				log(responseObj.inquireIndiStipAgree);
+				if(responseObj.inquireIndiStipAgree.agrmnts != null){
+					//전자지갑 약관
+					$("#pop_inquireAgree1").append(responseObj.inquireIndiStipAgree.agrmnts[0].agrmntCn);
+					//통합_이용약관
+					$("#pop_inquireAgree2").append(responseObj.inquireIndiStipAgree.agrmnts[1].agrmntCn);
+					$("#pop_inquireIndiStipAgree").show();
+				}
+			}else if(responseObj.verifyIndiECDW.ecdwTyCode == "2"){
+				if(confirm("전자지갑을 생성 하시겠습니까?")){
+					_me.addEcidLayer = new ComFnLib.fn_m_openLayerPopup($("#addEcidLayer"), "/cm/z/z/9992/req00000000000Layer.do?deviceId="+_me.getDeviceId(), {"fieldName":_me.fieldName, "inquireIndiStipAgree1" :responseObj.inquireIndiStipAgree.agrmnts[0].agrmntCn, "inquireIndiStipAgree2" :responseObj.inquireIndiStipAgree.agrmnts[1].agrmntCn} , "").refresh();
+				}
+			}
+
+		});
+	};
+	this.fn_delEcidCheckData = function(d){
+		var spData = $(d).data("seq");
+		var tempId = $(d).data("id");
+		if(spData != null && spData != ""){
+			var sp = $(d).data("seq").split('-');
+			if(sp[1] != null && sp[1] != ""){
+				var delInfo = {"athflSeq":sp[0], "atchFsno":sp[1],"ecidData.docPackageId":sp[2]};
+				var request = ComLib.ajaxReqObj("/cm/z/z/9992/deleteCheckEcidForm.do", delInfo, false);
+			}
+		}
+	};
+	this.fn_delEcidData = function(d){
+
+		if(!confirm("전자증명서를 삭제 하세겠습니까?")){
+			return false;
+		}
+
+		var _this = $(d)
+
+		var spData = _this.data("seq");
+		var tempId = _this.data("id");
+
+		if(spData != null && spData != ""){
+			var sp = _this.data("seq").split('-');
+			if(sp[1] != null && sp[1] != ""){
+				var delInfo = {"athflSeq":sp[0], "atchFsno":sp[1],"ecidData.docPackageId":sp[2]};
+				var request = ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileEcidForm.do", delInfo, false);
+				request.done(function() {
+                    if(_me.cvplRqutRcno != '' && _me.cvplRqutRcno != null){
+                        ComFnLib.deleteFile("", '', _me.systemId, _me.cvplRqutRcno, '', sp[2]);
+                    }
+    				alert("전자증명서가 삭제되었습니다.");
+
+    				_this.closest('li').remove();
+				});
+			}
+		}
+
+		_this.closest('li').remove();
+//		if(_me.mobileYn == "Y"){
+			$(_me.base+"#"+"btn_file_"+tempId+" span").text("파일찾기");
+
+			$(_me.base+"#"+"btn_file_"+tempId).click(function() {
+				$("input[name="+"files_dummy_"+tempId+"]").click();
+			});
+
+			$(_me.base+"#btn_reqEcid_"+tempId).show();
+//		}
+//		else{
+//			var elctProfDocKndCd = $(d).data("elctprofdockndcd");
+//			$(_me.base+"#"+"ecidArea_"+tempId).hide();
+//			$(_me.base+"#"+"dropZone_"+tempId).show();
+//			$(_me.base+"#chkEcid_"+tempId).attr("disabled",false);
+//			$(_me.base+"#chkEcid_"+tempId).attr("checked",false);
+//			$(_me.base+"#"+"btn_reqEcid_"+elctProfDocKndCd).hide();
+//		}
+
+//		var fileId = $("#filePapr_"+tempId).closest("[id^=fileGroup_]").attr("id").replace("fileGroup_", "")
+		//$("#fileupload_dummy_"+fileId).fileupload("option", "dropZone", $("#filePapr_"+tempId+" [id^=dropZone_]").not($("button:contains('전자증명서 제출 완료')").closest($("[id^=dropZone_]"))));
+
+		ComFileLib.fn_fileSync();
+
+
+		ComFileLib.fileDelFocus(_this);
+	};
+	this.fn_delCurrentRow = function(o,u,j){
+		var chkFile = "Y";
+		var	retId = $(o).closest('[id^="fileGroup"]').attr("id");
+		var fileContainerId = retId.replace("fileGroup_","fileContainer_");
+		var	fObj = $(o).closest('.template-upload');
+		if(fObj.find("[id^=file-ncmnNo]").val() == null || (fObj.find("[id^=file-cvplRqutRcno]").val() == "" && fObj.find("[id^=file-athflSeq]").val() == "") ){
+			if(u!=null && u=="etc"){
+				var gid = $(o).parent().parent().parent().attr("id");
+				var gid=gid.replace("fileGroup_","fileContainer_");
+				var delList = $("#"+gid).find(".ico16_file.del");
+				delList.each(function(idx,data01){
+				//	$(data01).click();
+				});
+			}
+			chkFile = 'N';
+		}
+
+		if(j.includes('etc_0')) {
+			alert("첫 기타 행은 삭제할 수 없습니다.");
+			event.stopPropagation();
+			return false;
+		}
+
+		if(!confirm("기타 행 삭제 시 기 등록된 기타 첨부파일도 삭제됩니다. 해당 기타 첨부파일을 삭제 하시겠습니까?")){
+			event.stopPropagation();
+			return false;
+		}
+
+		if(chkFile == 'N') {
+			$('#'+j).remove();
+		} else {
+
+			var delInfo = {"ncmnNo":fObj.find("[id^=file-ncmnNo]").val(), "cvplRqutRcno":fObj.find("[id^=file-cvplRqutRcno]").val(), "athflSeq":fObj.find("[id^=file-athflSeq]").val(), "atchFsno":fObj.find("[id^=file-atchFsno]").val()};
+			if(_me.delImmediate == "N"){
+				_me.delAttachList.push(delInfo);
+				$(o).closest('li').remove();
+				ComFileLib.gfn_delFildDiv(o);
+				return;
+			}
+			var request;
+			if(_me.auth == "any"){
+				request = ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileFormNxLn.do", delInfo, false);
+			}else{
+				request = ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileForm.do", delInfo, false);
+			}
+			request.done(function(responseObj, statusText, xhr) {
+	            if(_me.cvplRqutRcno != '' && _me.cvplRqutRcno != null){
+	                ComFnLib.deleteFile("", '', _me.systemId, fObj.find("[id^=file-cvplRqutRcno]").val(), fObj.find("[id^=file-ncmnNo]").val());
+	            }
+	            alert("삭제 하였습니다.");
+				if(u!=null && u=="etc"){
+					$(_me.base+"#"+fileContainerId).empty();
+					ComFileLib.gfn_delFildDiv(o);
+				}else{
+					ComFileLib.gfn_delFildDiv(o);
+					$(o).closest('li').remove();
+					if(_me.delFn && _me.delFn != null && _me.delFn != ""){
+						_me.delFn(delInfo);
+					}
+				}
+
+				$('#'+j).remove();
+			});
+
+		}
+	};
+	this.fn_delCurrent = function(o,u){
+
+		var	retId = $(o).closest('[id^="fileGroup"]').attr("id");
+		var fileContainerId = retId.replace("fileGroup_","fileContainer_");
+		var	fObj = $(o).closest('.template-upload');
+		if(fObj.find("[id^=file-ncmnNo]").val() == null || (fObj.find("[id^=file-cvplRqutRcno]").val() == "" && fObj.find("[id^=file-athflSeq]").val() == "") ){
+			if(u!=null && u=="etc"){
+				var gid = $(o).parent().parent().attr("id");
+				var gid=gid.replace("fileGroup_","fileContainer_");
+				var delList = $("#"+gid).find(".ico16_file.del");
+				delList.each(function(idx,data01){
+					$(data01).click();
+				});
+			}
+			return false;
+		}
+		if(!confirm("파일을 삭제 하시겠습니까?")){
+			event.stopPropagation();
+			return false;
+		}
+		var delInfo = {"ncmnNo":fObj.find("[id^=file-ncmnNo]").val(), "cvplRqutRcno":fObj.find("[id^=file-cvplRqutRcno]").val(), "athflSeq":fObj.find("[id^=file-athflSeq]").val(), "atchFsno":fObj.find("[id^=file-atchFsno]").val()};
+		if(_me.delImmediate == "N"){
+			_me.delAttachList.push(delInfo);
+			$(o).closest('li').remove();
+			ComFileLib.gfn_delFildDiv(o);
+			return;
+		}
+		var request;
+		if(_me.auth == "any"){
+			request = ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileFormNxLn.do", delInfo, false);
+		}else{
+			request = ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileForm.do", delInfo, false);
+		}
+		request.done(function(responseObj, statusText, xhr) {
+            if(_me.cvplRqutRcno != '' && _me.cvplRqutRcno != null){
+                ComFnLib.deleteFile("", '', _me.systemId, fObj.find("[id^=file-cvplRqutRcno]").val(), fObj.find("[id^=file-ncmnNo]").val());
+            }
+            alert("파일을 삭제 하였습니다.");
+			if(u!=null && u=="etc"){
+				$(_me.base+"#"+fileContainerId).empty();
+				ComFileLib.gfn_delFildDiv(o);
+			}else{
+				ComFileLib.gfn_delFildDiv(o);
+				$(o).closest('li').remove();
+				if(_me.delFn && _me.delFn != null && _me.delFn != ""){
+					_me.delFn(delInfo);
+				}
+			}
+
+			ComFileLib.fn_fileSync();
+
+		});
+	};
+	this.fn_delCurrentMyData = function(o,u){
+		var	retId = $(o).closest('[id^="fileGroup_"]').attr("id");
+		var fileContainerId = retId.replace("fileGroup_","fileContainer_");
+		var	fObj = $(o).closest('.template-upload');
+		if(fObj.find("[id^=file-mdtDlngSeq]").val() == null || (fObj.find("[id^=file-cvplRqutRcno]").val() == "" && fObj.find("[id^=file-athflSeq]").val() == "") ){
+			if(u!=null && u=="etc"){
+				var gid = $(o).parent().parent().attr("id");
+				var gid=gid.replace("fileGroup_","fileContainer_");
+				var delList = $("#"+gid).find(".ico16_file.del");
+				delList.each(function(idx,data01){
+					$(data01).click();
+				});
+			}
+			return false;
+		}
+		if(!confirm("파일을 삭제 하시겠습니까?")){
+			event.stopPropagation();
+			return false;
+		}
+		var delInfo = {"mdtDlngSeq":fObj.find("[id^=file-mdtDlngSeq]").val(), "cvplRqutRcno":fObj.find("[id^=file-cvplRqutRcno]").val(), "athflSeq":fObj.find("[id^=file-athflSeq]").val(), "atchFsno":fObj.find("[id^=file-atchFsno]").val()};
+		if(_me.delImmediate == "N"){
+			_me.delAttachList.push(delInfo);
+			$(o).closest('li').remove();
+			ComFileLib.gfn_delFildDiv(o);
+			return;
+		}
+
+		var request = ComLib.ajaxReqObj("/cm/z/z/9993/deletePublicMyDataAthfl.do", delInfo, false);
+
+		request.done(function(responseObj, statusText, xhr) {
+            if(_me.cvplRqutRcno != '' && _me.cvplRqutRcno != null){
+                ComFnLib.deleteFile("", '', _me.systemId, fObj.find("[id^=file-cvplRqutRcno]").val(), fObj.find("[id^=file-mdtDlngSeq]").val());
+            }
+            alert("파일을 삭제 하였습니다.");
+			if(u!=null && u=="etc"){
+				$(_me.base+"#"+fileContainerId).empty();
+				ComFileLib.gfn_delFildDiv(o);
+			}else{
+				ComFileLib.gfn_delFildDiv(o);
+				$(o).closest('li').remove();
+				if(_me.delFn && _me.delFn != null && _me.delFn != ""){
+					_me.delFn(delInfo);
+				}
+			}
+
+			ComFileLib.fn_fileSync();
+		});
+
+	};
+	this.fn_addEtc = function(o){
+		if(_me._checkEtc.currentCnt+1 >= _me._checkEtc.maxEtcCnt){
+			return false;
+		}
+		_me._checkEtc.currentCnt = _me._checkEtc.currentCnt+1;
+		if(_me.viewMode == 'view'){
+			$("#cvplFomtFileLayout_"+_me._el.prop("id")).append($("#fileBody_template_etc_view").render(_me._checkEtc));
+		}else{
+			$("#cvplFomtFileLayout_"+_me._el.prop("id")).append($("#fileBody_template_etc").render(_me._checkEtc));
+		}
+		var tempId = _me._checkEtc["athflMdulId"]+"_"+_me._checkEtc["atchPaprId"]+"_etc_"+_me._checkEtc["currentCnt"];
+		_me.makeFileUploadTemplate(tempId, _me._checkEtc);
+	};
+	this.fn_delFileInfo = function(o){
+
+		if(_me.delImmediate == "N"){
+			return _me.delAttachList;
+		}else{
+			alert("delImmediate 가 'N' 인경우만 지원합니다");
+			return null;
+		}
+	};
+	this.fn_insertFileInfo = function(o){
+		//실제 저장 할 물리파일 정보 리턴
+		var ret = [];
+		$(_me.base+'[id^="fileContainer"]').each(function(idx,data01){
+			const dataTransfer = new DataTransfer();
+			$("#"+data01.id+"> ul > li").each(function(idx,data){
+				if($(data).data('data') != null){
+					var files = $(data).data('data')["files"];
+					$(files).each(function(idx,data){
+						if(data["error"] == null){
+							ret.push(data);
+						}
+					});
+				}
+			});
+		});
+		return ret;
+	};
+
+	this.fn_selectFileInfo = function(o){
+		var ret = [];
+		$(_me.base+'[id^="fileContainer"]').each(function(idx,data01){
+			const dataTransfer = new DataTransfer();
+			$("#"+data01.id+"> ul > li").each(function(idx,data){
+				if($(data).data('data') != null){
+					var files = $(data).data('data')["files"];
+					$(files).each(function(idx,data){
+						if(data["error"] == null){
+							ret.push(idx);
+						}
+					});
+				} else if($(data).find(':input[id^=file-ncmnNo]').val() != '') {
+					ret.push(idx);
+				}
+			});
+		});
+		return ret;
+	};
+	this.fn_getCvplFomtCd = function(o){
+		if(!ComLib.isEmpty(_me.cvplFomtCd)){
+			return _me.cvplFomtCd;
+		}else if(!ComLib.isEmpty(_me.prgmId)){
+			return _me.prgmId;
+		}else{
+			return _me.athflMdulId;
+		}
+	};
+
+	this.makeFileUploadTemplate = function(tempId, ret){
+		var inFileCnt = Number(ret["inFileCnt2"]);
+		//log(inFileCnt,"inFileCnt");
+		if(inFileCnt <= 0 ){
+			return;
+		}
+		if(_me.viewMode != 'view'){
+			var tmp_fileupload_dummy = new FormLib.Form().createForm("fileupload_dummy_"+tempId, "", "POST", "multipart/form-data", null);
+
+			if(ret["athflStupSecd"] == "ERT01"){
+				$(_me.base + "#paprGroup_"+ret["athflMdulId"]+ " [id^=filePapr_]").each(function(){
+					var fileId = $(this).attr("id").replace("filePapr_", "");
+					tmp_fileupload_dummy.addHiddenFile("files_dummy_"+fileId, inFileCnt<=1?"":"multiple");
+				});
+			}else{
+				tmp_fileupload_dummy.addHiddenFile("files_dummy_"+tempId, inFileCnt<=1?"":"multiple");
+			}
+
+			tmp_fileupload_dummy.addBody();
+
+			$(tmp_fileupload_dummy.form).attr("data-prgmid",_me.prgmId);
+
+			$(_me.base + "#paprGroup_"+ret["athflMdulId"]+ " [id^=filePapr_]").find("[id^=btn_file_]").not("[id^=btn_reqEcid_]").each(function(){
+				$(this).off().on("click", function() {
+					var fileId = $(this).attr("id").replace("btn_file_", "");
+					$("#"+"fileupload_dummy_"+tempId).fileupload("option", "_btn", $(this).attr("id"));
+
+					$("input[name="+"files_dummy_"+fileId+"]").trigger("click");
+				});
+			});
+
+
+			var defaultAcceptFileTypes = /(\.|\/)(zip|hwp|doc|docx|ppt|pptx|xls|xlsx|txt|jpg|jpeg|bmp|gif|png|pdf)$/i;
+			if(ret.athflFnen2 != null && ret.athflFnen2 != ""){
+				defaultAcceptFileTypes = ret.athflFnen2;
+			}
+
+			var retUrl = "/cm/z/z/9992/fileuploadForAjax.do";
+			if(_me.auth == "any"){
+				retUrl = "/cm/z/z/9992/fileuploadForAjaxNx.do";
+			}
+
+			$("#"+"fileupload_dummy_"+tempId).fileupload({
+				maxNumberOfFiles : inFileCnt
+				, acceptFileTypes: defaultAcceptFileTypes
+				, maxFileSize : ret.atchFlsz2
+				, filesContainer : $("#"+"fileContainer_"+tempId+" ul")
+				//, dropZone : $("[id^=dropZone_"+tempId+"]")
+				, dropZone : $("#fileContainer_"+tempId)
+				, drop: function(e, data){
+					var target = e.delegatedEvent.delegateTarget;
+					var fileId = target.id.replace("fileContainer_", "");
+
+					if(fileId.split("_").length == 1){
+						var athflMdulInfo = _me._fileInfo.filter(fileInfo => fileInfo.athflMdulId == fileId);
+
+						if(athflMdulInfo.length > 1){
+							var _data = {"fileInfo" : athflMdulInfo};
+
+							$("body").append($.render.popup_atchPapr(_data));
+
+							// 기존 팝업에서 딤이 되어있는지 확인.
+							var isDimmed = $("body").hasClass("dim");
+							if(!isDimmed){
+								ui.dimShow();
+							}
+
+							$("#popup_atchPapr").fadeIn(150).addClass("on");
+
+							$("#popup_atchPapr #btn_atchPapr").on("click", function(){
+								if($("#popup_atchPapr #sel_atchPapr").val() == ""){
+									alert("파일 구분은 필수값입니다. 파일 구분을 선택해 주세요.");
+									return;
+								}
+
+								$("#"+"fileupload_dummy_"+tempId).fileupload("add", {files: data.files, paramName : "files_dummy_"+tempId+"_"+$("#popup_atchPapr #sel_atchPapr").val()});
+								$("#popup_atchPapr .closed").trigger("click");
+							});
+
+							/* 닫기 버튼 클릭 */
+					        $("#popup_atchPapr .closed").off('click').on("click", function() { /* 닫기 */
+					            var target= $(this).closest(".full_pop");
+	//				            var prevLayerId = popupSelector.prevAll("div.box_btn_wrap.layer").first();
+
+					            target.fadeOut(150, function(){
+					                $("#popup_atchPaprDiv").remove();
+					            })
+
+	//				            if(prevLayerId.length > 0){
+	//				                prevLayerId.find("section").fadeIn(150).addClass("on");
+	//				            }else{
+	//				                ui.dimHide();
+	//				            }
+					            if(!isDimmed){
+									ui.dimHide();
+								}
+					        });
+
+							e.preventDefault();
+						}else{
+							data.paramName = "files_dummy_"+fileId+"_"+athflMdulInfo[0].atchPaprId;
+						}
+					}else{
+						data.paramName = "files_dummy_"+fileId;
+					}
+				}
+				, downloadTemplateId : null
+				, uploadTemplateId: null
+				, uploadTemplate : function (o){
+					o.label = _me._fileInfo.find(item => item.athflMdulId === o.fileMdulInfo.athflMdulId && item.atchPaprId === o.fileMdulInfo.atchPaprId).atchPaprCn;
+					return $.templates.upload_component.render(o);
+				}
+				, url: retUrl+'?_csrf='+$("meta[name=_csrf]").prop("content")
+				, essYn : ret.essYn
+				, limitFileCnt : inFileCnt
+				, athflStupSecd : ret.athflStupSecd
+				, totFileSize : 0
+			})
+			.on('fileuploaddragover', function(e){
+				var target = e.delegatedEvent.delegateTarget;
+
+				$(target).addClass("fileover");
+			})
+			.on('fileuploaddrop', function(e){
+				var target = e.delegatedEvent.delegateTarget;
+				$(target).removeClass("fileover");
+			})
+			.on('fileuploaddragleave', function(e){
+				var target = e.delegatedEvent.delegateTarget;
+				$(target).removeClass("fileover");
+			});
+
+			var fileError = false;
+		    $("#"+"fileupload_dummy_"+tempId).bind('fileuploadprocessfail', function (e, data) {
+				fileError = true;
+		    });
+
+		    $("#"+"fileupload_dummy_"+tempId).bind('fileuploadprocessstop', function (e, data) {
+				if(!fileError){
+					var valTxt = "파일이 추가되었습니다.";
+					$("#fileValidationView >.head > h1").text("파일 첨부");
+					$("#fileValidationViewList").empty();
+
+					if($("#fileValidationView").css("display") == "none"){
+						ui.dimShow();
+						$("#fileValidationView").show();
+						$("#fileValidationViewList").append('<li class="txt_list">'+valTxt+'</li>');
+						$("#fileValidationView h1").focus();
+
+						const childInput = $("#fileValidationView").find('a, input:not([type=hidden]), select , button, radio, checkbox, a:not(.closed)');
+						var $firstFocusEl = childInput.first();
+			            var $lastFocusEl = childInput.last();
+			            $lastFocusEl.off('keydown').on({
+			                'keydown': function(e) {
+			                    var _keyCode = e.keyCode || e.which;
+			                    if(_keyCode === 9) {
+			                        if(!e.shiftKey) {
+			                            e.preventDefault();
+			                            $firstFocusEl.focus();
+			                        }
+			                    }
+			                }
+			            });
+				   }else{
+						if($("#fileValidationViewList").length > 0){
+							$("#fileValidationViewList").append('<li class="txt_list">'+valTxt+'</li>');
+						}else{
+							alert(valTxt);
+						}
+				   }
+
+				   $("#btn_fileValidationViewClose, #btn_fileValidationViewClose").off('click').on('click', function() {
+					   var _focus = $("#"+"fileupload_dummy_"+tempId).fileupload("option", "_btn");
+
+						if(!$("div.box_btn_wrap.layer section").hasClass("on")){
+							ui.dimHide();
+						}
+						$("#fileValidationViewList").empty();
+				    	$("#fileValidationView").hide();
+
+				    	$("#"+_focus).focus();
+				   });
+				}
+
+				fileError = false;
+//				$(_me.base+ "#div_fileArea").attr("tabindex" , -1).focus();
+		    });
+
+			$("#"+"fileupload_dummy_"+tempId).bind('fileuploadprocessalways', function (e, data) {
+				ComFileLib.fn_fileSync();
+		    });
+
+			$("#"+"fileupload_dummy_"+tempId).bind('fileuploadsubmit', function (e, data) {
+				var paramName = data.paramName.replace("files_dummy_", "");
+				var sp = paramName.split('_');
+
+				data.formData.id = paramName;
+				data.formData.athflMdulId = sp[0];
+				data.formData.atchPaprId = sp[1];
+		    });
+			$("#"+"fileupload_dummy_"+tempId).bind('fileuploaddone', function (e, data) {
+		    	log(data,"fileuploaddone");
+		    	if(data.textStatus == "success"){
+					_me._retUpload.push(data.result.files[0]);
+                    _me._retUpload["fieldName"] = _me.fieldName;
+					_me._retUpload["athflSeq"] = _me.retAthflSeq;
+			    	_me.uploadTmpCnt++;
+			    	if(_me.uploadCnt == _me.uploadTmpCnt){
+						_me.uploadComplate = "Y";
+						if(_me.callback === "Y"){
+							_me.uploadFn(_me._retUpload);
+						}
+					}
+				}
+		    });
+
+		    $("#"+"fileupload_dummy_"+tempId).bind('fileuploadfail', function (e, data) {
+		    	log(data,"fileuploadfail");
+		    	if(!typeof data.response === 'undefined'){
+					if(data.response()["jqXHR"] != null)
+			    	if(typeof data.response().jqXHR === 'undefined'){
+					}else{
+						alert(data.response().jqXHR.responseJSON.errorMsg);
+						return false;
+					}
+				}
+				setTimeout(function(){
+					ComFileLib.fn_fileSync();
+				}, 10)
+		    });
+	    }
+	};
+
+	this.getEcidData = function(id){
+		var ret = {};
+		var docPackageId = $("#docPackageId_"+id).val() == null?"":$("#docPackageId_"+id).val()
+		var pinCode = $("#pinCode_"+id).val() == null?"":$("#pinCode_"+id).val()
+		var instPresentnUrl = $("#instPresentnUrl_"+id).val() == null?"":$("#instPresentnUrl_"+id).val()
+		var validDt = $("#validDt_"+id).val() == null?"":$("#validDt_"+id).val()
+		var docKndCode = $("#docKndCode_"+id).val() == null?"":$("#docKndCode_"+id).val()
+		var docId = $("#docId_"+id).val() == null?"":$("#docId_"+id).val()
+
+		ret["ecidData.docPackageId"] = docPackageId; //전자증명문서묶음ID
+		ret["ecidData.pinCode"] = pinCode; //전자증명문서열람번호
+		ret["ecidData.instPresentnUrl"] = instPresentnUrl;
+		ret["ecidData.validDt"] = validDt;
+		ret["ecidData.docKndCode"] = docKndCode; //전자증명문서종류코드
+		ret["ecidData.docId"] = docId; //ELCT_PROF_DOC_NO
+		return ret;
+	};
+
+	this._validFileArea = function(){
+		var b = true;
+		var fileName = "";
+		var ret = {};
+
+		// 영역별 첨부파일 갯수제한
+		$('[id="div_fileArea"]').each(function(){
+			var fileCnt = Number($(this).find("#maxFileCnt").text());
+
+			if(fileCnt > 0){
+				if(Number(fileCnt) < $(this).find('[id^="fileContainer"] ul li').length){
+					ret.message = "허용된 첨부파일 갯수가 초과되었습니다. '최대 "+ fileCnt + "개'";
+					b = false;
+					ret.b = b;
+					return false;
+				}
+			}
+		});
+
+		if(!b){
+			return ret;
+		}
+
+
+		$('[id^="fileContainer"]').each(function(idx,data01){
+			const dataTransfer = new DataTransfer();
+			$("#"+data01.id+"> ul > li").each(function(idx,data){
+				if($(data).data('data') != null){
+					var files = $(data).data('data')["files"];
+					$(files).each(function(idx,data){
+						if(data["error"] != null){
+							b = false;
+						}
+					});
+				}
+			});
+		});
+
+		//첨부파일 필수여부 체크
+		if(b){
+			$('[id^="fileupload_dummy_"]').each(function(idx,data01){
+				if($(data01).data().blueimpFileupload != null){
+					var fileCnt = $(data01).data().blueimpFileupload.options.getNumberOfFiles();
+					var essYn = $(data01).data().blueimpFileupload.options.essYn;
+					if(essYn == "Y" && fileCnt <= 0 && b){
+
+						b = false;
+						fileName = $(data01).data().blueimpFileupload.options.filesContainer[0].id
+						return;
+					}
+				}
+			});
+		}
+
+		ret.b = b;
+		ret.fileName = fileName;
+		return ret;
+	};
+
+	this.fn_fileValidation = function(){
+
+		if(_me.valid =="Y"){
+			var ret = _me._validFileArea();
+			if(!ret.b){
+
+				//alert("첨부파일을 확인 하세요.!");
+				return false;
+			}
+		}else{
+			return true;
+		}
+		return true;
+	};
+
+	this._checkMyData = function(modlPaprId, chkLength){
+
+		var maxUploadCnt = $("[name=files_dummy_"+modlPaprId+"]").closest("[id^='fileupload_dummy_']").fileupload("option", "limitFileCnt");
+
+		var fileCnt = $("#filePapr_"+modlPaprId).closest("[id^='fileGroup_']").find("[id^='fileContainer_'] ul li").length;
+
+		if(maxUploadCnt < fileCnt + chkLength){
+			alert("첨부 파일 갯수 한도가 초과되었습니다.");
+			return false;
+		}
+
+		return true;
+	};
+
+	this.fn_fileChkAtchFiles = function(){
+        var request = ComLib.ajaxReqObj("/cm/z/z/9992/getAthflSeq.do", {"cvplRqutRcno":_me.cvplRqutRcno,"athflMdulId":_me.athflMdulId,"prgmId":_me.prgmId}, false);
+        var retAthflSeq = "";
+        request.done(function(responseObj, statusText, xhr) {
+            retAthflSeq = ComLib.nvl(responseObj.retAthflSeq,"");
+        });
+        return retAthflSeq;
+    };
+	this.fn_copyFileTemplate = function(){
+		var ret = _me._validFileArea();
+		if(!ret.b){
+			alert("첨부파일을 확인 하세요.!");
+			return false;
+		}
+		$(_me.base+'[id^="fileContainer"]').each(function(idx,data01){
+			const dataTransfer = new DataTransfer();
+			$("#"+data01.id+"> ul > li").each(function(idx,data){
+				if($(data).data('data') != null){
+					var files = $(data).data('data')["files"];
+					$(files).each(function(idx,data){
+						if(data["error"] == null){
+							dataTransfer.items.add(data);
+						}
+					});
+				}
+			});
+			var targetFileId = data01.id.replace("fileContainer_","files_");
+			$("[name="+targetFileId+"]")[0].files = dataTransfer.files;
+		});
+		return true;
+	};
+	this.fn_checkAthflSeq = function(gbn){
+		if(gbn=="check"){
+			if( (_me.retAthflSeq == null || _me.retAthflSeq == "" || _me.retAthflSeq == "0" )){
+				_me.fn_selectAthflSeq();
+			}
+		}else if(gbn=="make"){
+			if( (_me.retAthflSeq == null || _me.retAthflSeq == "" || _me.retAthflSeq == "0" )){
+				_me.fn_selectAthflSeq();
+			}
+		}
+	};
+	this.fn_selectAtchPaprIdCnt = function(atchPaprId){
+		var ret = $(_me.base+'[id^="fileContainer_"][id$="_'+atchPaprId+'"] > ul').length;
+		return ret;
+	};
+	this.fn_selectAthflSeq = function(){
+		var retUrl = "/cm/z/z/9992/checkAthflSeq.do";
+		if(_me.auth == "any"){
+			retUrl = "/cm/z/z/9992/checkAthflSeqNx.do";
+		}
+		var request = ComLib.ajaxReqObj(retUrl, {"cvplRqutRcno":_me.cvplRqutRcno}, false);
+		request.done(function(responseObj, statusText, xhr) {
+			log(responseObj, "checkAthflSeq");
+			if(responseObj.retAthflSeq == null){
+				alert("첨부파일 채번 중 오류입니다.");
+				return false;
+			}
+			_me.retAthflSeq = responseObj.retAthflSeq;
+		});
+	};
+
+	this.addMydataHtml = function(obj){
+		var meta = _me._fileInfo.find(item => item.athflMdulId === obj.athflMdulId && item.atchPaprId === obj.atchPaprId);
+		obj.atchPaprCn = meta.atchPaprCn;
+		obj.athflStupSecd = meta.athflStupSecd;
+		obj.etc = $("#filePapr_"+obj.athflMdulId+"_"+obj.atchPaprId).data("etc");
+
+		return $.render.download_mydata(obj);
+	}
+
+	this.addMydata = function(modlPaprId){
+		$("#addMyData_"+modlPaprId).hide();
+		$("#chkMyData_"+modlPaprId).show();
+
+		var selector = $("#addMyData_"+modlPaprId).closest("[id^=filePapr_]").find("#div_fileArea ul").length > 0 ? $("#addMyData_"+modlPaprId).closest("[id^=filePapr_]").find("#div_fileArea ul") : $("#addMyData_"+modlPaprId).closest("[id^=fileGroup_]").children("#div_fileArea").find("ul");
+
+		selector.append($("#strHtml").val());
+		$("#chkMyData_"+modlPaprId).trigger("click");
+
+		ComFileLib.fn_fileSync();
+	}
+
+	this.addElctCrtf = function(obj){
+		var meta = _me._fileInfo.find(item => item.athflMdulId === obj.athflMdulId && item.atchPaprId === obj.atchPaprId);
+		obj.atchPaprCn = meta.atchPaprCn;
+		obj.athflStupSecd = meta.athflStupSecd;
+		obj.etc = $("#filePapr_"+obj.athflMdulId+"_"+obj.atchPaprId).data("etc");
+
+		var html = $.render.download_elctCrtf(obj);
+
+		var selector = $("#filePapr_"+obj.athflMdulId+"_"+obj.atchPaprId).find("#div_fileArea ul").length > 0 ? $("#filePapr_"+obj.athflMdulId+"_"+obj.atchPaprId).find("#div_fileArea ul") : $("#filePapr_"+obj.athflMdulId+"_"+obj.atchPaprId).closest("[id^=fileGroup_]").children("#div_fileArea").find("ul");
+
+		selector.append(html);
+
+		$("#btn_file_"+obj.athflMdulId+"_"+obj.atchPaprId).off('click').html("<span class='ico_file'>전자증명서 제출 완료</span>");
+
+		$("#filePapr_"+obj.athflMdulId+"_"+obj.atchPaprId).find("[id^=btn_reqEcid_]").hide();
+
+		$("[name='btn_del_elct']").off().on("click", function(){
+			_me.fn_delEcidData(this);
+		});
+
+		//$("#fileupload_dummy_"+fileContainerId).fileupload("option", "dropZone", $("#filePapr_"+obj.athflMdulId+"_"+obj.atchPaprId+" [id^=dropZone_]").not($("button:contains('전자증명서 제출 완료')").closest($("[id^=dropZone_]"))));
+
+		ComFileLib.fn_fileSync();
+	}
+
+	// 첨부파일 조기화
+	this.reset = function(){
+		_me.clear().refresh();
+	}
+
+
+	//첨부파일 업로드 처리
+	this.fn_copyFileUpload = function(opt){
+		if(_me.valid =="Y"){
+
+			var ret = _me._validFileArea();
+			if(!ret.b){
+
+				var fileName = "";
+				$(_me._fileInfo).each(function(idx, data01){
+					if(ret.fileName == data01.fileContainer) {
+						fileName = data01.atchPaprCn;
+					}
+				});
+
+				if(!ComLib.isEmpty(ret.message)) {
+					alert(ret.message);
+				}else if(!ComLib.isEmpty(fileName)) {
+					alert(fileName+" 증빙서류는 필수입니다.\n첨부파일을 등록해주세요.");
+				} else {
+					alert("첨부파일을 확인해주세요.");
+				}
+
+
+				return false;
+			}
+		}
+
+		return _me._fn_copyFileUpload(opt);
+	}
+
+	//첨부파일 업로드 처리
+	this.fn_copyFileUploadAfterWebfilter = function(opt){
+		if(_me.valid =="Y"){
+			var ret = _me._validFileArea();
+			if(!ret.b){
+				var fileName = "";
+				$(_me._fileInfo).each(function(idx, data01){
+					if(ret.fileName == data01.fileContainer) {
+						fileName = data01.atchPaprCn;
+					}
+				});
+
+				if(!ComLib.isEmpty(ret.message)) {
+					alert(ret.message);
+				}else if(!ComLib.isEmpty(fileName)) {
+					alert(fileName+" 증빙서류는 필수입니다.\n첨부파일을 등록해주세요.");
+				} else {
+					alert("첨부파일을 확인해주세요.");
+				}
+
+
+				return false;
+			}
+		}
+
+		var webfilterReturn;
+
+		//웹필터 검사 처리.
+		$(_me.base+'[id^="fileContainer"]').each(function(idx,data01){
+			$(_me.base+"#"+data01.id+"> ul > li").each(function(idx,data){
+				var dta = $(data).data('data')
+				if (dta && dta.submit) {
+					var newForm = document.createElement('form')
+					newForm.enctype = 'multipart/form-data';
+					newForm.method = 'post'
+					newForm.action = 'dummyAction';
+
+					if(dta.fileInput){
+						newForm.appendChild(dta.fileInput[0])
+					}else{
+						newForm = new FormData();
+						newForm.append("files[]",dta.files[0])
+					}
+					console.log("newForm",newForm);
+
+					if(sendWebFilter(newForm) == false){
+						webfilterReturn = false;
+					};
+				}
+			});
+		});
+
+		if(webfilterReturn == false ) return false;
+
+
+		return _me._fn_copyFileUpload(opt);
+	}
+
+	this._fn_copyFileUpload = function(opt){
+		if(_me.delImmediate == "N" && _me.delAttachList.length > 0){
+			for(var i=0;i<_me.delAttachList.length;i++){
+				var delInfo = _me.delAttachList[i];
+				if(!ComLib.isEmpty(delInfo.ecidData)){
+					ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileEcidForm.do", delInfo, false);
+				}else{
+					ComLib.ajaxReqObj("/cm/z/z/9992/deleteFileForm.do", delInfo, false);
+				}
+			}
+		}
+		_me.delAttachList = [];
+		_me.uploadCnt = 0;
+		$(_me.base+'[id^="fileContainer"]').each(function(idx,data01){
+			$(_me.base+"#"+data01.id+"> ul > li").each(function(idx,data){
+				var data = $(data).data('data')
+				if (data && data.submit) {
+					if(data["files"]["error"] == null){
+						_me.uploadCnt++;
+					}
+			    }
+			});
+		});
+
+		if(opt != null && opt.iAthflSeq != null && opt.iAthflSeq != "0" && opt.iAthflSeq != ""){
+			_me.retAthflSeq = opt.iAthflSeq;
+		}
+		if(opt != null && opt.callback === "N"){
+			_me.callback = "N";
+		}
+
+		if(_me.retAthflSeq == null || _me.retAthflSeq == "" || _me.retAthflSeq=="0" || _me.retAthflSeq==0){
+			if(_me.encAthflSeq != null){
+				_me.retAthflSeq = _me.encAthflSeq;
+			}
+		}
+		if(_me.uploadCnt > 0){
+			_me.fn_checkAthflSeq("check");
+		}
+
+		$(_me.base+'[id^="fileContainer"]').each(function(idx,data01){
+
+			//일반 첨부파일 파일 업로드 처리
+			$(_me.base+"#"+data01.id+"> ul > li.atchfile").each(function(idx,data){
+				var data = $(data).data('data')
+				if (data && data.submit) {
+					if(data["files"]["error"] == null){
+						data.async = false;
+
+						data.formData = {
+							"systemId":_me.systemId
+							, "filepolicy":_me.filepolicy
+							, "filePath":_me.systemId+"/HP/"+_me.fn_getCvplFomtCd()
+							, "fieldName" : _me.fieldName
+							, "cvplRqutRcno":_me.cvplRqutRcno
+							, "txtData": $(this).find("#fileTxt_etc").length > 0 ? $(this).find("#fileTxt_etc").val() : ""
+							, "athflSeq":_me.retAthflSeq
+							, "otpbScpeSecd" : _me.otpbScpeSecd
+							, "validateNeo" : "Y" // 신규 파일 컴포넌트 전용
+						}
+
+						data.submit();
+					}
+			    }
+			});
+
+		});
+
+		//공공마이데이터 처리
+		if($(_me.base+'[id^="fileContainer"] ul li.mydata a.btn_filelist_name').length > 0){
+
+			_me.fn_checkAthflSeq("make");
+
+			var data = $(_me.base+'[id^="fileContainer"] ul li.mydata a.btn_filelist_name').map(function(){
+				var thisData = $(this).data();
+				thisData.txtData = $(this).siblings("#fileTxt_etc").length > 0 ? $(this).siblings("#fileTxt_etc").val() : " ";
+
+			    return thisData;
+			}).get();
+
+			var formData = {
+					"systemId":_me.systemId
+					, "filepolicy":_me.filepolicy
+					, "filePath":_me.systemId+"/HP/"+_me.fn_getCvplFomtCd()
+					, "fieldName" : _me.fieldName
+					, "athflSeq":_me.retAthflSeq
+					, "atchFsno": data.map(item => item.atchFsno == "" ? " " : item.atchFsno).join("|")
+					, "athflMdulId": data.map(item => item.athflMdulId).join("|")
+					, "atchPaprId": data.map(item => item.atchPaprId).join("|")
+					, "mdtDlngSeq": data.map(item => item.transkey).join("|")
+					, "mdtDlngBndlId": data.map(item => item.mdtdlngbndlid).join("|")
+					, "mdtDlngFomtList": data.map(item => item.mdtdlngfomtlist).join("|")
+					, "txtData": data.map(item => item.txtData).join("|")
+					, "otpbScpeSecd" : _me.otpbScpeSecd
+			}
+
+			ComLib.ajaxReqObj("/cm/z/z/9993/saveNeoPublicMyData.do", formData, false);
+		}
+
+		//전자증명신청 처리
+		if($(_me.base+'[id^="fileContainer"] ul li.elctCrtf').length > 0){
+
+			$(_me.base+'[id^="fileContainer"] ul li.elctCrtf').each(function(){
+
+				var id = $(this).find("[id^=docPackageId_]").attr("id").replace("docPackageId_", "");
+
+				var _docPackageId = "docPackageId_"+id;
+
+				var sp = $("#"+_docPackageId).attr("id").split('_');
+				_me.fn_checkAthflSeq("make");
+				var atchFsno = $(this).find("button[name=btn_del_elct]").data("seq");
+				if(atchFsno != null){
+					atchFsno = atchFsno.split('-')[1];
+				}
+				var formData = {
+							"systemId":_me.systemId
+							, "filepolicy":_me.filepolicy
+							, "filePath":_me.systemId+"/HP/"+_me.fn_getCvplFomtCd()
+							, "fieldName" : _me.fieldName
+							, "athflSeq":_me.retAthflSeq
+							, "atchFsno": atchFsno
+							, "athflMdulId":sp[1]  //모듈 ID
+							, "atchPaprId":sp[2]  // 서식 ID
+							, "txtData" : $(this).find("[id^='fileTxt_etc']").length > 0 ? $(this).find("[id^='fileTxt_etc']").val() : ""
+							, "otpbScpeSecd" : _me.otpbScpeSecd
+						  }
+
+				// 신규 건이면 아래 메소드 실행
+				if($(_me.base+"#"+_docPackageId).val() != null && $(_me.base+"#"+_docPackageId).val() != ""){
+					$.extend(formData, _me.getEcidData(sp[1]+"_"+sp[2]));
+				}
+
+				ComLib.ajaxReqObj("/cm/z/z/9992/saveEcidData.do", formData, false);
+
+//				 else if($(_me.base+"#"+_chk).prop("checked")){
+//
+//					var sp = $("#"+_chk).attr("id").split('_');
+//					var docKndCode = $(_me.base+"#"+_chk).data("elctcrtfevdcpaprid");
+//					var seqExists = $(_me.base+"#"+_chk).data("seq");
+//					if(seqExists == null || seqExists == ""){
+//						_me.fn_checkAthflSeq("make");
+//						var formData = {
+//									"systemId":_me.systemId
+//									, "filepolicy":_me.filepolicy
+//									, "filePath":_me.systemId+"/HP/"+_me.fn_getCvplFomtCd()
+//									, "fieldName" : _me.fieldName
+//									, "athflSeq":_me.retAthflSeq
+//									, "athflMdulId":sp[1]
+//									, "atchPaprId":sp[2]
+//									, "currentCnt":sp[4]
+//									, "ecidData.docKndCode":docKndCode
+//									, "otpbScpeSecd" : _me.otpbScpeSecd
+//								  }
+//						var request = ComLib.ajaxReqObj("/cm/z/z/9992/saveEcidData.do", formData, false);
+//							request.done(function(responseObj, statusText, xhr) {
+//						});
+//					}
+//				}
+			});
+		}
+
+		// 수정시 첨부파일 유형명 수정
+		var sendData = [];
+		var txtList = $(_me.base+'ul li.atchfile [id^="fileTxt_"][data-mode="U"]');
+		for(var i=0 ; i<txtList.length; i++){
+			log($(txtList[i]).attr("id"));
+			if($(txtList[i]).val() != null && $(txtList[i]).val() != ""){
+				var formData = {
+						"athflSeq":_me.retAthflSeq
+						, "atchFsno": $(txtList[i]).closest(".box_file_flex").find("[id$=atchFsno]").val()
+						, "atchPaprCn" : $(txtList[i]).val()
+					  }
+
+				sendData.push(formData);
+			}
+		}
+		if(sendData.length > 0){
+			this.fn_checkAthflSeq("make");
+			ComLib.ajaxReqObj("/cm/z/z/9992/saveNeoFileTxtData.do", {"txtData":JsonLib.stringify(sendData)}, false);
+		}
+
+		//첨부파일없이 저장해도 콜백 되도록
+		if(_me.uploadComplate == "N"){
+			_me._retUpload["athflSeq"] = _me.retAthflSeq;
+            _me._retUpload["fieldName"] = _me.fieldName;
+			if(opt == null || opt.callback === "Y"){
+				_me.uploadFn(_me._retUpload);
+			}
+		}
+		return _me.retAthflSeq;
+	}
+
+	//첨부파일 건수 조회
+    this.fn_getFileCnt = function(){
+        var ret = $(_me.base+'[id^="fileContainer"] > ul > li').length;
+        return ret;
+    }
+    return _me;
+}
+
+/**
+ * 파일 컴포넌트 동기화 및 파일 갯수 계산
+ */
+ComFileLib.fn_fileSync = function(){
+	$("[id=div_fileArea]").each(function(){
+		var _this = $(this);
+
+	    var cnt = _this.find("[id^='fileContainer_'] ul li").length;
+	    _this.find("#fileTotCnt").text(cnt);
+
+		if(cnt > 0){
+			_this.find("[id^='fileContainer_']").find("p").hide();
+			_this.find("[id^='fileContainer_']").find("ul").show();
+			_this.find("#btn_deleteAll").removeAttr("disabled");
+		}else{
+			_this.find("[id^='fileContainer_']").find("p").show();
+			_this.find("[id^='fileContainer_']").find("ul").hide();
+			_this.find("#btn_deleteAll").attr("disabled", "true");
+		}
+
+
+		var totFileSize = 0;
+		_this.find("[id^='fileContainer_'] ul li [id=flsz]").each(function(){
+			totFileSize += $(this).data("flsz");
+		});
+
+		_this.find("#fileTotSize").data("flsz", totFileSize).text($.blueimp.fileupload.prototype._formatFileSize(totFileSize));
+
+		// 파일 컴포넌트의 옵션값 수정
+		var fileUploadId = _this.find("[id^='fileContainer_']").attr("id").replace("fileContainer_", "fileupload_dummy_");
+		$("#"+fileUploadId).fileupload("option", "totFileSize" , totFileSize);
+
+
+	    //var _option = $("#"+"fileupload_dummy_"+_id).fileupload("option");
+	    // 파일 컴포넌트 파일 갯수 및 크기 제한 동기화
+	    /*
+		$("#"+"fileupload_dummy_"+_id).fileupload("option", "maxNumberOfFiles" , _option.limitFileCnt - myDataCnt);
+		*/
+
+		_this.find("ul li").each(function(idx){
+			$(this).find(".fileIndex").text(idx+1);
+		})
+
+
+		/* 첨부파일 부른 후 JSFileWidth() 실행해주세요. */
+		_this.find('.box_file_wrap ').find('.clr_blue').each(function(index, elm) {
+			if(index === _this.find('.box_file_wrap ').find('.clr_blue').length -1) {
+				var gWidth = $(elm).outerWidth(true);
+				var exitValue = parseFloat($(elm).css('max-width'));
+				if(exitValue > 10) return false;
+		        $(elm).css('max-width', '10px');
+		        var eW = $(elm).closest('.box_file_flex').outerWidth(true);
+		        var cM = $(elm).siblings('.mb').outerWidth(true) || 0;
+
+				document.fonts.ready.then(function() {
+					requestAnimationFrame(function() {
+						var eTag1 = Math.floor($(elm)[0].getBoundingClientRect().left);
+						var eTag2 = Math.floor($(elm).closest('.box_file_flex')[0].getBoundingClientRect().left);
+						var eTag = eTag1 - eTag2;
+						var elmWidth = eW - eTag - cM;
+
+						$(elm).css('max-width', '');
+
+						if(Math.floor(gWidth+cM+eTag) >= eW) {
+							$(elm).css('max-width', elmWidth - 20);
+						}
+					})
+				});
+			}
+		});
+	});
+
+}
+
+ComFileLib.gfn_delCurrent = function(t,f,u){
+    window[f].fn_delCurrent(t,u);
+}
+
+ComFileLib.gfn_delCurrentMyData = function(t, athflMdulId, atchPaprId, f, u){
+    var isDeleted = window[f].fn_delCurrentMyData(t,u);
+
+	var selector = $(t).closest('[id^="fileContainer"] > ul > li.mydata');
+    var selectorLength = selector.length;
+    if(isDeleted  != false){
+        if(selectorLength < 1) {
+            $("#addMyData_"+athflMdulId+"_"+atchPaprId).show();
+            $("#chkMyData_"+athflMdulId+"_"+atchPaprId).hide();
+        }
+    }
+}
+
+
+ComFileLib.gfn_delFildDivMyData = function (obj, athflMdulId, atchPaprId) {
+	var _selector = $(obj).closest("[id^='fileGroup']");
+
+	if(confirm("첨부파일을 삭제하시겠습니까?")) {
+        if($(obj).closest('[id^="fileContainer"]').find("li.mydata").length <= 1) {
+            $(obj).closest('li').remove();
+            $("#addMyData_"+athflMdulId+"_"+atchPaprId).show();
+            $("#chkMyData_"+athflMdulId+"_"+atchPaprId).hide();
+            $("#addMyData_"+athflMdulId+"_"+atchPaprId)[0].focus();
+        } else {
+            $(obj).closest('li').remove();
+            $("#chkMyData_"+athflMdulId+"_"+atchPaprId)[0].focus();
+        }
+
+        ComFileLib.fn_fileSync();
+    }
+
+
+}
+
+ComFileLib.gfn_delFildDiv = function(obj){
+	ComFileLib.fn_fileSync();
+    //첨부파일등록버튼으로 포커스 이동
+    ComFileLib.fileDelFocus($(obj));
+}
+
+//첨부파일 삭제 후 첨부파일등록버튼으로 포커스 이동
+ComFileLib.fileDelFocus = function(deleteBtn){
+
+	//삭제 버튼이 속한 파일 그룹 찾기
+	var fileGroup = deleteBtn.closest("#div_fileArea");
+	if(!fileGroup) return;
+
+	//그 그룹 안의 첨부파일등록 버튼 찾기
+	var addBtn = fileGroup.find("b");
+	if(!addBtn) return;
+
+	//삭제 후 포커스 이동
+	setTimeout(function(){
+		addBtn.focus();
+	}, 0);
+
+}
+
+/*
+ * 첨부파일 삭제 함수
+ * callBackFunc::String >> 결과 리턴받을 함수명
+ * sId::String >> 결과 리턴 시 사용 할 Id
+ * sysGbn::String >> 시스템구분 EI / HR / WK / UA / EP
+ * cvplRqutRcno::String >> 고용24민원접수번호
+ * ncmnNo::String >> 문서관리번호
+ * 사용법
+ * ComFnLib.deleteFile(callBackFunc, sId, sysGbn, cvplRqutRcno, ncmnNo);
+ */
+ComFileLib.deleteFile = function(callBackFunc, sId, sysGbn, cvplRqutRcno, ncmnNo, elctProfDocPckgId, elctCrtfPstnYn) {
+
+    var form = document.createElement("form");
+    form.setAttribute("action", "");
+    form.setAttribute("method", "POST");
+    form.setAttribute("id", "_cmDeleteFile");
+    form.setAttribute("name", "_cmDeleteFile");
+    form.setAttribute("target", "");
+
+    var hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "sysGbn");
+    hiddenField.setAttribute("value", sysGbn);
+
+    form.appendChild(hiddenField);
+
+    var hiddenField2 = document.createElement("input");
+    hiddenField2.setAttribute("type", "hidden");
+    hiddenField2.setAttribute("name", "cvplRqutRcno");
+    hiddenField2.setAttribute("value", cvplRqutRcno);
+
+    form.appendChild(hiddenField2);
+
+    var hiddenField3 = document.createElement("input");
+    hiddenField3.setAttribute("type", "hidden");
+    hiddenField3.setAttribute("name", "ncmnNo");
+    hiddenField3.setAttribute("value", ncmnNo);
+
+    form.appendChild(hiddenField3);
+
+    var hiddenField4 = document.createElement("input");
+    hiddenField4.setAttribute("type", "hidden");
+    hiddenField4.setAttribute("name", "_csrf");
+    hiddenField4.setAttribute("value", $("meta[name='_csrf']").attr("content"));
+
+    form.appendChild(hiddenField4);
+
+    var hiddenField5 = document.createElement("input");
+    hiddenField5.setAttribute("type", "hidden");
+    hiddenField5.setAttribute("name", "elctProfDocPckgId");
+    hiddenField5.setAttribute("value", elctProfDocPckgId);
+
+    form.appendChild(hiddenField5);
+
+    var hiddenField6 = document.createElement("input");
+    hiddenField6.setAttribute("type", "hidden");
+    hiddenField6.setAttribute("name", "elctCrtfPstnYn");
+    hiddenField6.setAttribute("value", elctCrtfPstnYn);
+
+    form.appendChild(hiddenField6);
+
+    document.body.appendChild(form);
+
+    var _request = ComLib.ajaxReqObj("/cm/z/z/9992/deleteFile.do", "_cmDeleteFile", false);
+    document.body.removeChild(form);
+    _request.done(function(responseObj, statusText, xhr) {
+        if(callBackFunc != ""){
+            new Function("sId","obj", callBackFunc + "(sId,obj);")(sId,responseObj.rtnMap);
+        }
+    });
+};

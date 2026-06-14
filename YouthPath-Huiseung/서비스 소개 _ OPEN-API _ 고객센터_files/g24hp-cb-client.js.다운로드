@@ -1,0 +1,29 @@
+var __wncb_version = (new Date()).getTime();
+
+requirejs.config({
+    // baseUrl : '/chatbot/res/js/module',
+    // baseUrl : 'http://127.0.0.1:8888/js/module',
+    paths : {
+    //    'jquery' : '../lib/jquery',
+        'util': '/chatbot/res/js/module/util',
+        'Chatbot-init' : '/chatbot/res/js/module/Chatbot-init',
+        'wncb-html-obj' : '/chatbot/res/js/module/wncb-html-obj',
+        'tests' : '/chatbot/res/js/module/tests'
+		// ,'Chatbot-policy' : '/chatbot/res/js/module/Chatbot-policy' // 2024.01.16 정책정보 테스트
+		// ,'Chatbot-recruitment' : '/chatbot/res/js/module/Chatbot-recruitment' // 2024.01.16 채용정보 테스트
+		// ,'Chatbot-training' : '/chatbot/res/js/module/Chatbot-training' // 2024.01.16 훈련정보 테스트
+		// ,'Chatbot-center' : '/chatbot/res/js/module/Chatbot-center' // 2024.01.16 고용센터 테스트
+    },
+    waitSeconds : 0,
+    urlArgs : __wncb_version + ''
+});
+
+var wncb_master_instance = {};
+
+requirejs([], function() {
+    console.log('wn/cb start!');
+    // require(["http://127.0.0.1:8888/js/g24hp-cb-main.js"], function(pageHandler){
+    require(["/chatbot/res/js/g24hp-cb-main.js?v=1"], function(pageHandler){
+        if (typeof pageHandler.process == 'function') { pageHandler.process(wncb_master_instance); }
+    });
+});

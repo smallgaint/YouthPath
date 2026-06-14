@@ -1,0 +1,1208 @@
+@charset "utf-8";
+
+:root {
+    --col_blue:#6b83ff;
+    --col_skyblue:#5cb8ff;
+    --col_skyblue_light:#28282d;
+    --col_green:#24A960;
+    --col_green2:#1bbc5a;
+    --col_lightgreen:#a8e63b;
+    --col_orange:#ff8e4c;
+    --col_navy:#9aa4c6;
+    --col_cyan:#3adbe6;
+    --col_pink:#ff55ee;
+    --col_pink2:#f4a8e2;
+    --col_magenta:#ff55ee;
+    --col_yellow:#e1c53d;
+    --col_purple:#c580ff;
+    --col_h:#eaeaea;
+    --col_body:#d0d0d0;
+    --col_p:#b7b7b7;
+    --col_dis:#888;
+    --col_white:#1a1a1a;
+    --col_tabe:#2b2b2b;
+    --col_btn:#383838;
+    --col_button:#555;
+    --col_border:#1c1c1c;
+    --col_bluegray: #1a1a1a;
+    --col_bg:#181818;
+    --col_box_bg:#302f2f;
+    --col_red:#ff537a;
+    --col_darkred:#ff3d3d;
+    --col_gray:#555; /* 없음 */
+    --col_brown:#c97a2b;
+    --col_brown2:#e1c53d;
+    --col_header_line:#3aae90;
+    --col_homegreen:#4fe8ae;
+    --col_brightyellow:#ffd600;
+    --col_darkgreen:#1bbc5a;
+}
+body { background-color: #212121;}
+body.dim:before { background-color: rgba(255,255,255,0.08);}
+
+
+/* 로그인 JS문제로 재 정의 */
+.login--style .box_notice_wrap { border-color: #303030 !important; background-color: #28282d !important;}
+.login--style .login_wrp .box_join_person a { border-color: #303030 !important; background-color: #28282d !important;}
+.login--style .input_txt.big { color: #d0d0d0 !important; border: 1px solid #383838 !important; background-color: #212121 !important;}
+#footer .site_list .list { border-color: #303030 !important; background-color: #1a1a1a !important;}
+#footer .site_list .list li a { color: #d0d0d0 !important;}
+#footer .site_list .list li a:hover { background-color: #28282d !important;}
+.login_wrp .full_pop { background-color: #1a1a1a !important;}
+.login_wrp .full_pop .head { border-color: #303030 !important; background-color: #1a1a1a !important;}
+.login_wrp .box_chk-group input[type="checkbox"] + label { color: #d0d0d0 !important;}
+.login_wrp [class^='btn'].type02 { color: #d0d0d0 !important;}
+#header_top .header_top_area { background-color: #6b83ff !important;}
+#wrap.company #header_top .header_top_area { background-color: #24A960 !important;}
+#wrap.person #header_top .header_top_area ul.header_type li:first-child,
+#wrap.company #header_top .header_top_area ul.header_type li:nth-child(2) { color: #d0d0d0 !important; background-color: #28282d !important;}
+.full_pop_site .menu_tit a { color: #d0d0d0 !important;}
+.full_pop_site .h2_sb { color: #d0d0d0 !important;}
+.full_pop_site .tab_wrap.round_type .tab_title li button span { color: #d0d0d0 !important;}
+.full_pop_site .box_table_group .box_ipt { background-color: #1a1a1a !important;}
+.new #gnb .gnb3depth li a span,
+#popupContainer .dept3.val { color: #d0d0d0 !important;}
+.new #gnb .gnb3depth { border-color: #303030 !important;}
+.new #gnb .gnb2depth::after { background-color: #303030 !important;}
+.new #gnb .gnb3depth li a:hover span,
+.new #gnb .gnb2depth >li >a span,
+#popupContainer .dept1.key,
+#popupContainer .dept2.key,
+#popupContainer .dept3.key { color: #6b83ff !important;}
+.new #gnb .gnb2depth >li >a:hover { background-color: #1a1a1a !important;}
+.company .new #gnb .gnb3depth li a:hover span,
+.company .new #gnb .gnb2depth >li >a span { color: #24A960 !important;}
+.new #header_menutree .screen_size { border-color: #303030 !important; background-color: #1a1a1a !important;}
+.new #header_menutree .screen_size .screen_reset { color: #d0d0d0 !important; border-color: #303030 !important;}
+.new #header_menutree .header_util li .col .btn { color: #d0d0d0 !important; border-color: #303030 !important; background-color: #28282d !important;}
+#header_menutree .layer_ts .hot_item,
+#header_menutree .layer_ts .hot_item .my { border-color: #303030 !important;}
+#header_menutree .layer_ts .main_search_area .inner_search { background-image: linear-gradient(#28282d, #28282d), linear-gradient(to right, #24A960 0%, #3F58D4 100%)}
+#header_menutree .layer_ts .main_search_area .inner_search .btn_cate_select span { color: #d0d0d0 !important;}
+#header_menutree .layer_ts .hot_item .many .range { color: #d0d0d0 !important; border-color: #303030 !important; background-color: #28282d !important;}
+#header_menutree .layer_ts .layer_auto_search .service .b1_sb { color: #d0d0d0 !important;}
+#header_menutree .layer_ts .form_search_wrap .layer_auto_search > .keyword + .service { border-color: #303030 !important;}
+#header_menutree .layer_ts .point_color02,
+.new #gnb .gnb3depth li a.active span { color: #6b83ff !important;}
+.company .new #gnb .gnb3depth li a.active span { color: #24A960 !important;}
+
+.login--style .h2_sb,
+.login--style .s1_r,
+.login--style .s1_sb,
+.login--style .b1_sb,
+.login--style .box_list_area .txt_list,
+.login--style .box_bot_txt .box_bot_desc,
+.login--style .box_notice_wrap .tit,
+.login--style dl dt  .btn.big span,
+.login--style .box_form_table .list_tit,
+.login--style .tab_cont .left label,
+.login--style .tab_wrap .tab_title li button span,
+.login--style .tab_wrap .tab_title li a span,
+.new #gnb > ul > li >a span,
+.new .gnb_wrap .header_allmenu,
+.new #header_menutree .header_util li >a,
+#header_menutree .header_info li,
+#header_menutree .header_info li a,
+#footer .flex_left p,
+#footer .flex_left p.etc strong,
+#footer .flex_right .guide a span,
+#footer .control .links a,
+#footer .site .btnsite .text,
+#contents .login--style .box_bot_txt .btn span,
+.location ul li.home a:not(.location_list > li > a),
+.location ul li:last-child a:not(.location_list > li > a),
+.location ul li select,
+.location ul li .btn_downgrill,
+.form_search_wrap .layer_cate_search a span,
+.layer_ts .h1_sb,
+#header_menutree .layer_ts .hot_item .hd h3,
+#header_menutree .layer_ts .hot_item .my .hd .button
+{ color: #d0d0d0 !important;}
+
+.new #header_bottom ,
+#footer .site,
+#footer .site .btnsite,
+#footer .site .btnsite ~ .btnsite,
+#footer .control,
+.login--style .tab_wrap.line_type .tab_title,
+.login--style .login_wrp .tab_cont .left,
+.full_pop .head
+{ border-color: #303030 !important;}
+
+#footer .group,
+.form_search_wrap .layer_search,
+.form_search_wrap .layer_cate_search a span,
+.login--style .box_table_group .box_ipt{ background-color: #1a1a1a !important;}
+#footer .logos.gov { background-color: #212121 !important;}
+.new #header_menutree .header_util li.after >a {background-color: #28282d !important;}
+#header_menutree,
+#header_bottom,
+#contents .login--style .box_bot_txt .btn
+{ background-color: #28282d !important;}
+#header_menutree .header_info li.line::after { background-color: #666;}
+.login--style .box_list_area .txt_list:before,
+.login--style .sym_cir::before { background-color: #999 !important;}
+.new .gnb_wrap .header_allmenu .lines span { background-color: #eaeaea !important;}
+/* 로그인 JS문제로 재 정의 end */
+
+/* 마이페이지>내전자지갑>정부전자문서지갑 JS문제로 재 정의 */
+.sub_tl .h2_sb,
+.login--style .box_step > li .txt,
+.login--style .certification_btn_group.type3.row2 [class^='btn'].big,
+.login--style .t2_sb,
+.certification_btn_group.type3 .cert_info .b1_r,
+.lnb > h2, .lnb > .h2_sb,
+.lnb > ul > li > a,
+.lnb .on > a,
+.lnb > ul > li > ul > li > a,
+.tab_wrap .box_notice_wrap .box_list_area .txt_list,
+.tab_wrap .box_notice_wrap .tit,
+.box_table_wrap:not(.r_type01,.r_type02) .box_table th,
+.box_table_wrap:not(.r_type01,.r_type02) .box_table td,
+.box_message_wrap.tit_type .tit.text-danger,
+.box_message_wrap.tit_type .box_list_area .txt_list,
+.valueInfoArea .valueInfo .item .info .title
+{ color: #d0d0d0 !important;}
+
+.lnb a:hover
+{ color: #6b83ff !important;}
+
+
+.login--style .box_join_person a
+{ background-color: #1a1a1a !important;}
+
+.lnb > ul > li + li,
+.login--style .box_join_person a,
+.box_table thead th,
+.box_table tbody td,
+.box_message_wrap.tit_type
+{ border-color: #303030 !important;}
+
+.login--style .box_join_person a::after { filter: invert(1);}
+/* 마이페이지>내전자지갑>정부전자문서지갑 JS문제로 재 정의 end */
+
+/* 마이페이지>직업훈련관리>국민내일배움카드 JS문제로 재 정의 */
+.tab_cont .acd.type02 .b1_sb,
+.box_table_wrap .box_table_hd .tit,
+.box_table_wrap .box_table_hd .section_right .btn,
+.acd_cont .box_list_area .txt_list,
+.acd_cont .box_list_area .txt_list *
+{ color: #d0d0d0 !important;}
+
+.tab_cont .acd.type02,
+.tab_wrap.line_type .tab_title
+{ border-color: #303030 !important;}
+
+.tab_wrap .box_notice_wrap { border-color: #303030 !important;}
+.tab_wrap.line_type .tab_title li button span { color: #eaeaea !important; background-color: #1a1a1a !important;}
+.tab_wrap .tab_title li.active button span:after { background-color: #6b83ff !important;}
+.tab_wrap .tab_title li button,
+.tab_wrap .tab_title li button span { color: #eaeaea !important; background-color: #212121 !important;}
+.tab_wrap .tab_title li.active button span { background-color: #6b83ff !important;}
+#sitemappopup .tab_wrap .tab_title li button,
+#sitemappopup .tab_wrap .tab_title li button span { color: #eaeaea !important; background-color: #1a1a1a !important;}
+.box_table_wrap .box_table_hd .section_right .sel.round select { color: #d0d0d0 !important; background-color: #1a1a1a !important;}
+/* 마이페이지>직업훈련관리>국민내일배움카드 JS문제로 재 정의 end */
+
+
+
+
+
+
+
+
+
+
+
+/* 독자적인 */
+input[type=text][readonly='readonly'],
+input[type=password][readonly='readonly'],
+input[type=text][readonly],
+input[type=password][readonly],
+input[type=text]:read-only,
+input[type=password]:read-only { border: 1px solid #383838 !important; background-color: #212121 !important;}
+input:-webkit-autofill { -webkit-text-fill-color: #d0d0d0 !important; -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important; box-shadow: 0 0 0 1000px #1a1a1a inset !important;}
+
+[class^='btn'].type02 { background-color: #212121 !important;}
+[class^='btn'].type03 { color: #d0d0d0 !important;}
+[class^='btn'].fill.type01 { color: #fff !important;}
+#wrap [class^='btn']:disabled { background-color: #28282d !important;border:1px solid var(--col_bg) !important;color:var(--col_gray) !important;font-weight:400 !important;}
+
+.dimmed { background: rgba(255, 255, 255, 0.08);}
+
+#header_top { background-color: #262626 !important;}
+
+.complex_type .comple_img img,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg > div:before,
+.top_banner_area .banner_icon >img
+{ display: none !important;}
+
+.main_top_search #topQuery
+{ color: #d0d0d0 !important; border: none; background-color: #1a1a1a !important;}
+
+.mt40.tabs >a
+ { color: #d0d0d0 !important; border-color: #333 !important; background-color: #121212 !important;}
+
+.main_wrap,
+.main_wrap.coporation,
+#wrap .main_wrap .favorite_swiper_wrp::before,
+#wrap .main_wrap .favorite_swiper_wrp::after,
+#wrap .main_wrap.coporation .favorite_swiper_wrp::before,
+#wrap .main_wrap.coporation .favorite_swiper_wrp::after
+{ background: initial !important;}
+
+#wrap .side_inner.ty_hover .skyblue
+{ color: inherit !important; background-color: inherit !important;}
+
+.customer .home .cont_search_wrap .srch_area input[type="text"] { color: var(--col_h); background-color: var(--col_white);}
+.schEduCont .more .goLinkLong03,
+#intro.content.active .pagination a,
+.mypage .home .my_wrap .list li .group .blet_gray,
+.cir_333 { color: #d0d0d0 !important; background-color: #121212 !important;}
+.main_wrap .main_favorite .tab .btn_bookmark.active  { color: #d0d0d0 !important; background-color: #3043a1 !important;}
+.main_wrap.coporation .main_favorite .tab .btn_bookmark.active { background-color: #145C34 !important;}
+#container .fav_input input,
+.nguide .mdesc .t .links .flex_div { color: var(--col_h) !important; border: 1px solid var(--col_button) !important; background-color: var(--col_white) !important;}
+.customer .home .cont_customer .tab_expand .btn_expand { background:linear-gradient(to left, #212121 60%, transparent 100%);}
+.main_wrap .main_svc .service > li > a:hover, .main_wrap .main_svc .service > li > a:focus { box-shadow: inset 0 0 0 2px #6b83ff !important;}
+.main_wrap .main_svc .service > li > a:hover .tit, .main_wrap .main_svc .service > li > a:focus .tit,
+.main_wrap .main_svc .service > li > a:hover .ico_arr, .main_wrap .main_svc .service > li > a:focus .ico_arr { color: #6b83ff !important;}
+.main_wrap.coporation .main_svc .service > li > a:hover, .main_wrap.coporation .main_svc .service > li > a:focus { box-shadow: inset 0 0 0 2px #24A960 !important;}
+.main_wrap.coporation .main_svc .service > li > a:hover .tit, .main_wrap.coporation .main_svc .service > li > a:focus .tit,
+.main_wrap.coporation .main_svc .service > li > a:hover .ico_arr, .main_wrap.coporation .main_svc .service > li > a:focus .ico_arr { color: #24A960 !important;}
+#container .customer .ts .main_search_area .inner_search { background-image: linear-gradient(#232323, #232323), linear-gradient(90.32deg, var(--col_blue) 0%, var(--col_green) 100%)}
+.login--style .login_wrp .box_join_person a:hover, .login--style .login_wrp .box_join_person a:focus { background-color: #121212 !important;}
+.box_step > li.is-active ~ li::after { right: -12px;}
+#contents .login--style .login_wrp .box_join_person a:hover dt { filter: initial !important;}
+#contents .login--style .login_wrp .box_join_person a:hover dt .tit { color: #6b83ff !important;}
+.emp_theme_wrap .emp_theme_list.type_card .card_box .left_side .left_side_list li.active button::after { filter: invert(93%) sepia(0%) saturate(0%) hue-rotate(197deg) brightness(94%) contrast(91%);}
+.emp_theme_wrap .emp_theme_list.type_card .card_box .left_side .left_side_list li:not(.active):hover { background-color: #28282d !important;}
+.emp_theme_wrap .emp_theme_list.type_card .card_box .left_side .left_side_list li:not(.active):hover button::after { filter: invert(92%) sepia(0%) saturate(0%) hue-rotate(197deg) brightness(94%) contrast(91%);}
+.quick_top a.btn_quick_guide, .company .quick_top a.btn_quick_guide {color: #111 !important;}
+.new #gnb .gnb2depth >li >a[title="선택됨"],
+.company .new #gnb .gnb2depth >li >a[title="선택됨"] {background-color: #1a1a1a !important;}
+.upload_box .upload_tl {border-color: var(--col_btn) !important;}
+.policy_list_wrp .box_link_tip .box_line { border: 1px solid #303030 !important;}
+.dictionary_popup .flex_row{ border: 1px solid #444 !important;}
+.complex_type .txt_cell.ml22 { margin-left: 0 !important;}
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg > div { -webkit-box-shadow: initial !important; box-shadow: initial !important}
+.customer .home .cont_customer .tab_wrap.round_type .tab_title li button { border-radius: 15px;}
+.box_form_login  .box_find_area { color: #d0d0d0 !important; background-color: #28282d !important;}
+.tn_quick_dictionary { color: #1a1a1a !important; background-color: #6b83ff !important;}
+.dictionary_popup .flex_con { background-color: #1a1a1a !important;}
+.dictionary_popup .dc_search .input_btn input[type=text] { color: #d0d0d0 !important; background-color: #1a1a1a !important;}
+#custmadeSearchFilterList .on { border-color: #6b83ff !important;}
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon-green button { color: #d0d0d0 !important; border-color: #303030 !important; background-color: #1a1a1a !important; box-shadow: none !important;}
+.tab_wrap.line_type .site_info { background-color: #6b83ff !important;}
+.tab_wrap.line_type .site_info_company { background-color: #24A960 !important;}
+#main_tab_cont .side_inner a .box_line { background-color: #ddd;}
+.box_side_wrap .side_inner.type02 .box_line.al_center { color: #d0d0d0 !important; background-color: #28282d !important;}
+.box_side_wrap .side_inner.type02 .box_line.al_center p { color: #d0d0d0 !important;}
+.tbl_label.fill.green2 { color: #1a1a1a !important; border-color: #1bbc5a !important; background-color: #1bbc5a !important;}
+.new #header_menutree .screen_size .mode .b_mode:hover,
+.new #header_menutree .screen_size .mode .b_mode[title='선택됨'] { color: #d0d0d0 !important; background-color: #28282d !important;}
+.commentReviewArea .commentReview .head { color: #d0d0d0 !important; background-color: #1a1a1a !important;}
+/* 독자적인 end */
+
+
+/* 대학 재학생 맞춤형 고용서비스 / 졸업생 특화프로그램 */
+.mypage .progmg.allcare .btn_prof_edit span::after,
+.allcare_popup .sel.round.new_sel_span::after,
+.allcare .sel.round.new_sel_span::after,
+.mypage .progmg.allcare .new_selectbox::after,
+.ico24_call,
+#validateForm .wk-pos-rel.resumeItem .expend_btn_td button.careerAreaOpener {filter: brightness(5);}
+
+
+
+
+/* 기업 수정사항 251201 */
+.btn_search_korean .btn.active {color: var(--col_h) !important; background-color: var(--col_blue) !important;}
+
+/* 251205 공공마이데이터 수정 */
+.atfl_area .flch_wrap .box_filelist_wrap ul li .box_filelist_btn .ico24_file.del,
+.layer_mdim .esign_area .esign_btn_wrap button:before,
+.layer_mdim .esign_area .esign_btn_wrap button:after,
+.layer_mdim .box_step > li .txt:after {filter: brightness(5);}
+
+.layer_mdim .esign_area .esign_btn_wrap button:hover:after,
+.layer_mdim .esign_area .esign_btn_wrap button:focus:after,
+.layer_mdim .esign_area .esign_btn_wrap button:hover:before,
+.layer_mdim .esign_area .esign_btn_wrap button:focus:before {filter: initial;}
+
+.layer_mdim .pmdf_list li .trait,
+.layer_mdim .pmdf_list li.nada .trait,
+.layer_mdim .pmdf_list li.err .trait,
+.atfl_area .flch_wrap .box_filelist_wrap ul li .btn_filelist_name.m_data .trait {background-color: #111;}
+
+/* 색상반전 */
+.company .mypage .home .my_wrap .select_w .select .icon,
+.company .mypage .home .my_wrap .select_w .parp .button .icon,
+.btn_quick_help::before, .btn_quick_compare::before,
+.help_wrap .btn_close::after {filter: invert(1);}
+
+
+
+/* 고유 색상이 필요한 경우 */
+textarea,
+.schEduContHead .leftGroup .title,
+.mypage .home .my_wrap .list li .label,
+.svc_util > li a .txt,
+.svc_util > li a .ico_link,
+.svc_util > li a .txt .sub,
+.nguide .mdesc .b .group p,
+.main_wrap .favorite_swiper_wrp .txt.blue,
+.mbr_type .list_cont h5,
+.mbr_type .list_cont ul li a,
+#header_top .get_top .text,
+#container .customer .ts .main_search_area .inner_search input[type="text"],
+.tit_jobPsy_ban,
+.label_txt.fill.gray,
+.greeting_work24 dd p,
+.clr_fff,
+.company .mypage .home .my_wrap .select_w .parp .text,
+.mypage .home .service_wrap .buttons .button .sub,
+#anyidc .join-member-bn-wrap .txt-desc,
+.mypage .home .todo_wrap .btitle .subtxt,
+.jobSwiper_wrp .myJobSlider .box > li .txt_area .date,
+#header_menutree .layer_ts .main_search_area .inner_search input[type="text"],
+.dictionary_popup .dc_search .input_btn input[type=text],
+#layer_dialog .box_list_area .txt_list a,
+#layer_dialog .menu_info_header h5,
+#layer_dialog .tab_wrap.line_type .site_info li.active button span,
+.box_page_skip .ps_tit,
+.svc_util > li .ico_link,
+.bkmkadd .fav_toggle label,
+div.bkmkadd .menu-input input,
+.full_pop_site .fav_pop_wrap .fav_pop_wrap,
+.full_pop_site .fav_pop_wrap .fav_pop_label,
+.full_pop_site .fav_pop_item,
+.full_pop_site .site_input_txt,
+.accd_type .btn_arrow_type,
+.ui-widget-content span,
+.chatbotMsg font,
+.chatbot-container article.chatbot header h2,
+.dictionary_popup .dc_list li .title,
+.dictionary_popup .dc_list li .text,
+.dictionary_popup .dc_header .hd_tns .title,
+.dictionary_popup .dc_btns .ph,
+.dictionary_popup .de_set,
+.box_textarea .txt_byte,
+.box_tab-contents .box_table_wrap .t3_sb,
+.txt_essential,
+.allcare_popup .newpop_major_search.newpop_inner .category_box .category_lv ul li button,
+.allcare_popup .newpop_major_search.newpop_inner .category_box .category_lv .category-placeholder p,
+.txtSchAreaKwd #tranNewSelect,
+.box_border_type .line_type .flex_box .s1_r.fs-12.cl-grey,
+#empAppCtrSrchList .a-l .ico-txt.tbl_label.gray,
+.customer .form_user_info .cir_required,
+.box_tab-contents .box_table .box_table_group .txt_notice,
+.full_pop .tertiary .sub-title-16.bul,
+.box_form_group .box_table_group .txt_notice,
+.full_pop.full_01 .text_step_deatil,
+.commentReviewArea .commentReview .body .ment,
+.commentReviewArea .commentReview .head .title,
+.search_more_type .slide_cont .selectBox,
+.infoDetailBox .info .title .tit,
+.infoDetailBox .info .title .infoList .tit,
+.infoDetailBox .info .title .infoList .con,
+.infoDetailBox .info .content .infoList li .tit,
+.infoDetailBox .info .content .infoList li .con,
+.valueInfoArea .valueInfo .item .info .value .num,
+.evalListArea .evalListTit,
+.evalListArea .evalList .title,
+.accodionList .acd .b1_sb,
+.box_table_group .txt_notice,
+.srch_list_default .dl_list .tbl_label,
+#dgtlBadgeApplyInfo .dgt_guide_wrp .top_info .text *
+{ color: #d0d0d0 !important;}
+
+textarea::placeholder,
+input[type="text"]::placeholder,
+input[type="search"]::placeholder,
+input[type="password"]::placeholder,
+.comm_orderlist li .txt,
+#layer_dialog .menu_info_header p,
+.box_page_skip .cell .box_page_skip .ps_tit,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button
+{ color: #999 !important;}
+
+.main_wrap .main_favorite .tab button.active { color: #fff !important;}
+
+.tbl_label.fill.green,
+.comm_orderlist li .txt.active,
+.login--style .login_wrp .cert_list dt .tit,
+.dgt_guide_wrp .text .sub.b1_r,
+.notitalk_wrap .kakao_wrp .title,
+.recommand_service_wrap ul li.list .box_list_area .txt_list,
+.recommand_service_wrap ul li.list.bg_green02 .t2_sb,
+.recommand_service_wrap ul li.list.bg_green02 .b1_r,
+.recommand_service_wrap ul li.list .b1_sb span,
+.detail_card_list .list > li.bg_green .data_list .b1_r,
+.detail_card_list .list > li.bg_green .data_list .b1_sb,
+.detail_card_list .list > li.bg_green .t2_sb,
+.detail_card_list .list > li.bg_green .link_more span,
+.chatbot-container article.chatbot-popup > header > h3 > span
+{ color: #1a1a1a !important;}
+
+/* 색상 inherit */
+.aroundMe_wrp .around_list .bar_txt,
+.box_table_hd .box_txt_step .txt_step
+{ color: inherit !important;}
+
+
+.box_step > li::before
+{ border-left-color: #212121 !important;}
+
+.mt40.tabs >a.active,
+.tab_wrap .tab_title li button span,
+.tab_wrap .tab_title li a span,
+#intro.content.active,
+#intro.content.active .center-item,
+.floating_search_result .box_border_type .clr_blue .line_type,
+.table > .col,
+.mypage .home .todo_wrap .list .JS-myswiper,
+.mypage .home .my_wrap .list,
+.mypage .home .service_wrap .list_inter .box ul,
+.mypage .home .my_wrap .notice .item_alram li a,
+.box_file_wrap,
+.nguide .mdesc .b,
+.mbr_type .list_cont,
+.mbr_type .list_cont .service,
+.jobSwiper_wrp .myJobSlider li .btm_area,
+.box_side_wrap .recommand_board_list,
+.sign_area,
+.company .mypage .home .service_wrap .list_program .box ul,
+.emp_sumup_wrp,
+#layer_dialog .site_map_div .list>li+li,
+.horizon_etn_wrap,
+.horizon_etn_wrap .etn_item,
+.ui-datepicker .ui-datepicker-buttonpane,
+.fav_pop_wrap,
+.fav_pop_listbox,
+.full_pop_site .bkmk_bline,
+.full_pop_site .site_input_txt,
+.jobSwiper_wrp .myJobSlider .box > li > a,
+.box_table_wrap .box_table .agree,
+.chatbot-container article.chatbot header,
+.box_table tbody .line td,
+.box_info .box_line .info_btm,
+.dictionary_popup .dc_list li,
+.dictionary_popup .dc_empty .line,
+.fav_menu [type="checkbox"]:checked,
+.box_tab-contents .re_recommand_search,
+.ai_peronwrap .recommand_list,
+#layerPopup,
+#layerPopup .popup-header,
+.tertiary #keywordsScrollDiv,
+.parentSearchBar #searchBox,
+.commentReviewArea .commentReview .body,
+.new #header_menutree .screen_size .screen_btns,
+.evalListArea .evalList.third .item
+{ border-color: #303030 !important;}
+
+table.table_guide th,
+.box_border_type,
+.floating_search_result.ty2 .inner_wrap .tit,
+.box_form_content,
+.box_message_wrap,
+.floating_search_result .box_border_type h3.tit,
+.box_file_wrap,
+.mypage .home .todo_wrap .list .item_group,
+.mypage .home .service_wrap .buttons,
+.mypage .home .info_m,
+.mypage .home .service_wrap .list_inter .box,
+.mypage .home .service_wrap .ro_theme .co a,
+.mypage .home .service_wrap .subject:hover .round,
+.mypage .home .service_wrap .subject[aria-expanded="true"] .round,
+.box_rnd_noti.blue,
+.customer .home .cont_search_wrap .keyword_wrap .keyword > button,
+.box_rnd_gray,
+.box_rnd_noti.gray,
+.svc_util > li,
+.nguide .mtitle,
+.main_wrap .main_svc .service > li > a,
+.customer .ts .search_area .form_keyworkds button,
+.customer .ts .page .apply .op,
+#contents .login--style .box_bot_txt.blue,
+#contents .login--style .box_bot_txt.green,
+#contents .renewal_EmpSrch .layer_section,
+.box_table td.td_bg,
+.jobSwiper_wrp,
+.ai_peronwrap .recommand_list,
+.label_txt.fill.gray,
+.greeting_work24,
+.greeting_work24 dd p,
+.tab_wrap .bg_f8f8f8,
+.company .mypage .home .service_wrap .list_program .box,
+.company .mypage .home .service_wrap .list_program .boxgrid ul li a,
+.box_step > li.is-active ~ li,
+.main_wrap .main_info .box > ul li,
+#layer_dialog .fixedDiv,
+#layer_dialog .full_pop_site,
+#layer_dialog .tab_cont .tab_wrap,
+#layer_dialog .tab_wrap.line_type.sitemap_wdt,
+#layer_dialog .tab_wrap.line_type .site_info li.active,
+.horizon_etn_wrap,
+.fav_pop_listbox,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg > div,
+.chatbot-container article.chatbot header h2,
+.chatbot-container article.chatbot footer > label,
+.chatbot-container article.chatbot footer .chatbot-inputCon,
+#layerPopup,
+#popupContainer div.dept1.key,
+.parentSearchBar #searchBox
+{ background-color: #1a1a1a !important;}
+
+.main_wrap .main_info .box,
+.box_table_wrap .box_table #sortableBody1 tr,
+.chatbot-container article.chatbot div.chatbot-msgCon > hr,
+.full_pop .box_form_content,
+.box_table tr.notice3 td,
+.box_table tr.notice4 td
+{ background-color: #212121 !important;}
+
+#table_wrap .table_wrap .table tbody.guide td,
+#trId_1_1 td,
+#trId_1_8 td,
+.search_more_type > ul > li,
+.box_table_wrap.write th,
+.box_table thead th,
+.table > .col,
+.main_wrap .main_info .box > ul li a:hover, .main_wrap .main_info .box > ul li a:focus,
+.sx_loginbox,
+.form_search_wrap .layer_cate_search a.active, .form_search_wrap .layer_cate_search a:hover,
+.box_side_wrap .box_line .column_wrap .box_btn_wrap .btn_hash,
+.box_side_wrap .recommand_board_list,
+.box_table tbody th,
+.new #header_menutree .screen_size ul li .btn_size:hover,
+.new #header_menutree .screen_size ul li .active.btn_size,
+.emp_theme_wrap .emp_theme_list.type_all > ul li ul,
+.emp_sumup_wrp,
+.new #header_menutree .header_util li .col,
+.calendar_table td .td_box.schedule,
+#header_menutree .layer_ts .main_search_area .inner_search input[type="text"],
+.box_border_type .btn_toggle_more,
+#layer_dialog .tab_wrap.round_type .tab_title li button span,
+.box_table .list_group .tit::after,
+.horizon_etn_wrap .etn_item,
+.customer .ts .search_area .form_keywords button,
+.ui-widget-content,
+.bkmkadd .menu-input input,
+.fav_pop_wrap,
+.full_pop_site .bkmk_bline::after,
+.full_pop_site .bkmk_bline::before,
+.full_pop_site .site_input_txt,
+.full_pop_site .fixedDiv:after,
+.full_pop_site .fixedDiv::before,
+.chatbot-container,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button,
+.box_table.data01 td.data_action,
+.box_table.data01 td.data_on,
+.box_display_data .data_action,
+.dictionary_popup .dc_list li .text,
+.dictionary_popup .dc_btns .gp,
+.dictionary_popup .dc_search,
+.fixedDiv .tab_wrap.round_type.mt24:before,
+.fav_menu [type="checkbox"],
+.box_tab-contents .re_recommand_search,
+.date_tbl.box_table.mt08 tbody.tac tr:nth-child(2n),
+.mypage .progmg.allcare .notlist_inner,
+.mypage .progmg.allcare .point_request_dashboard,
+.mypage .progmg.allcare .iap_status_dashboard,
+.mypage .progmg.allcare .job_readiness_wrap .notice_banner_area,
+.box_border_wrap.ty2 .side_emp_wrp,
+.emp_theme_wrap .emp_theme_list.type_card,
+.new #header_menutree .screen_size .screen_btns .screen_close::after
+{ background-color: #28282d !important;}
+
+
+.box_step > li,
+.comm_orderlist li .txt,
+#header_bottom.extend::after,
+.calendar_table td .td_box.select_on,
+.allcare.hsces .gsprog_uni .step_cont_area ol>li .inner_bg
+{ background-color: #333 !important;}
+
+.comm_orderlist li .txt.active { background-color: #6b83ff !important;}
+
+.box_step > li.is-active,
+#intro.content.active .pagination a.active { background-color: #6b83ff !important;}
+
+.box_message_wrap .search_more_type > ul > li,
+.box_border_type .search_more_type > ul > li,
+.box_message_wrap.tit_type.type2,
+.tab_cont .box_tab-contents .tab_wrap
+{ background-color: inherit !important;}
+
+
+
+
+
+/* 색상 반전 */
+.new #header_menutree .header_util .ico09,
+.new #header_menutree .header_util .ico11,
+.new #header_menutree .header_util .ico12,
+.new #gnb > ul > li >a::after,
+.new #header_menutree .btn_screen::after,
+.new #header_menutree .btn_remote::after,
+span.ico16_loudspeaker_white,
+.location ul li.home a:not(.location_list > li > a)::before,
+.btn_calendar, .ui-datepicker-trigger,
+#footer .flex_right .guide a .icon,
+.box_list_set ul li [class*='ico40'],
+.ico16_duplicate,
+.ico24_pencil,
+.ico16_delete,
+.ico_memo_search:before,
+.ico_register:before,
+.ico_home_guide:before,
+.ico24_search,
+.ico16_unlike,
+.box_pagination .btn_page:after,
+.ico24_memo_search,
+.btn_ico.ico_list:before,
+.btn_ico.ico_calnedar:before,
+#intro_sub >img[alt='이미지 하단 바'],
+.ico24_pc,
+.btn.fill.ico_type.type01::after,
+.mypage .home .info_m h3::before,
+.mypage .home .help_m .group .box .bottom::after,
+.mypage .home .my_wrap .notice .page .close,
+.ico24_notice_gray,
+.fav_menu .ico24_drag_select2:after,
+.fav_input button,
+.txt_ico_arr::after,
+.customer .home .cntr_contact .btn_group .btn.btn_share::after,
+.nguide .mtitle .mflex.f::before,
+.nguide .mtitle .mflex.l::after,
+.main_wrap .favorite_swiper .swiper-button-prev.btn_left,
+.main_wrap .favorite_swiper .swiper-button-next.btn_right,
+#footer .site .btnsite .icon,
+.mypage .home .todo_wrap .list .collection .swiper-button-prev,
+.mypage .home .todo_wrap .list .collection .swiper-button-next,
+.mypage .home .title_wrap .title .button::before,
+.mypage .home .service_wrap .moregroup .more::after,
+#container .policySlider .swiper-button-prev.btn_left,
+#container .policySlider .swiper-button-next.btn_right,
+.btn_slide_more.on .txt:after,
+.ico24_user_tag2,
+.ico24_email2,
+.ico24_faq2,
+.top_noti_area .noti_banner_slide .btn_container .btn.noti_pause,
+.top_noti_area .noti_banner_slide .btn_container .btn.noti_play,
+#container .customer .ts .main_search_area .inner_search .delete .icon,
+.customer .ts .option .head .button .icon,
+.aroundMe_wrp .around_list .map_list_toggle > button,
+.box_side_wrap.type02 .box_line .jtfy-sb .al-item-c img,
+.btn.ico_type.type02::after,
+.box_bottom_notice .txt .ico16_call,
+.list_tit.c_number:before,
+.jobSwiper_wrp .swiper-button-prev,
+.jobSwiper_wrp .swiper-button-next,
+.ico_movie:before,
+.guide_speech_section .txt03 .ico,
+.ico16_home_center_filled,
+.box_notice_wrap  .ico24_coin,
+.ico_search:before, .ico_search2,
+.box_form_login .box_form_table .list_tit:before, .btn_ico:before,
+.company .mypage .home .service_wrap .list_program .boxgrid .icon1,
+.company .mypage .home .service_wrap .list_program .boxgrid .icon2,
+.box_border_type .ico24_email,
+.sort_btn_wrap ul li .icon,
+#contents .login--style .login_wrp .cert_list dt,
+#contents .login--style .box_bot_txt .img_before,
+#anyidc.thema_04 .krds-tooltip-wrap .tool-btn.white:after,
+#anyidc.thema_04 .btn-txt.ico-arr:after,
+.ico_pc_plus:before,
+.icon_jobfind_check,
+.icon_group,
+.icon_pc_check,
+.company .mypage .home .service_wrap .item_category a .round .icon,
+.type_bd_progress .box_progress li .t_bundle:after,
+.new #header_menutree .screen_size .screen_reset::before,
+.new #header_menutree .screen_size ul li .active.btn_size::after,
+.emp_theme_wrap .emp_theme_list li p i >svg,
+.emp_theme_wrap .emp_theme_list .card_box .left_side_list li button i >svg,
+.emp_box_items > li .img_wrp,
+.gap_box08 .icon_hamburger,
+.gap_box08 .icon_diagram_fill,
+.customer .ts .page .apply .filters .delete .icon,
+.dictionary_layer .dc_search .input_btn .ico16_close,
+.btn_join span:after,
+.main_wrap .main_info .box > ul li a::after,
+.ico24_task_normal,
+.new #header_menutree .header_util .ico14,
+.new #header_menutree .header_util .ico13,
+.ico_line_plus:after,
+.ico_line_minus:after,
+[class^='btn'].btn_form:before,
+.btn_layer.on span,
+.nadd .privacy_policy_wrap .toggle .icon,
+#header_menutree .layer_ts .layer_ts_closed .icon,
+.dictionary_popup .dc_header .hd_tns .icon,
+.dictionary_popup .dc_search .input_btn .delete,
+.allcare_popup .uni_prog_tool .new_table td:last-child .oper_year::before,
+.allcare_popup .uni_prog_tool .new_table td:last-child .oper_time::before,
+.allcare_popup .uni_prog_tool .new_table td:last-child .oper_count::before,
+.sub_tl a i,
+.r_btn_area  a .ico16_home,
+#layer_dialog .fixed_Bg,
+#layer_dialog .btn_link_new:not(.lnb > ul *):before,
+#layer_dialog .siteMap_ico09,
+.box_message_wrap .acd > ul > li::after,
+.box_message_wrap .acd_arow > .btn_text::after,
+.box_notice_wrap .ico24_call,
+.policySlider a .flex_sh,
+.box_section .box_btn_wrap .ico16_call,
+.fav_pop_item button,
+.btn_expand_section .btn_arrow_type:after,
+.box_calendar_table .select_month .btn_arrow:after,
+.keyword_search_area .btn_keyword_srch,
+#header_menutree .layer_ts .hot_item .my .hd .button .icon,
+#header_menutree .layer_ts .main_search_area .inner_search .delete .icon,
+.type_updown_wrap .updown.icon_up::after,
+.type_updown_wrap .updown.icon_down::after,
+.box_filelist_wrap .box_filelist_btn .ico16_file.del,
+.acd > ul > li::after, .acd_arow > .btn_text::after,
+.box_border_type .emp_box_items p img,
+.list_chk_area .pop_subtl .ico24_memo_search_check,
+.list_chk_area .pop_subtl .ico24_memo_search_like,
+.box_btn_wrap .btn.white_next i,
+.recommand_list_top > .sub_btn_area > .btn.btn_like,
+.box_ipt button[class*='ico'],
+.box_round_item.big .ico_img_24::before,
+.box_border_type.px24 .gap_box04.flex_al_c .ico24,
+.mypage .progmg.allcare .statusdesc_cont button::after,
+.box_section .box_border_type .ico_txt::before,
+.box_section .box_table th .ico_txt::before,
+.location ul li.home a:not(.location_list > li > a)::before,
+.result_list_wrap .arr_right:after,
+.text_right .btn .ico16_directbox-notif,
+.text_right .btn .ico16_message,
+.text_right .btn .ico16_email,
+.text_right .btn .ico16_note_edit,
+.box_table td select.selectBox.w800p,
+.box_table td select.selectBox.w100p,
+.customer .cstm_qna > li a::after,
+.box_link_tip .box_line.active:after,
+.notice_slide_wrap .btn_slide_prev,
+.notice_slide_wrap .btn_more,
+.side_emp_wrp .btn_toggle_more i,
+.box_table .tbl_type02[class^='btn'].btn_fold:before,
+.box_side_wrap .vline_group .item.sm .vtalm3,
+.box_border_type.expand .btn_toggle_more i,
+.line_btn_wrap .btn_toggle_more i,
+.box_btn_wrap .btn .icon_share,
+.notice_slide_wrap .btn_autoplay,
+.notice_slide_wrap [class*='btn_slide_'],
+.my_status_area .status_cont li a .icon,
+.new #header_menutree .screen_size .mode .b_mode[title='선택됨']::after,
+.new #header_menutree .screen_size .screen_btns .screen_close::before,
+.box_message_wrap .b1_sb .btn_link:not(.lnb > ul *):before,
+.box_calc_wrap .calc_box + .calc_box::before,
+.emp_colbox_div .ico16_email,
+.btn.ico_type.tbl_type02::after,
+.box_table_group .t3_sb .btn_share::after,
+.tit_mark_01.scroll:before
+{filter: invert(100%) !important;}
+
+/* 필터 초기화 */
+.sort_btn_wrap ul li.is-active a .icon,
+.emp_theme_wrap .emp_theme_list .card_box .left_side_list li.active  button i >svg,
+.gap_box08 .fill .icon_hamburger,
+.gap_box08 .fill .icon_diagram_fill,
+.btn_calendar:disabled,
+.recommand_list_top > .sub_btn_area > .btn.btn_like.on,
+.my_status_area .status_cont li a .icon.ico24_back
+{filter: initial !important;}
+
+
+
+
+
+
+/* 백그라운드 이미지 교체 */
+.new .go24_ci {top: -58px !important; height: 56px !important; background-image: url(/cm/static/images/darkmode/h1_ci_large.svg) !important;}
+.new .work24_logo {display: none;}
+#header_menutree .layer_ts .layer_bg { background-color: #212121; background-image: url(/cm/static/images/darkmode/bg_work24_symbol.svg)}
+
+
+
+/* ico16 화살표 색상 화이트 */
+.main_wrap .main_svc .btn_more,
+.main_wrap .main_svc .service > li > a .ico_arr,
+.main_wrap .main_info .box .tit,
+.ico16_arrow,
+.detail_card_list .list > li.bg_green .link_more span,
+.more_btn_wrap a span,
+.recommand_service_wrap ul li.list.bg_green02 .box_list_area .txt_list
+{background: url(/cm/static/images/icon/16/ico16_line_right_white.svg) right center no-repeat;}
+
+/* ico16 화살표 색상 네이비 */
+.box_block_wrap .bd_box .title_area .link_more {background: url(/cm/static/images/main_new/ico_arrow_navy.svg) right center no-repeat;}
+
+/* ico16 화살표 색상 검정 */
+.detail_card_list .list > li .link_more span,
+.recommand_service_wrap ul li.list .box_list_area .txt_list {background: url(/cm/static/images/ico16_arrow_right_black.svg) no-repeat right center;}
+
+/* 캘린더 수정 */
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-datepicker th {background-color: var(--col_bg);}
+.ui-datepicker select.ui-datepicker-month, .ui-datepicker select.ui-datepicker-year,
+.ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next, .ui-datepicker-prev:before, .ui-datepicker-next:before {filter: invert(100%) !important;}
+
+/* 지역선택 팝업 */
+.search_more_type > ul > li.hasLayer .layer_section {background-color : var(--col_bg) !important;}
+.sort_btn_list ul li button {background-color: #212121;}
+
+.sub_tl +.complex_type { background: initial !important;}
+
+#HPCMDD0110VO .fav_menu [type="checkbox"]:checked {border-color: #6b83ff !important; background-color: #6b83ff !important; }
+
+
+
+/* 마이페이지(개인) > 회원정보관리 > 비밀번호 변경 */
+.box_notice_wrap {background: #1a1a1a !important;}
+.box_notice_wrap .tit, .box_list_area .txt_list,
+.box_step > li.is-active ~ li .txt,
+.box_form_login.type3 .box_form_table .list_tit,
+.t1_sb span.cir_required, .btn_ico {color: #d0d0d0 !important;}
+.box_list_area .txt_list:before {background: #999 !important;}
+.t1_sb {color: #eaeaea !important;}
+.box_form_login .box_form_table .list_tit.member02:before,
+.btn_ico.authentication:before,
+.btn_ico.phone:before,
+.btn_ico.ipin:before,
+.btn_ico.card:before {filter: invert(0) !important;}
+.input_txt.big {background: #1a1a1a !important; color: #d0d0d0 !important;}
+.mih_fav [class^='btn'].medium {background: #6b83ff !important; color: #fff !important;}
+.box_notice_wrap, .box_form_login {border: 1px solid #383838 !important;}
+
+/* 기업 체크박스 */
+.company .fav_menu [type="checkbox"] {border: 1px solid #555 !important; background-color: #1a1a1a !important;}
+.company .fav_menu [type="checkbox"]:checked {background-color: #6b83ff !important;}
+.company [class^='btn'].type01 {background: #6b83ff !important; color: #fff !important;}
+
+/* 251211 전수조사후 수정 */
+.site_map_div ol li a.active,
+#layer_dialog .btn_link_new:not(.lnb > ul *):before,
+.page #tab-panel-01 .result_list_wrap .result_view .srch_list_default .btn_link.v_top::before,
+.btn_txt.ico_arrow.bk:after {filter: brightness(100) !important;}
+
+.cont.sitemap_wdt .site_map_div ol li a.active {filter: initial !important;}
+
+.certification_btn_group.type3 .btn_ico:before {filter: invert(0) !important;}
+.certification_btn_group.type3 .btn_ico.certificate:before,
+.emp_box_items > li.disable:before,
+.emp_box_items > li.disable:after,
+#vertEtn.vert_etn_wrap .title,
+#vertEtn.vert_etn_wrap .title strong,
+#selectedIdTitle .list_status_info .vline_group.bar_r .ico16_home_center,
+#companySection03 .box_group_wrap .t2_r.c_loud:before,
+#companySection01 .box_group_wrap .t2_r.c_info.white:before,
+.window_pop a.closed,
+#HPWKUB1100VO .box_group_wrap .t2_r.member:before,
+.ico24_building {filter: invert(1) !important;}
+
+#popupContainer .inline-object {background: #2b2b2b !important; border-color: #2b2b2b !important;}
+
+.box_help-data .box_calc_wrap.col-3 .tbl_label.gray {border-color: var(--col_navy); color: var(--col_navy);}
+
+#dgtlBadgeApplyInfo .dgt_guide_wrp .top_info.bg2 .text .title:after {background: #555 !important;}
+
+#layer_dialog .d_badge_wrp .badgeli:hover .atcdel_btn.dgtlBadgeIssuBtn,
+.box_side_wrap .side_inner article.box_form_side .box_line p,
+.accordionList .wrap .writerInfo li,
+.stepApplication .stepTitlem, .stepApplication2 .stepTitle, .stepApplication3 .stepTitle,
+.signUpFlowList > div .txt,
+#oacxEmbededContents *, #oacxEmbededContents *:after, #oacxEmbededContents *  {color: #d0d0d0 !important;}
+
+.box_side_wrap .side_inner article.box_form_side .box_line,
+.box_side_wrap .side_inner article.box_form_side .box_line [class^='btn'].type01,
+.acd > ul > li .acd_cont {background: #1a1a1a !important;}
+
+.mypage .progmg.allcare .new_selectbox {background-color: var(--col_white); border: 1px solid var(--col_button);}
+.mypage .progmg.allcare .new_selectbox select {color: var(--col_h);}
+.mypage .progmg.allcare .new_selectbox select option {background-color: var(--col_white);}
+.allcare .icon_add .num02, .allcare .icon_add .num02,
+.allcare.hsces .icon_add i.hs_tit,
+.ico16_call,
+.acd > ul > li.on::after,
+.stepApplication li + li:before,
+.stepApplication2 li + li:before,
+.stepApplication3 li + li:before,
+.popup_full .popup_close,
+.aroundMe_wrp .icon_align,
+.aroundMe_wrp .ovflY-auto .btn_more,
+#companySection06 .box_group_wrap .t2_r.user_tag:before,
+#companySection04 .box_group_wrap .t2_r.chart:before,
+.dark_text_trans .btn_download,
+.nw_srch_wrap .nw_srch_box .nw_srch_inner .nw_sel:after,
+.nw_sel:after {filter: brightness(30) !important;}
+.aroundMe_wrp .ovflY-auto .btn_more.on {filter: initial !important;}
+#eduList .tbl_label.gray,
+#frm #schoolAdd .tbl_label.gray {background: #000; border-color: #888; color: #888;}
+
+#mForm .box_table_wrap.write td.text_center {background: #28282d !important;}
+#HPCMFC0100VO .tbl_label.gray.fill.color_type {background: #555 !important;}
+#wrap #HPWKUC1100VO #eduList td [class^='btn'].btn.small.type03.status_type.mscs-def:disabled {border-color: #302f2f !important; background-color: #302f2f !important; color: #d0d0d0 !important;}
+
+#HPCMCF1100VO .box_border_type_policy.type_pd24 .HStyle0 span>font {color: #6b83ff;}
+
+.dark_text_trans td * {color: #d0d0d0 !important;}
+
+
+/* 배경 이미지 교체 */
+#footer .logos:first-child img { display: none;}
+#footer .logos:first-child::after { content: ''; display: block; width: 108px; height: 36px; background: url(/cm/static/images/darkmode/footer_ci01.svg) no-repeat;}
+#footer .logos.gov a:first-child img { display: none;}
+#footer .logos.gov a:first-child::after { content: ''; display: block; width: 74px; height: 24px; background: url(/cm/static/images/darkmode/footer_ci02.svg) no-repeat;}
+.full_pop > .closed, .layer_section .closed,
+.allcare_popup .newpop_tit .closed,
+.recommand_list_top > .sub_btn_area > .btn.btn_close { background-image: url(/cm/static/images/darkmode/ico32_close.svg) !important;}
+.renewal_EmpSrch .rslt_btn_box li a.back { background-image: url(/cm/static/images/darkmode/icon_back.svg) !important;}
+.renewal_EmpSrch .rslt_btn_box li a.disk { background-image: url(/cm/static/images/darkmode/icon_disk.svg) !important;}
+.renewal_EmpSrch .rslt_btn_box li a.folder { background-image: url(/cm/static/images/darkmode/icon_folder.svg) !important;}
+.emp_info_dtl li.job { background-image: url(/cm/static/images/darkmode/ico16_job.svg) !important;}
+.ico24_back { background-image: url(/cm/static/images/darkmode/ico24_back.svg) !important;}
+.ico24_calendar { background-image: url(/cm/static/images/darkmode/ico24_calendar.svg) !important;}
+.schEduCont .site,
+.emp_info_dtl li.site { background-image: url(/cm/static/images/darkmode/ico16_location.svg) !important;}
+.schEduCont .member { background-image: url(/cm/static/images/darkmode/ico16_member.svg) !important;}
+.box_rnd_noti .tit.ico_message_srch { background-image: url(/cm/static/images/darkmode/ico24_message_search.svg) !important;}
+.customer .home .cont_search_wrap .keyword_wrap .tit { background-image: url(/cm/static/images/darkmode/ico16_thumbs.svg) !important;}
+.svc_util > li a .ico_link { background-image: url(/cm/static/images/darkmode/ico16_share.svg) !important;}
+.main_top_search .btn_cate_select,
+.topsearch_wrap .main_search_area .inner_search .btn_cate_select { background-image: url(/cm/static/images/darkmode/ico10_select.svg) !important;}
+.form_search_wrap .layer_cate_search a.active span { background-image: url(/cm/static/images/darkmode/ico16_ui_checked03.svg) !important;}
+.list_tit.member02:before,
+.box_section .box_group .icon_me { background-image: url(/cm/static/images/darkmode/ico24_member_mypage.svg) !important;}
+.box_section .box_group .icon_bd { background-image: url(/cm/static/images/darkmode/ico24_home_center.svg) !important;}
+.box_section .box_group .icon_pen { background-image: url(/cm/static/images/darkmode/ico24_member_register.svg) !important;}
+.box_section .box_group .icon_medal { background-image: url(/cm/static/images/darkmode/ico24_medal_star.svg) !important;}
+.box_section .box_group .icon_paper { background-image: url(/cm/static/images/darkmode/ico_24_news.svg) !important;}
+.box_border_type .box_group .caution_box > ul > li:nth-child(1) { background-image: url(/cm/static/images/darkmode/ico40_memo_edit.svg) !important;}
+.box_border_type .box_group .caution_box > ul > li:nth-child(2) { background-image: url(/cm/static/images/darkmode/ico40_talk_no.svg) !important;}
+.box_border_type .box_group .caution_box > ul > li:nth-child(3) { background-image: url(/cm/static/images/darkmode/ico40_write.svg) !important;}
+.box_border_type .box_group .caution_box > ul > li:nth-child(4) { background-image: url(/cm/static/images/darkmode/ico40_memo_check.svg) !important;}
+.box_border_type .box_group .caution_box > ul > li:nth-child(5) { background-image: url(/cm/static/images/darkmode/ico40_task.svg) !important;}
+.box_list_set ul li span.ico40_tree { background-image: url(/cm/static/images/darkmode/ico40_tree.svg) !important;}
+.ico16_member_mypage2_filled { background-image: url(/cm/static/images/darkmode/ico24_member_mypage.svg) !important;}
+.location .lct_area .lct_btn_print { background-image: url(/cm/static/images/darkmode/btn32_printOFF.svg) !important; background-size: contain;}
+.vline_group.type2 .item.time { background-image: url(/cm/static/images/darkmode/ico16_time.svg) !important;}
+.list_status_info .info_area .coin { background-image: url(/cm/static/images/darkmode/ico16_coin2.svg) !important;}
+.box_rnd_noti .tit.ico_alarm_red,
+.ico24_ui_alarm_red { background-image: url(/cm/static/images/darkmode/ico24_ui_alarm_red.svg) !important;}
+.box_step > li.is-active ~ li, .box_step > li.is-active ~ li::after { background-image: url(/cm/static/images/darkmode/bg_progress.svg) !important;}
+.box_step > li::after { background-image: url(/cm/static/images/darkmode/bg_progress_past.svg) !important;}
+.box_step > li.is-active::after { background-image: url(/cm/static/images/darkmode/bg_progress_ok.svg) !important;}
+.comm_orderlist li .txt::before { background-image: url(/cm/static/images/darkmode/bg_order_b.svg) !important;}
+.comm_orderlist li .txt::after { background-image: url(/cm/static/images/darkmode/bg_order_a.svg) !important;}
+.comm_orderlist li .txt.active::before  { background-image: url(/cm/static/images/darkmode/bg_order_b_active.svg) !important;}
+.comm_orderlist li .txt.active::after  { background-image: url(/cm/static/images/darkmode/bg_order_a_active.svg) !important;}
+.box_border_type .ico24_building,
+.box_notice_wrap .notice_group .ico24_building { background-image: url(/cm/static/images/darkmode/ico24_home_center.svg) !important;}
+.jobSwiper_wrp .myJobSlider .box > li .default .txt_area { background-image: url(/cm/static/images/darkmode/ico40_off_memo_edit.svg) !important;}
+.emp_info_dtl li.member { background-image: url(/cm/static/images/darkmode/ico16_member.svg) !important;}
+.emp_info_dtl li.time { background-image: url(/cm/static/images/darkmode/ico16_time.svg) !important;}
+.emp_info_dtl li.dollar { background-image: url(/cm/static/images/darkmode/ico16_coin2.svg) !important;}
+.mypage .home .my_wrap .top .flex .bell .icon { background-image: url(/cm/static/images/darkmode/ico24_bell.svg) !important;}
+.main_wrap.coporation .main_info .title { background-image: url(/cm/static/images/darkmode/bg_title_info_company.png) !important;}
+.mbr_type .list_cont .service h5 { background-image: url(/cm/static/images/darkmode/ico_svc.png) !important;}
+.mbr_type .list_cont .system h5 { background-image: url(/cm/static/images/darkmode/ico_sys.png) !important;}
+.visual_contents_box.bg02 { background-image: url(/cm/static/images/darkmode/bg_contents_guide02_dark.png) !important;}
+.visual_contents_box.bg01 { background-image: url(/cm/static/images/darkmode/bg_contents_guide01_dark.png) !important;}
+.box_side_wrap .icon_box.memo_search { background-image: url(/cm/static/images/darkmode/ico40_memo_search.svg) !important;}
+.box_side_wrap .icon_box.brain { background-image: url(/cm/static/images/darkmode/ico40_brain.svg) !important;}
+.box_side_wrap .icon_box.group { background-image: url(/cm/static/images/darkmode/ico40_group.svg) !important;}
+.box_side_wrap .icon_box.smile { background-image: url(/cm/static/images/darkmode/ico40_smile.svg) !important;}
+.box_side_wrap .icon_box.center { background-image: url(/cm/static/images/darkmode/ico40_center.svg) !important;}
+.box_side_wrap .icon_box.worker { background-image: url(/cm/static/images/darkmode/ico40_worker.svg) !important;}
+.box_group .icon_cooperation { background-image: url(/cm/static/images/darkmode/ico24_group.svg) !important;}
+.box_table_wrap .icon_check_list { background-image: url(/cm/static/images/darkmode/ico24_memo_check.svg) !important;}
+.box_group .icon_bulb { background-image: url(/cm/static/images/darkmode/ico24_light.svg) !important;}
+.box_side_wrap .icon_box.memo_edit { background-image: url(/cm/static/images/darkmode/ico40_memo_edit.svg) !important;}
+.box_side_wrap .icon_box.grow { background-image: url(/cm/static/images/darkmode/ico40_grow.svg) !important;}
+.box_side_wrap .icon_box.talk { background-image: url(/cm/static/images/darkmode/ico40_talk_no.svg) !important;}
+.box_side_wrap .icon_box.jobfind { background-image: url(/cm/static/images/darkmode/ico40_jobfind.svg) !important;}
+.box_side_wrap .icon_box.jobfind_medal { background-image: url(/cm/static/images/darkmode/ico40_jobfind_medal.svg) !important;}
+.box_side_wrap .icon_box.task { background-image: url(/cm/static/images/darkmode/ico40_task.svg) !important;}
+.box_side_wrap .icon_box.jobfind_check { background-image: url(/cm/static/images/darkmode/ico40_jobfind_check.svg) !important;}
+.box_side_wrap .icon_box.plane { background-image: url(/cm/static/images/darkmode/ico40_plane.svg) !important;}
+.box_side_wrap .icon_box.off_menu { background-image: url(/cm/static/images/darkmode/ico40_off_menu.svg) !important;}
+.box_side_wrap .icon_box.thumbs { background-image: url(/cm/static/images/darkmode/ico40_thumbs.svg) !important;}
+.box_side_wrap .icon_box.memo_check { background-image: url(/cm/static/images/darkmode/ico40_memo_check.svg) !important;}
+.box_side_wrap .icon_box.write { background-image: url(/cm/static/images/darkmode/ico40_write.svg) !important;}
+.new #header_menutree .screen_size::after { background-image: url(/cm/static/images/darkmode/img_edge.png) !important;}
+.new #gnb a.btn_link_new span::after { background-image: url(/cm/static/images/darkmode/ico16_share.svg) !important;}
+.horizon_etn_wrap .tab_title li > button { background-image: url(/cm/static/images/darkmode/horizon_edit_tool.png) !important;}
+.horizon_etn_wrap .tab_title li.active > button { background-image: url(/cm/static/images/darkmode/horizon_edit_tool_active.png) !important;}
+.error_page_section .ico_error { background-image: url(/cm/static/images/darkmode/ico80_non_file.svg) !important;}
+.nadd .ico40_task02 { background-image: url(/cm/static/images/darkmode/img_term_15.svg) !important;}
+.nadd .ico40_people_check { background-image: url(/cm/static/images/darkmode/img_term_03.svg) !important;}
+.nadd .ico40_off_memo_edit { background-image: url(/cm/static/images/darkmode/img_term_04.svg) !important;}
+.nadd .ico40_right { background-image: url(/cm/static/images/darkmode/img_term_06.svg) !important;}
+.nadd .ico40_certified03 { background-image: url(/cm/static/images/darkmode/img_term_07.svg) !important;}
+.nadd .ico40_manager { background-image: url(/cm/static/images/darkmode/img_term_09.svg) !important;}
+.svc_util > li .ico_link { background-image: url(/cm/static/images/darkmode/ico16_share.svg) !important;}
+.box_info .box_line .info_btm .date { background-image: url(/cm/static/images/darkmode/ico24_calendar.svg) !important;}
+.rslt_btn_box .ico_folder { background-image: url(/cm/static/images/darkmode/icon_folder.svg) !important;}
+.rslt_btn_box .ico_disk { background-image: url(/cm/static/images/darkmode/icon_disk.svg) !important;}
+.info_area .flex1 .site { background-image: url(/cm/static/images/darkmode/ico16_location.svg) !important;}
+.info_area .flex1 .member { background-image: url(/cm/static/images/darkmode/ico16_member.svg) !important;}
+.box_notice_wrap .tit:before { background-image: url(/cm/static/images/darkmode/ico24_loudspeaker.svg) !important;}
+.full_pop .cell.self_test_step button { background-image: url(/cm/static/images/darkmode/img_seniorSelfTestBtnOff.gif) !important;}
+.full_pop .cell.self_test_step button:hover { background-image: url(/cm/static/images/darkmode/img_seniorSelfTestBtnOn.gif) !important;}
+.customer .home .s1_r .blank_link { background-image: url(/cm/static/images/darkmode/ico16_share.svg) !important;}
+.expend_ctr_btn .btn.btn_ctr { background-image: url(/cm/static/images/darkmode/ico24_arrow_circle_down.svg) !important;}
+.nadd .nai01 { background-image: url("/cm/static/images/darkmode/img_term_01.png") !important;}
+.nadd .nai02 { background-image: url("/cm/static/images/darkmode/img_term_02.png") !important;}
+.nadd .nai03 { background-image: url("/cm/static/images/darkmode/img_term_03.png") !important;}
+.nadd .nai04 { background-image: url("/cm/static/images/darkmode/img_term_04.png") !important;}
+.nadd .nai05 { background-image: url("/cm/static/images/darkmode/img_term_05.png") !important;}
+.nadd .nai06 { background-image: url("/cm/static/images/darkmode/img_term_06.png") !important;}
+.nadd .nai07 { background-image: url("/cm/static/images/darkmode/img_term_07.png") !important;}
+.nadd .nai08 { background-image: url("/cm/static/images/darkmode/img_term_08.png") !important;}
+.nadd .nai09 { background-image: url("/cm/static/images/darkmode/img_term_09.png") !important;}
+.nadd .nai10 { background-image: url("/cm/static/images/darkmode/img_term_10.png") !important;}
+.nadd .nai11 { background-image: url("/cm/static/images/darkmode/img_term_11.png") !important;}
+.nadd .nai12 { background-image: url("/cm/static/images/darkmode/img_term_12.png") !important;}
+.nadd .nai13 { background-image: url("/cm/static/images/darkmode/img_term_13.png") !important;}
+.nadd .nai14 { background-image: url("/cm/static/images/darkmode/img_term_14.png") !important;}
+.nadd .nai15 { background-image: url("/cm/static/images/darkmode/img_term_15.png") !important;}
+
+
+/* 배경 이미지 삭제 */
+.notice_slide_wrap .swiper-vertical,
+.vert_etn_wrap .title
+{ background: none;}
+
+/* Img 이미지 교체 */
+.introduction_bi_wrap .bi_section01::after { content: ''; display: block; width: 308px; height: 84px; background: url(/cm/static/images/darkmode/footer_ci01.svg) no-repeat center/contain;}
+.introduction_bi_wrap .bi_section01 img { display: none;}
+.introduction_bi_wrap .get_banner .inner .pic::after { content: ''; display: block; width: 106px; height: 33px; background: url(/cm/static/images/darkmode/footer_ci01.svg) no-repeat center/contain;}
+.introduction_bi_wrap .get_banner .inner .pic img { display: none;}
+.box_table_wrap .box_table .flex_wrap.flex_item_c::after { content: ''; display: block; width: 106px; height: 33px; background: url(/cm/static/images/darkmode/footer_ci01.svg) no-repeat center/contain;}
+.box_table_wrap .box_table .flex_wrap.flex_item_c img { display: none;}
+#footer .logos.gov a ~ a::after { content: ''; display: block; width: 105px; height: 24px; background: url(/cm/static/images/darkmode/footer_ci03.svg) no-repeat center/contain;}
+#footer .logos.gov a ~ a img { display: none;}
+
+.policy_list_wrp .box_link_tip #SC00000001more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_jobfind.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000002more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_memo_edit.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000028more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_jobfind_check.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000033more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_baby.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000034more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_outofdoor.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000037more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_bag.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000038more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_wheelchair2.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000039more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_right_black.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000096more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_centerworker.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000097more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_centeredu.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000098more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_centerbaby.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000099more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_timer.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000100more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_worker.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000101more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_centerbag.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000102more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_centerwheelchair.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000103more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_earthman.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000104more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_grow.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000105more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_note02.svg) no-repeat center/contain;}
+.policy_list_wrp .box_link_tip #SC00000106more .box_line .img_area { content: ''; display: block; width: 40px; height: 40px; background: url(/cm/static/images/darkmode/ico40_home_center.svg) no-repeat center/contain;}
+
+.policy_list_wrp .box_link_tip .box_line .img_area img { display: none;}
+
+#selectedIdTitle .list_status_info .info_area .time {background: url(/cm/static/images/darkmode/ico16_time.svg) 0 6px no-repeat;}
+
+/* 로그인 - 인증서 */
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.selectLayout .provider-list h2,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form h2,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .agree>dt>span {color: #1a1a1a !important}
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.selectLayout>div>div>ul>li>label>span>p,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .tab-content .userInfo li *,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .agree .pcAgree ul li *,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .agree .totalAgree,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .agree dt label.smBtn,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .guide .linkArea .info,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .btnArea .basic.popup-close,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>div>div.viewPop.view>.policy * {color: #383838 !important;}
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .tab-content .userInfo li .ul-td input {-webkit-text-fill-color: #383838 !important; box-shadow: 0 0 0 1000px #fff inset !important;}
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>.pcView>div.formLayout .select form .btnArea #oacx-request-btn-pc,
+#oacxDiv>div>#oacxEmbededContents.wrap.oacxWrap>div>div>div.viewPop.view>.policy .btnArea button {color: #eaeaea !important;}
+
+/* 설문조사 */
+.nw_box_step li {background-color: #333 !important;}
+.nw_box_step li.is-active {background-color: var(--col_blue) !important;}
+.nw_box_step li.is-active .txt {color: #eaeaea !important;}
+.nw_box_step li.is-active ~ li {background-color: #333 !important;}
+.nw_box_step li.is-active:after {background: url(/cm/static/images/darkmode/bg_order_a_active.svg) no-repeat !important;}
+.nw_box_step li::before, .nw_box_step li.is-active ~ li::before {background: url(/cm/static/images/darkmode/bg_order_b.svg) no-repeat !important;}
+.nw_box_step li::after, .nw_box_step li.is-active ~ li::after {background: url(/cm/static/images/darkmode/bg_order_a.svg) no-repeat !important;}
+.nw_box_step li.is-active:before {background: url(/cm/static/images/darkmode/bg_order_b_active.svg) no-repeat !important;}
+
+/* 1229 로그인 페이지 간편인증 팝업 글자 색상 수정 */
+#oacxEmbededContents .container dt,
+#oacxEmbededContents .stepArea .step .num,
+#oacxEmbededContents .csTxt>p,
+#oacxEmbededContents .csTxt p,
+#oacxEmbededContents .container dd,
+#oacxEmbededContents .stepArea .step p,
+#oacxEmbededContents .csTxt p a,
+#oacxEmbededContents button.basic,
+#oacxEmbededContents .alert p.tit,
+#oacxEmbededContents .alert p
+{ color: #1a1a1a !important;}
+
+
+/* 고용24 대민 실업급여 문의 자동답변 */
+.layer_ai_answer .cont .answer_result_box .answer_result_hd .positive_btn button span::before {background-image: url('/cm/static/images/darkmode/24/dk24_slike.svg');}
+.layer_ai_answer .cont .answer_result_box .answer_result_hd .positive_btn button.dislike span::before {background-image: url('/cm/static/images/darkmode/24/dk24_sdislike.svg');}
+.layer_ai_answer .cont .answer_result_box .answer_result_hd .positive_btn button.like.is-active span::before {background-image: url('/cm/static/images/darkmode/24/dk24_slike_blue.svg');}
+.layer_ai_answer .cont .answer_result_box .answer_result_hd .positive_btn button.dislike.is-active span::before {background-image: url('/cm/static/images/darkmode/24/dk24_sdislike_blue.svg');}
+
+/* 간편인증 수정 */
+.new #header_menutree .screen_size .screen_title,
+.new #header_menutree .screen_size .screen_btns button.screen_close span {color: #d0d0d0 !important;}
+#oacxDiv>div>#oacxEmbededContents header .step1-header h1 span,
+#oacxDiv>div>#oacxEmbededContents header h1 span,
+#oacxDiv>div>#oacxEmbededContents .standby:has(.container .guidStep) .btnArea button.basic.sky {color: #fff !important;}
+#oacxDiv>div>#oacxEmbededContents .provider-list h2 span {color: #222 !important;}
+#oacxDiv>div>#oacxEmbededContents .standby .guidProblem .csTxt p span {color: #1a1a1a !important;}
+
+/* 고용24 실업급여 온라인취업특강 안내 화면 개선 */
+.btn.type02 i.ico16_share,
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li .step_process_tit i {filter: invert(100%) !important;}
+.online_lecture .stepgud_area .st_card_wrap .st_card,
+.online_lecture .stepgud_area .st_card_wrap .st_card ol li .st_card_num,
+.online_lecture .stepgud_area .st_cous_wrap .st_cous_ol>li .st_cous_tit .st_cous_num,
+.online_lecture .stepdiff_area .diff_ul li .diff_hd .diff_hd_img {background-color: #2b2b2b !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li {background-color: #1a1a1a !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(2) {background-color: #2b2b2b !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(3) {background-color: #383838 !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(4) {background-color: #555 !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li::before {background: url('/cm/static/images/darkmode/pseudo/ei_step_before2_dk.svg') !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li::after {background: url('/cm/static/images/darkmode/pseudo/ei_step_after1_dk.svg') !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(2)::before {background: url('/cm/static/images/darkmode/pseudo/ei_step_before2_dk.svg') !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(2)::after {background: url('/cm/static/images/darkmode/pseudo/ei_step_after2_dk.svg') !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(3)::before {background: url('/cm/static/images/darkmode/pseudo/ei_step_before3_dk.svg') !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(3)::after {background: url('/cm/static/images/darkmode/pseudo/ei_step_after3_dk.svg') !important;}
+.online_lecture .stepgud_area .st_cous_wrap .step_process_ol>li:nth-child(4)::before {background: url('/cm/static/images/darkmode/pseudo/ei_step_before4_dk.svg') !important;}
+
+/* Any-ID 수정 */
+#anyidc.thema_04 .certify-opt-tit .m-hide,
+#anyidc.certify-sel-wrap.thema_04 .certify-type>li .type-desc {color: #d0d0d0 !important;}
+#anyidc.certify-sel-wrap.type-arrow.thema_04 .tab .btn-tab {border-color: #555 !important; background-color: #28282d !important; color: #d0d0d0 !important;}
+#anyidc.certify-sel-wrap.type-arrow.thema_04 .tab.fill.full .active .btn-tab {background-color: #6b83ff !important; border-color: #6b83ff !important;}
+#anyidc.certify-sel-wrap.type-arrow.thema_04 .certify-type>li {border-color: #28282d; background-color: #28282d;}
+#anyidc.certify-sel-wrap.type-arrow.thema_04 .certify-type>li .login-link:before {filter: invert(1);}
+#anyidc.certify-sel-wrap.type-arrow.thema_04 .certify-type>li .type-tit {color: #d0d0d0;}
+
+/* 모바일 증명서 진위 확인 : S */
+.work24_verify_wrap {background-color: #1a1a1a;}
+.work24_verify_wrap .verify_qrcode {background-color: #fff;}
+/* 모바일 증명서 진위 확인 : E */
+
+/* 260508 | 실업급여 문의 자동답변 LLM 서비스 2차 : S */
+.is-create .ai_loading, .csllm_answer_ul {background-color: rgba(0, 0, 0, 0.34) !important;}
+.customer .home .cntr_contact.llm_negative_fdback .s1_r a.blank_link:has(i.ico16_share_blue) {background-image: none !important;}
+.customer .home .cntr_contact.llm_negative_fdback .btn_group .btn.btn_share::after {filter: none !important;}
+.csllm_fdback .fdback_topbox .fdback_bnt_box .bnt_fdback:not(.is-active) .ico24_slike, .csllm_fdback .fdback_topbox .fdback_bnt_box .bnt_fdback:not(.is-active) .ico24_sdislike {filter: brightness(4);}
+.csllm_fdback .fdback_topbox .fdback_bnt_box .bnt_fdback.is-active .ico16_sdislike, .csllm_fdback .fdback_topbox .fdback_bnt_box .bnt_fdback.is-active .ico16_slike {filter: none;}
+/* 260508 | 실업급여 문의 자동답변 LLM 서비스 2차 : E */

@@ -1,0 +1,1016 @@
+define([], function () {
+
+    var sample = [
+
+        // 0
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "1 ms",
+                "work process": "1 ms",
+                "work select": "1 ms",
+                "work meta insert": "1 ms",
+                "sendresult": "1 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template": "template_01",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "안녕하세요. 여러분의 취업성공을 도와드리는 '채용이'입니다. 취업정보에 필요한 다양한 정보를 24시간 신속하게 안내할게요 ! 궁금하신 내용을 문의해주세요-"
+                            }],
+                            "carousel_button": [{
+                                "text": "채용정보",
+                                "img_url": "/img_path",
+                                "value": "6A4A4E6651E895700A255C2D928B7058"
+                            }, {
+                                "text": "고용정보",
+                                "img_url": "/img_path",
+                                "value": "06542EB93827F735914DC78404BD8397"
+                            }, {
+                                "text": "기업정보",
+                                "img_url": "/img_path",
+                                "value": "16C117F2F639E01AA071E26D94E94F60"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        // 1
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "0 ms",
+                "work process": "0 ms",
+                "work select": "0 ms",
+                "work meta insert": "0 ms",
+                "sendresult": "0 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template": "template_02",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "아직 등록한 이력서가 없습니다. 워크넷에 이력서를 등록하시면 최적화된 맞춤 상담이 가능합니다. 이력서 등록 페이지로 이동 하시겠습니까?"
+                            }],
+                            "button": [{
+                                "text": "이력서 등록할래",
+                                "value": "6A4A4E6651E895700A255C2D928B7058"
+                            }, {
+                                "text": "나중에 할래",
+                                "value": "06542EB93827F735914DC78404BD8397"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        // 02
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "0 ms",
+                "work process": "0 ms",
+                "work select": "0 ms",
+                "work meta insert": "0 ms",
+                "sendresult": "0 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template": "template_03",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "희망직종 : 웹기획자 \n 희망근무지역 : 성남시 분당구 \n 희망급여 : 연봉 3000만원 이상"
+                            }, {
+                                "text": "최부장님께서 설정하신 조건에 맞는 채용공고를 10개 찾았습니다."
+                            }],
+                            "carousel_button": [{
+                                "text": "한글과 컴퓨터",
+                                "img_url": "/img_path",
+                                "description": "일러스트 및 프로그램 가능자 javascript, react 경험자 우대 경력무관 경기도 부천시 원미로",
+                                "value": "6A4A4E6651E895700A255C2D928B7058"
+                            }, {
+                                "text": "한컴MDS",
+                                "img_url": "/img_path",
+                                "description": "일러스트 및 프로그램 가능자 javascript, react 경험자 우대 경력무관 경기도 부천시 원미로",
+                                "value": "06542EB93827F735914DC78404BD8397"
+                            }],
+                            "button": [{
+                                "text": "채용공고 전체 다 보여줘",
+                                "value": "6A4A4E6651E895700A255C2D928B7058"
+                            }, {
+                                "text": "조건을 변경할래",
+                                "value": "06542EB93827F735914DC78404BD8397"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        // 3
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "1 ms",
+                "work process": "1 ms",
+                "work select": "1 ms",
+                "work meta insert": "1 ms",
+                "sendresult": "1 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template": "template_04",
+                        "dialogue_id": "S-0001",
+                        "response_type": "prompt",
+                        "messages": [{
+                            "description": [{
+                                "text": "변경하고 싶은 채용조건은 어떤것인가요?"
+                            }],
+                            "button": [{
+                                "text": "직종을 변경할래",
+                                "value": "6A4A4E6651E895700A255C2D928B7058"
+                            }, {
+                                "text": "근무지역을 변경할래",
+                                "value": "06542EB93827F735914DC78404BD8397"
+                            }, {
+                                "text": "희망임금을 변경할래",
+                                "value": "1E895700A748F735914DC78404BD8397"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        // 4
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "1 ms",
+                "work process": "1 ms",
+                "work select": "1 ms",
+                "work meta insert": "1 ms",
+                "sendresult": "1 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template": "template_05",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "희망근무지역을 시/구 단위로 입력해주세요. 구체적으로 알려주시면 더 정확한 정보를 제공해 드릴 수 있습니다. \n(예:서울시 전체, 성남시 분당구)"
+                            }]
+                        }]
+                    }
+                }
+            }
+        }
+    ];
+
+    var sample2 = [
+
+        // 0
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "0 ms",
+                "work process": "0 ms",
+                "work select": "0 ms",
+                "work meta insert": "0 ms",
+                "sendresult": "0 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template_id": "template_01",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "안녕하세요. 여러분의 취업성공을 위해 취업 입문부터 실전, 그리고 성공까지 길잡이 역할을 할 ‘고용이’에요."
+                            }, {
+                                "text": "아래의 메뉴를 통해 궁금하신 내용을 편하게 물어보세요. 신속하게 알려드려요!"
+                            }],
+                            "carousel_button": [{
+                                "title": "채용정보",
+                                "use_yn": "Y",
+                                "url": "chatbot",
+                                "value": "채용정보를 알려줘"
+                            }, {
+                                "title": "고용정책",
+                                "use_yn": "N",
+                                "url": "chatbot",
+                                "value": "고용정책을 알려줘"
+                            }, {
+                                "title": "기업정보",
+                                "use_yn": "N",
+                                "url": "chatbot",
+                                "value": "기업정보를 알려줘"
+                            }, {
+                                "title": "직업정보",
+                                "use_yn": "N",
+                                "url": "chatbot",
+                                "value": "직업정보를 알려줘"
+                            }, {
+                                "title": "고용센터",
+                                "use_yn": "N",
+                                "url": "chatbot",
+                                "value": "고용센터를 알려줘"
+                            }, {
+                                "title": "용어안내",
+                                "use_yn": "N",
+                                "url": "chatbot",
+                                "value": "용어안내 해줘"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        //1
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "1 ms",
+                "work process": "1 ms",
+                "work select": "1 ms",
+                "work meta insert": "1 ms",
+                "sendresult": "1 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template_id": "template_02",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "무엇을 도와드릴까요? 궁금하신 사항을 아래에서 확인 후 선택해주세요"
+                            }],
+                            "button": [{
+                                "title": "고용이와 대화요령",
+                                "url": "-",
+                                "value": "-"
+                            }, {
+                                "title": "고용이 위치 찾기",
+                                "url": "-",
+                                "value": "-"
+                            }, {
+                                "title": "서비스 안내",
+                                "url": "-",
+                                "value": "-"
+                            }, {
+                                "title": "구직신청 도움말",
+                                "url": "-",
+                                "value": "-"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        // 2
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "0 ms",
+                "work process": "1 ms",
+                "work select": "1 ms",
+                "work meta insert": "1 ms",
+                "sendresult": "1 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template_id": "template_03",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "희망직종 : 웹기획자 \n 희망근무지역 : 성남시 분당구 \n 희망급여 : 연봉 3000만원"
+                            }, {
+                                "text": "최부장님께서 설정하신 조건에 맞는 채용공고를 10개 찾았습니다."
+                            }],
+                            "carousel_button": [{
+                                "title": "경기창조경제혁신센터",
+                                "url": "http://www.work.go.kr/empInfo/empInfoSrch/detail/empDetailAuthView.do?wantedAuthNo=K151631812070026",
+                                "region": "경기 성남시 분당구",
+                                "body": "경기창조경제혁신센터 글로벌본부 직원(정규직 선임급...",
+                                "sal": "4200만원 ~ 5600만원"
+                            }, {
+                                "title": "일광이앤씨주식회사",
+                                "url": "http://www.work.go.kr/empInfo/empInfoSrch/detail/empDetailAuthView.do?wantedAuthNo=K151631812070020",
+                                "region": "경기 성남시 분당구",
+                                "body": "건축 공무 경력직 모집",
+                                "sal": "5000만원 ~ 5500만원"
+                            }, {
+                                "title": "(주)이앤씨지엘에스",
+                                "url": "http://www.work.go.kr/empInfo/empInfoSrch/detail/empDetailAuthView.do?wantedAuthNo=K151631812070007",
+                                "region": "경기 성남시 분당구",
+                                "body": "재무,회계 팀장급 경력직 모집",
+                                "sal": "3800만원 ~ 4500만원"
+                            }, {
+                                "title": "동우공영(주)",
+                                "url": "http://www.work.go.kr/empInfo/empInfoSrch/detail/empDetailAuthView.do?wantedAuthNo=K120121811290008",
+                                "region": "경기 성남시 분당구",
+                                "body": "시설총괄팀장/기계팀장",
+                                "sal": "3200만원 ~ 3600만원"
+                            }],
+                            "button": [{
+                                "title": "자세히 보기",
+                                "url": "http://www.work.go.kr/empInfo/empInfoSrch/list/dtlEmpSrchList.do#viewSPL",
+                                "value": "-"
+                            }, {
+                                "title": "검색조건변경",
+                                "url": "chatbot",
+                                "value": "검색조건변경"
+                            }, {
+                                "title": "처음으로",
+                                "url": "chatbot",
+                                "value": "처음으로"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        // 3
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "0 ms",
+                "work process": "0 ms",
+                "work select": "0 ms",
+                "work meta insert": "0 ms",
+                "sendresult": "0 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template_id": "template_04",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "구직신청을 하지 않아도 채용정보 서비스를 이용할 수 있어요. 하지만 회원님에게 채용정보 검색결과를 제공하기 위해서는 원하시는 희망 직종/근무지역/연봉의 정보가 필요해요. 각각의 질문을 하나의 퍼즐이라고 생각하시고 함께 퍼즐을 맞춰 나가볼까요?"
+                            }, {
+                                "text": "희망직종을 입력해주세요. ‘사무직’과 같은 직무형태는 고용이가 안내하기 어려워요 (예시: OO 강사/OO 개발자/OO 디자이너)"
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+        
+        // 4
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "1 ms",
+                "work process": "1 ms",
+                "work select": "1 ms",
+                "work meta insert": "1 ms",
+                "sendresult": "2 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template_id": "template_05",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": "저는 이제 막 걸음마를 떼고 언어를 배우기 시작했어요. 편하게 대해주세요."
+                            }]
+                        }]
+                    }
+                }
+            }
+        },
+
+        // 5
+        {
+            "status": {
+                "code": 200,
+                "message": "OK"
+            },
+            "_elapsed": {
+                "paramcheck": "0 ms",
+                "work insert": "0 ms",
+                "work process": "0 ms",
+                "work select": "0 ms",
+                "work meta insert": "1 ms",
+                "sendresult": "1 ms"
+            },
+            "data": {
+                "version": "",
+                "domain_id": "",
+                "user_id": "",
+                "timestamp": "",
+                "result": {
+                    "meta": {
+                        "intent_id": "trintent20181015T1532047790000",
+                        "chatflow_id": [],
+                        "scenario_id": "",
+                        "step": {
+                            "total": "1",
+                            "current": "1"
+                        },
+                        "scenario_parameters": [],
+                        "intent": "",
+                        "score": 1,
+                        "taxonomy": [],
+                        "resolved_query": "",
+                        "life_cycle": "check",
+                        "message_type": "check",
+                        "parameters": [{
+                            "key": "",
+                            "value": "",
+                            "id": "trparameter20181015T1533061320000",
+                            "status": "",
+                            "required": ""
+                        }]
+                    },
+                    "fulfillment": {
+                        "template_id": "template_90",
+                        "dialogue_id": "S-0001",
+                        "response_type": "answer",
+                        "messages": [{
+                            "description": [{
+                                "text": ""
+                            }],
+                            "custom": [{
+                                "command": "챗봇_도움말_view"
+                            }]
+                        }]
+                    }
+                }
+            }
+        }
+    ]
+
+    var sample_msg = [
+        
+        { // 01
+            "description": [{
+                "text": "안녕하세요. 여러분의 취업성공을 도와드리는 '채용이'입니다. 취업정보에 필요한 다양한 정보를 24시간 신속하게 안내할게요 ! 궁금하신 내용을 문의해주세요-"
+            }],
+            "carousel_button": [{
+                    "text": "채용정보",
+                    "img_url": "/img_path",
+                    "value": "6A4A4E6651E895700A255C2D928B7058"
+                },
+                {
+                    "text": "고용정보",
+                    "img_url": "/img_path",
+                    "value": "06542EB93827F735914DC78404BD8397"
+                },
+                {
+                    "text": "기업정보",
+                    "img_url": "/img_path",
+                    "value": "16C117F2F639E01AA071E26D94E94F60"
+                }
+            ]
+        },
+
+        { // 02
+            "description": [{
+                "text": "아직 등록한 이력서가 없습니다. 워크넷에 이력서를 등록하시면 최적화된 맞춤 상담이 가능합니다. 이력서 등록 페이지로 이동 하시겠습니까?"
+            }],
+            "button": [{
+                    "text": "이력서 등록할래",
+                    "value": "6A4A4E6651E895700A255C2D928B7058"
+                },
+                {
+                    "text": "나중에 할래",
+                    "value": "06542EB93827F735914DC78404BD8397"
+                }
+            ]
+        },
+
+        { // 03
+            "description": [{
+                    "text": "희망직종 : 웹기획자 \n 희망근무지역 : 성남시 분당구 \n 희망급여 : 연봉 3000만원 이상"
+                },
+                {
+                    "text": "최부장님께서 설정하신 조건에 맞는 채용공고를 10개 찾았습니다."
+                }
+            ],
+            "carousel_button": [{
+                    "text": "한글과 컴퓨터",
+                    "img_url": "/img_path",
+                    "description": "일러스트 및 프로그램 가능자 javascript, react 경험자 우대 경력무관 경기도 부천시 원미로",
+                    "value": "6A4A4E6651E895700A255C2D928B7058"
+                },
+                {
+                    "text": "한컴MDS",
+                    "img_url": "/img_path",
+                    "description": "일러스트 및 프로그램 가능자 javascript, react 경험자 우대 경력무관 경기도 부천시 원미로",
+                    "value": "06542EB93827F735914DC78404BD8397"
+                }
+            ],
+            "button": [{
+                    "text": "채용공고 전체 다 보여줘",
+                    "value": "6A4A4E6651E895700A255C2D928B7058"
+                },
+                {
+                    "text": "조건을 변경할래",
+                    "value": "06542EB93827F735914DC78404BD8397"
+                }
+            ]
+        },
+
+        { // 04
+            "description": [{
+                "text": "변경하고 싶은 채용조건은 어떤것인가요?"
+            }],
+            "button": [{
+                    "text": "직종을 변경할래",
+                    "value": "6A4A4E6651E895700A255C2D928B7058"
+                },
+                {
+                    "text": "근무지역을 변경할래",
+                    "value": "06542EB93827F735914DC78404BD8397"
+                },
+                {
+                    "text": "희망임금을 변경할래",
+                    "value": "1E895700A748F735914DC78404BD8397"
+                }
+            ]
+        },
+
+        { // 05
+            "description": [{
+                "text": "희망근무지역을 시/구 단위로 입력해주세요. 구체적으로 알려주시면 더 정확한 정보를 제공해 드릴 수 있습니다. \n(예:서울시 전체, 성남시 분당구)"
+            }]
+        }
+
+    ];
+
+    var chatBotHtml =
+        '<button type="button" class="chatbot-init-button" style="display:none">챗봇</button>' +
+        '<div class="chatbot-container" style="display:none">' +
+        '<article class="chatbot">' +
+        '<header>' +
+        '<h2 class="chatbot-repositionHandler">고용이</h2>' +
+        '<button type="button">close</button>' +
+        '</header>' +
+        '<div class="chatbot-msgCon">' +
+        '</div>' +
+        '<footer>' +
+        '<input type="checkbox" id="chatbotMemuToggle">' +
+        '<label for="chatbotMemuToggle">메뉴 토글</label>' +
+        '<div class="chatbot-menu">' +
+        '<button type="button" class="chatbot-home">처음으로</button>' +
+        '<button type="button" class="chatbot-hunting">구직신청</button>' +
+        '<button type="button" class="chatbot-helper">도움말</button>' +
+        '</div>' +
+        '<div class="chatbot-inputCon">' +
+        '<label for="chatbotSendmessage">메세지입력</label>' +
+        '<input type="text" id="chatbotSendmessage">' +
+        '<div class="chatbot-autoComplete">' +
+        '<ul>' +
+        // '<li><a href="#none">abc<strong>def</strong>ghi-1</a></li>' +
+        // '<li><a href="#none">abc<strong>def</strong>ghi-2</a></li>' +
+        // '<li><a href="#none">abc<strong>def</strong>ghi-3</a></li>' +
+        // '<li><a href="#none">abc<strong>def</strong>ghi-4</a></li>' +
+        // '<li><a href="#none">abc<strong>def</strong>ghi-5</a></li>' +
+        '</ul>' +
+        '</div>' +
+        '<button type="button">전송</button>' +
+        '</div>' +
+        '<div class="chatbot-disabledFooter">채용이에게 궁금한 게 있으시면 언제든지 찾아주세요!</div>' +
+        '</footer>' +
+        '</article>' +
+        '<article class="chatbot-popup">' +
+        '<header>' +
+        '<h3><span>채용공고</span></h3>' +
+        '<button type="button">close</button>' +
+        '</header>' +
+        '<div>' + '...' + '</div>' +
+        '</article>' +
+        '<div class="chatbot-resizeHandler">' +
+        '<span class="chatbot-t"></span>' +
+        '<span class="chatbot-r"></span>' +
+        '<span class="chatbot-b"></span>' +
+        '<span class="chatbot-l"></span>' +
+        '<span class="chatbot-lt"></span>' +
+        '<span class="chatbot-rt"></span>' +
+        '<span class="chatbot-rb"></span>' +
+        '<span class="chatbot-lb"></span>' +
+        '</div>' +
+        '</div>';
+
+    var emulateServer = function (param) {
+        var dataFromSvr = [];
+        var keyword = param.userCharMsg.trim();
+        var idx = 0;
+        switch (keyword) {
+
+            case '채용정보':
+                var recommendJobInfoRegistration = "아직 구직신청을 하지 않으셨네요?\n워크넷에 구직신청을 등록하면 회원님에게 최적화된 채용정보를 제공해드릴 수 있는데구직신청 화면으로 이동하시겠습니까?"
+
+                dataFromSvr.push({
+                    text: recommendJobInfoRegistration.replace(/(?:\r\n|\r|\n)/g, '<br>')
+                });
+                break;
+
+            case 'template_01':
+            case 'template_02':
+            case 'template_03':
+            case 'template_04':
+            case 'template_05':
+                var idxChar = keyword.substr(keyword.length - 1, 1);
+                idx = parseInt(idxChar - '1');
+                dataFromSvr.push(sample2[idx]);
+                break;
+
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+                idx = parseInt(keyword - '1');
+                dataFromSvr.push(sample2[idx]);
+                break;
+
+            case '처음으로':
+                dataFromSvr.push(sample2[0]);
+                break;
+
+            case '도움말':
+                dataFromSvr.push(sample2[5]);
+                break;
+
+            case '구직신청 도움말':
+                var ret = {
+                    "data": {
+                        "result": {
+                            "fulfillment": {
+                                "template": "template_90",
+                                "messages": [{
+                                    "description": [],
+                                    "custom": "구직신청_도움말_view"
+                                }]
+                            }
+                        }
+                    }
+                };
+                dataFromSvr.push(ret);
+                break;
+
+            default:
+                dataFromSvr.push({
+                    text: '이해할 수 없습니다.'
+                });
+                break;
+
+        }
+        // simulate server
+        var sendData = {
+            uuid: param.uuid,
+            midx: param.midx,
+            data: dataFromSvr
+        };
+
+        // console.log('[SEND]', sendData);
+        setTimeout(param.resultCallback, 800, sendData);
+    }
+
+
+    return {
+        sample: sample,
+        sample_msg: sample_msg,
+        chatBotHtml: chatBotHtml,
+        emulateServer: emulateServer
+    };
+});

@@ -2,12 +2,78 @@ import streamlit as st
 import requests
 import pandas as pd
 import calendar
+import json
 from datetime import datetime
+from pathlib import Path
+import streamlit.components.v1 as components
+from html import escape
+from frontend.components.mypage import render_mypage
+
 
 st.set_page_config(
     page_title="YouthPath",
     layout="wide"
 )
+
+BASE_DIR = Path(__file__).resolve().parent
+USERS_FILE = BASE_DIR / "users.json"
+
+def load_users():
+    if USERS_FILE.exists():
+        with open(USERS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(users, f, ensure_ascii=False, indent=4)
+
+COMPANY_OPTIONS = [
+    "SK하이닉스",
+    "CJ ENM",
+    "삼성전자",
+    "네이버",
+    "CJ제일제당",
+    "현대자동차",
+    "카카오",
+    "LG전자",
+    "삼성물산",
+    "오뚜기",
+]
+
+
+@st.cache_data
+def load_single_column_options(filename: str) -> list[str]:
+    path = BASE_DIR / filename
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    first_column = df.columns[0]
+    values = df[first_column].dropna().astype(str).str.strip()
+    return list(dict.fromkeys(value for value in values if value))
+
+
+@st.cache_data
+def load_region_options() -> list[str]:
+    path = BASE_DIR / "전국 시군구 행정구역 목록.csv"
+    df = pd.read_csv(path, encoding="utf-8-sig", skiprows=2)
+    first_col = df.columns[0]
+    second_col = df.columns[1]
+
+    options: list[str] = []
+    for _, row in df[[first_col, second_col]].dropna(how="all").iterrows():
+        province = str(row.get(first_col, "")).strip()
+        city = str(row.get(second_col, "")).strip()
+        if city and city.lower() != "nan":
+            value = f"{province} {city}".strip()
+        else:
+            value = province
+        if value and value.lower() != "nan":
+            options.append(value)
+    return list(dict.fromkeys(options))
+
+
+REGION_OPTIONS = load_region_options()
+SKILL_OPTIONS = load_single_column_options("보유 기술.csv")
+ROLE_OPTIONS = load_single_column_options("희망직무.csv")
 
 # =========================
 # session state
@@ -22,6 +88,60 @@ if "response_data" not in st.session_state:
 if "saved_events" not in st.session_state:
     st.session_state.saved_events = []
 
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "current_user" not in st.session_state:
+    st.session_state.current_user = None
+
+if "profile" not in st.session_state:
+    st.session_state.profile = {}
+
+if not st.session_state.logged_in:
+    _, col_login, _ = st.columns([1, 1.2, 1])
+    with col_login:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("<h2 style='text-align: center; margin-bottom: 20px;'>🎯 YouthPath 시작하기</h2>", unsafe_allow_html=True)
+            tab_login, tab_signup = st.tabs(["로그인", "회원가입"])
+            
+            with tab_login:
+                login_id = st.text_input("아이디", key="login_id")
+                login_pw = st.text_input("비밀번호", type="password", key="login_pw")
+                if st.button("로그인", use_container_width=True, type="primary"):
+                    users = load_users()
+                    if login_id in users and users[login_id]["password"] == login_pw:
+                        st.session_state.logged_in = True
+                        st.session_state.current_user = login_id
+                        st.session_state.profile = users[login_id].get("profile", {})
+                        st.session_state.saved_events = users[login_id].get("saved_events", [])
+                        st.rerun()
+                    else:
+                        st.error("아이디 또는 비밀번호가 올바르지 않습니다.")
+                        
+            with tab_signup:
+                signup_id = st.text_input("아이디", key="signup_id")
+                signup_pw = st.text_input("비밀번호", type="password", key="signup_pw")
+                signup_pw_confirm = st.text_input("비밀번호 확인", type="password", key="signup_pw_confirm")
+                if st.button("회원가입", use_container_width=True, type="primary"):
+                    users = load_users()
+                    if signup_id in users:
+                        st.error("이미 존재하는 아이디입니다.")
+                    elif signup_pw != signup_pw_confirm:
+                        st.error("비밀번호가 일치하지 않습니다.")
+                    elif len(signup_id) < 1 or len(signup_pw) < 1:
+                        st.error("아이디와 비밀번호를 입력해주세요.")
+                    else:
+                        users[signup_id] = {
+                            "password": signup_pw,
+                            "profile": {},
+                            "saved_events": []
+                        }
+                        save_users(users)
+                        st.success("회원가입이 완료되었습니다. 로그인 탭에서 로그인해주세요.")
+                        
+    st.stop()
+
 def add_event_to_calendar(event):
     exists = any(
         saved_event["title"] == event["title"]
@@ -31,6 +151,10 @@ def add_event_to_calendar(event):
 
     if not exists:
         st.session_state.saved_events.append(event)
+        users = load_users()
+        if st.session_state.current_user in users:
+            users[st.session_state.current_user]["saved_events"] = st.session_state.saved_events
+            save_users(users)
 
     st.session_state.page = "mypage"
     st.rerun()
@@ -45,6 +169,10 @@ def delete_event_from_calendar(event):
             and saved_event["source"] == event["source"]
         )
     ]
+    users = load_users()
+    if st.session_state.current_user in users:
+        users[st.session_state.current_user]["saved_events"] = st.session_state.saved_events
+        save_users(users)
 
     st.rerun()
 
@@ -61,81 +189,96 @@ with st.sidebar:
 
     st.subheader("👤 프로필")
 
+    user_profile = st.session_state.profile
+
+    def get_idx(options, val, default=0):
+        try: return options.index(val)
+        except ValueError: return default
+
     age = st.selectbox(
         "나이",
         list(range(19, 40)),
-        index=8
+        index=get_idx(list(range(19, 40)), user_profile.get("age", 27), 8)
     )
 
+    region_options = REGION_OPTIONS
     region = st.selectbox(
         "거주지",
-        ["서울", "경기", "인천", "부산", "대구"]
+        region_options,
+        index=get_idx(region_options, user_profile.get("region", "서울특별시"), region_options.index("서울특별시") if "서울특별시" in region_options else 0)
     )
 
+    income_options = [f"중위 {percent}% 이하" for percent in range(10, 101, 10)]
     income = st.selectbox(
         "소득 구간",
-        [
-            "중위 60% 이하",
-            "중위 80% 이하",
-            "중위 100% 이하"
-        ]
+        income_options,
+        index=get_idx(income_options, user_profile.get("income", "중위 60% 이하"), 5)
     )
 
+    edu_options = ["고등학교 졸업", "전문대 졸업", "4년제 졸업", "대학원"]
     education = st.selectbox(
         "학력",
-        [
-            "고등학교 졸업",
-            "전문대 졸업",
-            "4년제 졸업",
-            "대학원"
-        ]
+        edu_options,
+        index=get_idx(edu_options, user_profile.get("education", "4년제 졸업"), 2)
     )
 
     skills = st.multiselect(
-        "보유 기술",
-        [
-            "Python",
-            "SQL",
-            "React",
-            "Java",
-            "Excel"
-        ],
-        default=["Python", "SQL"]
+        "보유 기술 / 자격증 / Tool",
+        SKILL_OPTIONS,
+        default=user_profile.get("skills", [option for option in ["정보처리기사", "SQLD", "Python"] if option in SKILL_OPTIONS])
     )
 
+    exp_options = [0,1,2,3,4,5]
     experience = st.selectbox(
         "경력(년)",
-        [0,1,2,3,4,5]
+        exp_options,
+        index=get_idx(exp_options, user_profile.get("experience", 0), 0)
     )
 
-    target_role = st.selectbox(
+    target_roles = st.multiselect(
         "희망 직무",
-        [
-            "데이터 분석가",
-            "백엔드 개발자",
-            "프론트엔드 개발자",
-            "기획",
-            "마케팅"
-        ]
+        ROLE_OPTIONS,
+        default=user_profile.get("target_roles", [])
     )
 
-    target_company = st.selectbox(
+    target_companies = st.multiselect(
         "관심 기업",
-        [
-            "네이버",
-            "카카오",
-            "삼성",
-            "쿠팡",
-            "토스"
-        ]
+        COMPANY_OPTIONS,
+        default=user_profile.get("target_companies", [])
     )
+
+    if st.button("💾 프로필 저장", use_container_width=True):
+        users = load_users()
+        users[st.session_state.current_user]["profile"] = {
+            "age": age,
+            "region": region,
+            "income": income,
+            "education": education,
+            "skills": skills,
+            "experience": experience,
+            "target_roles": target_roles,
+            "target_companies": target_companies
+        }
+        save_users(users)
+        st.session_state.profile = users[st.session_state.current_user]["profile"]
+        st.success("프로필이 성공적으로 저장되었습니다.")
 
     st.divider()
+
+    st.write(f"반갑습니다, **{st.session_state.current_user}**님!")
+    if st.button("🚪 로그아웃", use_container_width=True):
+        st.session_state.logged_in = False
+        st.session_state.current_user = None
+        st.session_state.profile = {}
+        st.session_state.saved_events = []
+        st.session_state.page = "home"
+        st.rerun()
 
     if st.button("📅 마이페이지"):
         st.session_state.page = "mypage"
 
     if st.button("🏠 홈"):
+        st.query_params.clear()
         st.session_state.page = "home"
 
 # =========================
@@ -152,6 +295,8 @@ if st.session_state.page == "home":
     )
 
     if st.button("🔍 질문하기"):
+        target_role = ", ".join(target_roles)
+        target_company = ", ".join(target_companies)
 
         response = requests.post(
             "http://127.0.0.1:8000/ask",
@@ -165,7 +310,9 @@ if st.session_state.page == "home":
                     "skills": skills,
                     "experience": experience,
                     "target_role": target_role,
-                    "target_company": target_company
+                    "target_roles": target_roles,
+                    "target_company": target_company,
+                    "target_companies": target_companies
                 }
             }
         )
@@ -191,6 +338,16 @@ if st.session_state.page == "home":
 
     LangGraph Router가 의도를 분석해 적절한 Agent를 호출합니다.
     """)
+
+    try:
+        if "cal_year" in st.query_params:
+            st.session_state.calendar_year = int(st.query_params["cal_year"])
+        if "cal_month" in st.query_params:
+            st.session_state.calendar_month = int(st.query_params["cal_month"])
+        if "cal_day" in st.query_params:
+            st.session_state.selected_day = int(st.query_params["cal_day"])
+    except ValueError:
+        pass
 
     # =========================
     # Output
@@ -278,6 +435,7 @@ elif st.session_state.page == "output":
                             "link": item["link"]
                         })
         if st.button("🏠 홈으로 돌아가기"):
+            st.query_params.clear()
             st.session_state.page = "home"
             st.rerun()
 
@@ -291,253 +449,4 @@ elif st.session_state.page == "output":
 # =========================
 
 elif st.session_state.page == "mypage":
-
-    st.title("🗓️ 마이페이지")
-
-    # =========================
-    # 현재 월 상태 관리
-    # =========================
-    today = datetime.today()
-
-    if "calendar_year" not in st.session_state:
-        st.session_state.calendar_year = today.year
-
-    if "calendar_month" not in st.session_state:
-        st.session_state.calendar_month = today.month
-
-    year = st.session_state.calendar_year
-    month = st.session_state.calendar_month
-
-    # =========================
-    # 더미 이벤트 데이터
-    # 나중에는 DynamoDB에서 가져오면 됨
-    # =========================
-    events = []
-    for saved_event in st.session_state.saved_events:
-        event_date = datetime.strptime(saved_event["date"], "%Y-%m-%d")
-
-        if event_date.year == year and event_date.month == month:
-            d_day_num = (event_date.date() - today.date()).days
-
-            if d_day_num >= 0:
-                d_day = f"D-{d_day_num}"
-            else:
-                d_day = f"D+{abs(d_day_num)}"
-
-            events.append({
-                **saved_event,
-                "day": event_date.day,
-                "d_day": d_day
-            })
-
-    # 날짜별 이벤트 묶기
-    events_by_day = {}
-    for event in events:
-        events_by_day.setdefault(event["day"], []).append(event)
-
-    # 선택 날짜 기본값
-    if "selected_day" not in st.session_state:
-        st.session_state.selected_day = today.day
-
-    # =========================
-    # 달력 상단
-    # =========================
-    col_title, col_nav = st.columns([5, 1])
-
-    with col_title:
-        st.subheader("🗓️ 내 일정 달력")
-
-    with col_nav:
-        nav1, nav2, nav3 = st.columns(3)
-
-        with nav1:
-            if st.button("◀"):
-                if month == 1:
-                    st.session_state.calendar_year -= 1
-                    st.session_state.calendar_month = 12
-                else:
-                    st.session_state.calendar_month -= 1
-                st.rerun()
-
-        with nav2:
-            st.markdown(f"**{year}. {month:02d}**")
-
-        with nav3:
-            if st.button("▶"):
-                if month == 12:
-                    st.session_state.calendar_year += 1
-                    st.session_state.calendar_month = 1
-                else:
-                    st.session_state.calendar_month += 1
-                st.rerun()
-
-    # =========================
-    # 전체 레이아웃: 왼쪽 달력 / 오른쪽 패널
-    # =========================
-    left, right = st.columns([3, 1.35])
-
-    # =========================
-    # 왼쪽: 달력
-    # =========================
-    with left:
-
-        weekdays = ["일", "월", "화", "수", "목", "금", "토"]
-
-        # calendar.monthcalendar는 월요일 시작이라, 일요일 시작으로 바꿔줌
-        calendar.setfirstweekday(calendar.SUNDAY)
-        month_calendar = calendar.monthcalendar(year, month)
-
-        header_cols = st.columns(7)
-        for i, day_name in enumerate(weekdays):
-            if day_name == "일":
-                header_cols[i].markdown(f"<span style='color:#ff4b4b; font-weight:700'>{day_name}</span>", unsafe_allow_html=True)
-            elif day_name == "토":
-                header_cols[i].markdown(f"<span style='color:#1f77ff; font-weight:700'>{day_name}</span>", unsafe_allow_html=True)
-            else:
-                header_cols[i].markdown(f"**{day_name}**")
-
-        for week in month_calendar:
-            week_cols = st.columns(7)
-
-            for i, day in enumerate(week):
-                with week_cols[i]:
-
-                    if day == 0:
-                        st.markdown(
-                            """
-                            <div style="
-                                height: 95px;
-                                border: 1px solid #eeeeee;
-                                border-radius: 4px;
-                                background-color: #fafafa;">
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-
-                    else:
-                        is_selected = day == st.session_state.selected_day
-                        has_events = day in events_by_day
-
-                        border_color = "#ff4b4b" if is_selected else "#eeeeee"
-                        bg_color = "#fff3f3" if is_selected else "white"
-
-                        # 날짜 선택 버튼
-                        if st.button(str(day), key=f"day_{day}"):
-                            st.session_state.selected_day = day
-                            st.rerun()
-
-                        # 이벤트 표시
-                        if has_events:
-                            for event in events_by_day[day]:
-                                if event["source"] == "policy":
-                                    st.markdown("🔴 정책")
-                                elif event["source"] == "job":
-                                    st.markdown("🔵 채용")
-                                else:
-                                    st.markdown("⚪ 일정")
-
-        st.caption("🔴 정책 마감  |  🔵 채용 마감  |  ⚪ 직접 추가")
-
-    # =========================
-    # 오른쪽: 선택 날짜 패널
-    # =========================
-    with right:
-
-        selected_day = st.session_state.selected_day
-        selected_events = events_by_day.get(selected_day, [])
-
-        st.error(f"📅 선택: {year}-{month:02d}-{selected_day:02d}")
-
-        with st.container(border=True):
-            st.markdown("### ➕ 직접 일정 추가")
-
-            custom_title = st.text_input(
-                "일정 제목",
-                placeholder="예: 포트폴리오 제출 마감"
-            )
-
-            custom_date = st.date_input(
-                "일정 날짜",
-                value=datetime(year, month, selected_day).date()
-            )
-
-            custom_link = st.text_input(
-                "관련 링크",
-                placeholder="https://..."
-            )
-
-            if st.button("직접 추가하기"):
-                add_event_to_calendar({
-                    "title": custom_title,
-                    "date": custom_date.strftime("%Y-%m-%d"),
-                    "type": "직접 추가",
-                    "source": "manual",
-                    "link": custom_link
-                })
-
-        with st.container(border=True):
-            st.markdown(f"### ▼ 그 날의 이벤트 ({len(selected_events)}건)")
-
-            if selected_events:
-                for event in selected_events:
-                    st.markdown(f"**💼 {event['title']}**")
-                    st.caption(f"마감: {event['date']} · {event['d_day']}")
-
-                    c1, c2 = st.columns([2, 1])
-                    with c1:
-                        st.link_button("해당 사이트로 가기 →", event["link"])
-                    with c2:
-                        if st.button(
-                            "삭제",
-                            key=f"delete_{event['source']}_{event['title']}_{event['date']}"
-                        ):
-                            delete_event_from_calendar(event)
-
-                    st.divider()
-            else:
-                st.caption("다른 날짜 클릭 시 해당 날의 이벤트로 교체됩니다.")
-
-        with st.container(border=True):
-            if events:
-                st.info(
-                    f"""
-                    📘 이번 달 요약
-
-                    총 {len(events)}건  
-                    가장 임박: {events[0]['title']} ({events[0]['d_day']})  
-                    가장 먼 일정: {events[-1]['title']} ({events[-1]['d_day']})
-                    """
-                )   
-            else:
-                st.info(
-                    """
-                    📘 이번 달 요약
-    
-                    아직 추가된 일정이 없습니다.  
-                    결과 화면에서 '캘린더 추가하기'를 눌러 일정을 모아보세요.
-                    """
-                )
-
-        with st.container(border=True):
-            st.markdown("### 📌 이번 달 이벤트 리스트")
-
-            for event in events:
-                if event["source"] == "policy":
-                    color = "🟥"
-                elif event["source"] == "job":
-                    color = "🟦"
-                else:
-                    color = "⬜"
-
-                st.markdown(
-                    f"{color} **{event['title']}** "
-                    f"<span style='float:right'>{event['d_day']}</span>",
-                    unsafe_allow_html=True
-                )
-
-    st.divider()
-
-    if st.button("🏠 홈으로 돌아가기"):
-        st.session_state.page = "home"
-        st.rerun()
+    render_mypage()

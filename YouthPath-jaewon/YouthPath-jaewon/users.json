@@ -1,0 +1,42 @@
+{
+    "hohoho897": {
+        "password": "2848hohoho",
+        "profile": {
+            "age": 26,
+            "region": "경기도 안산시",
+            "income": "중위 70% 이하",
+            "education": "고등학교 졸업",
+            "skills": [],
+            "experience": 0,
+            "target_roles": [
+                "CRM 데이터 분석가"
+            ],
+            "target_companies": [
+                "현대자동차"
+            ]
+        },
+        "saved_events": [
+            {
+                "title": "sdfasdf",
+                "date": "2026-06-15",
+                "source": "policy",
+                "link": "",
+                "type": "정책 마감"
+            },
+            {
+                "title": "gebfnb",
+                "date": "2026-06-18",
+                "source": "job",
+                "link": "",
+                "type": "채용 마감"
+            },
+            {
+                "title": "asg",
+                "date": "2026-06-24",
+                "source": "other",
+                "link": "",
+                "type": "기타"
+            }
+        ]
+    }
+}
