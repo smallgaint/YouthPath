@@ -307,6 +307,7 @@ if st.session_state.page == "home":
                     "education": education,
                     "skills": skills,
                     "experience": experience,
+                    "experience_y": experience,
                     "target_role": target_role,
                     "target_roles": target_roles,
                     "target_company": target_company,
@@ -315,7 +316,19 @@ if st.session_state.page == "home":
             }
         )
 
-        st.session_state.response_data = response.json()
+        response_data = response.json()
+        
+        # --- 터미널 디버깅 출력 ---
+        print("\n" + "="*60)
+        print("🛠️ [디버깅] 각 Agent별 응답 JSON 데이터")
+        print("="*60)
+        for agent_name in ["policy", "job", "resume", "calendar"]:
+            if response_data.get(agent_name):
+                print(f"\n[{agent_name.upper()} AGENT]")
+                print(json.dumps(response_data[agent_name], ensure_ascii=False, indent=2))
+        print("="*60 + "\n")
+
+        st.session_state.response_data = response_data
         st.session_state.page = "output"
         st.rerun()
 
@@ -355,83 +368,152 @@ elif st.session_state.page == "output":
     if st.session_state.response_data:
         data = st.session_state.response_data
         st.title("📤 결과")
-        st.success("Router가 Policy + Job Agent를 선택했습니다.")
+        
+        used_agents = []
+        if data.get("policy"): used_agents.append("Policy")
+        if data.get("job"): used_agents.append("Job")
+        if data.get("resume"): used_agents.append("Resume")
+        if data.get("calendar"): used_agents.append("Calendar")
+        
+        if used_agents:
+            st.success(f"Router가 {' + '.join(used_agents)} Agent를 선택했습니다.")
+        else:
+            st.warning("분석 결과 적절한 에이전트를 찾지 못했습니다.")
+            
         st.subheader("💬 답변")
-        st.write(data["answer"])
+        st.write(data.get("answer", ""))
 
         # =========================
         # 정책 결과
         # =========================
+        if data.get("policy"):
+            st.subheader("📋 정책 결과")
+            for item in data.get("policy", []):
+                with st.container(border=True):
+                    st.markdown(f"### {item.get('title', '제목 없음')}")
+                    st.write(item.get("description", "정책 상세 내용을 확인해보세요."))
+                    deadline = item.get("deadline", "미정")
+                    st.caption(f"마감 날짜: {deadline}")
 
-        st.subheader("📋 정책 결과")
-
-        for item in data["policy"]:
-
-            with st.container(border=True):
-
-                st.markdown(f"### {item['title']}")
-                st.caption(f"마감: {item['deadline']}")
-
-                st.write(item["description"])
-
-                st.success(f"조건 일치: {item['match']}")
-
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.link_button(
-                        "해당 사이트 가기",
-                        item["link"]
-                    )
-
-                with col2:
-                    if st.button(
-                        "📅 캘린더 추가하기",
-                        key=f"policy_calendar_{item['title']}"
-                    ):
-                        add_event_to_calendar({
-                            "title": item["title"],
-                            "date": item["deadline"],
-                            "type": "정책",
-                            "source": "policy",
-                            "link": item["link"]
-                        })
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        # 정책 API의 원본 키가 넘어올 경우를 대비한 Fallback 탐색
+                        link_url = (
+                            item.get("link") or 
+                            item.get("url") or 
+                            item.get("rqutUrla") or 
+                            item.get("rfcSiteUrla1") or 
+                            item.get("rfcSiteUrla2") or "#"
+                        )
+                        st.link_button("🌐 사이트 바로가기", link_url, use_container_width=True)
+                    with col2:
+                        if st.button(
+                            "➕ 마이페이지 추가",
+                            key=f"policy_calendar_{item.get('title', '')}",
+                            use_container_width=True
+                        ):
+                            add_event_to_calendar({
+                                "title": item.get("title", ""),
+                                "date": deadline,
+                                "type": "정책",
+                                "source": "policy",
+                                "link": link_url if link_url != "#" else ""
+                            })
 
         # =========================
         # 채용 결과
         # =========================
+        if data.get("job"):
+            st.subheader("💼 채용 결과")
+            for item in data.get("job", []):
+                with st.container(border=True):
+                    company = item.get("company", "")
+                    title = item.get("title", "")
+                    display_title = f"{company} - {title}" if company else title
 
-        st.subheader("💼 채용 결과")
+                    st.markdown(f"### {display_title}")
+                    st.write(item.get("description", "채용 상세 내용과 지원 자격을 확인해보세요."))
+                    deadline = item.get("deadline", item.get("date", "미정"))
+                    st.caption(f"마감 날짜: {deadline}")
 
-        for item in data["job"]:
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        link_url = item.get("url") or item.get("link") or "#"
+                        st.link_button("🌐 사이트 바로가기", link_url, use_container_width=True)
+                    with col2:
+                        if st.button(
+                            "➕ 마이페이지 추가",
+                            key=f"job_calendar_{company}_{title}",
+                            use_container_width=True
+                        ):
+                            add_event_to_calendar({
+                                "title": display_title,
+                                "date": deadline,
+                                "type": "채용",
+                                "source": "job",
+                                "link": link_url if link_url != "#" else ""
+                            })
 
-            with st.container(border=True):
+        # =========================
+        # 자소서 코치 결과 (이력서)
+        # =========================
+        if data.get("resume"):
+            st.subheader("🎯 자소서 코치 (작성 프롬프트)")
+            for i, item in enumerate(data.get("resume", [])):
+                with st.container(border=True):
+                    company = item.get("company", "회사명 없음")
+                    target_role = item.get("target_role", "직무 없음")
+                    st.markdown(f"### 📌 {company} — {target_role} 작성 프롬프트")
+                    
+                    summary = item.get("company_summary", {})
+                    if isinstance(summary, dict):
+                        st.markdown("**[회사 컨텍스트]**")
+                        if summary.get("business_keywords"):
+                            st.write(f"• 키워드: {', '.join(summary.get('business_keywords', []))}")
+                        if summary.get("values"):
+                            st.write(f"• 인재상: {', '.join(summary.get('values', []))}")
+                    elif isinstance(summary, str):
+                        st.markdown("**[회사 컨텍스트]**")
+                        st.write(summary)
+                        
+                    generated_prompt = item.get("generated_prompt", "")
+                    if generated_prompt:
+                        st.markdown("**[합성된 프롬프트]**")
+                        st.code(generated_prompt, language="markdown")
 
-                st.markdown(f"### {item['company']}")
-                st.write(item["title"])
+        # =========================
+        # 일정 결과
+        # =========================
+        if data.get("calendar"):
+            st.subheader("📅 마감 일정")
+            for i, item in enumerate(data.get("calendar", [])):
+                with st.container(border=True):
+                    title = item.get("title", "일정")
+                    st.markdown(f"### {title}")
+                    
+                    deadline = item.get("deadline", item.get("date", "미정"))
+                    days_rem = item.get("days_remaining", "")
+                    d_day_str = f"D-{days_rem}" if days_rem != "" else ""
+                    st.caption(f"마감 날짜: {deadline} {f'({d_day_str})' if d_day_str else ''}")
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        link_url = item.get("link") or item.get("url") or "#"
+                        st.link_button("🌐 사이트 바로가기", link_url, use_container_width=True)
+                    with col2:
+                        if st.button(
+                            "➕ 마이페이지 추가",
+                            key=f"cal_calendar_{i}_{title}",
+                            use_container_width=True
+                        ):
+                            add_event_to_calendar({
+                                "title": title,
+                                "date": deadline,
+                                "type": "일정",
+                                "source": "other",
+                                "link": link_url if link_url != "#" else ""
+                            })
 
-                st.warning(item["deadline"])
-
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.link_button(
-                        "해당 사이트 가기",
-                        item["link"]
-                        )
-
-                with col2:
-                    if st.button(
-                        "📅 캘린더 추가하기",
-                        key=f"job_calendar_{item['company']}_{item['title']}"
-                    ):
-                        add_event_to_calendar({
-                            "title": f"{item['company']} {item['title']}",
-                            "date": item["date"],
-                            "type": "채용",
-                            "source": "job",
-                            "link": item["link"]
-                        })
         if st.button("🏠 홈으로 돌아가기"):
             st.query_params.clear()
             st.session_state.page = "home"

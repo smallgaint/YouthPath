@@ -3,17 +3,15 @@
         "password": "2848hohoho",
         "profile": {
             "age": 26,
-            "region": "충남",
-            "income": "중위 40% 이하",
+            "region": "경기",
+            "income": "중위 50% 이하",
             "education": "학력무관",
             "skills": [],
             "experience": 0,
             "target_roles": [
                 "경영.회계.사무"
             ],
-            "target_companies": [
-                "현대자동차"
-            ]
+            "target_companies": []
         },
         "saved_events": [
             {
@@ -36,6 +34,27 @@
                 "source": "other",
                 "link": "",
                 "type": "기타"
+            },
+            {
+                "title": "국민건강보험공단 - 2026년도 하반기 국민건강보험공단 기간제근로자 채용 공고",
+                "date": "2026-06-23",
+                "type": "채용",
+                "source": "job",
+                "link": ""
+            },
+            {
+                "title": "스타트업AI기술인력양성(이어드림스쿨)",
+                "date": "2026-05-10",
+                "type": "정책",
+                "source": "policy",
+                "link": ""
+            },
+            {
+                "title": "2026 평택시 장학재단 애향장학생(대학생)선발",
+                "date": "2026-03-16",
+                "type": "정책",
+                "source": "policy",
+                "link": ""
             }
         ]
     }

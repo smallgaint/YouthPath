@@ -190,7 +190,7 @@ def _category_major(policy: dict[str, Any]) -> str:
 
 
 def _link(policy: dict[str, Any], chunks_by_pid: dict[str, list[dict[str, Any]]]) -> str | None:
-    for key in ("APLY_URL_ADDR", "aplyUrlAddr", "REF_URL_ADDR1", "refUrlAddr1"):
+    for key in ("APLY_URL_ADDR", "aplyUrlAddr", "REF_URL_ADDR1", "refUrlAddr1", "rfcSiteUrla1", "rfcSiteUrla2", "rqutUrla", "link"):
         value = _raw_field(policy, key)
         if value and value != "0":
             return _ensure_scheme(value)
@@ -492,6 +492,13 @@ def build_policy_response(profile: dict[str, Any], query: str) -> dict[str, Any]
             (matched if crit["ok"] else unmatched).append(crit)
 
         deadline, deadline_type, deadline_raw = _parse_deadline(cand)
+        
+        if deadline:
+            try:
+                if datetime.strptime(deadline, "%Y-%m-%d").date() < datetime.today().date():
+                    continue
+            except ValueError:
+                pass
 
         if pid in api_pids and pid in rag_pids:
             src = "api+rag"

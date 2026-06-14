@@ -362,11 +362,15 @@ class JobAgent:
             )
 
         normalized = [self._normalize(row, profile) for row in raw_jobs]
-        for job in normalized:
+        
+        # 1. 마감일이 지난 공고 제외 (days_remaining < 0 필터링)
+        valid_jobs = [job for job in normalized if job["days_remaining"] >= 0]
+        
+        for job in valid_jobs:
             job["fit_score"], job["fit_breakdown"] = self._compute_fit_score(profile, job)
 
-        normalized.sort(key=lambda job: job["fit_score"], reverse=True)
-        top = normalized[: profile.get("limit", 5)]
+        valid_jobs.sort(key=lambda job: job["fit_score"], reverse=True)
+        top = valid_jobs[: profile.get("limit", 5)]
 
         return {
             "agent_name": "job",

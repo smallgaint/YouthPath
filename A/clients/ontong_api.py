@@ -27,7 +27,7 @@ FIELD_ALIASES = {
     "max_age": ["SPRT_TRGT_MAX_AGE", "sprtTrgtMaxAge", "ageInfo", "maxAge"],
     "income": ["EARN_ETC_CN", "EARN_MIN_AMT", "EARN_CND_CN", "earnCndCn", "income", "incomeInfo"],
     "deadline": ["APLY_PRD_END_YMD", "APLY_PRD_SE_CD", "aplyYmd", "rqutPrdCn", "deadline", "applyPeriod"],
-    "link": ["APLY_URL_ADDR", "REF_URL_ADDR1", "aplyUrlAddr", "rfcSiteUrla1", "link", "url"],
+    "link": ["APLY_URL_ADDR", "REF_URL_ADDR1", "aplyUrlAddr", "rfcSiteUrla1", "rfcSiteUrla2", "rqutUrla", "link", "url"],
 }
 
 

@@ -96,7 +96,18 @@ def move_month(delta):
 def build_events(year, month, today):
     events = []
     for saved_event in st.session_state.saved_events:
-        event_date = datetime.strptime(saved_event["date"], "%Y-%m-%d")
+        date_str = saved_event.get("date", "")
+        event_date = None
+        for fmt in ("%Y-%m-%d", "%Y%m%d", "%Y.%m.%d", "%y-%m-%d", "%y%m%d"):
+            try:
+                event_date = datetime.strptime(date_str, fmt)
+                saved_event["date"] = event_date.strftime("%Y-%m-%d")
+                break
+            except ValueError:
+                pass
+
+        if not event_date:
+            continue
 
         if event_date.year == year and event_date.month == month:
             d_day_num = (event_date.date() - today).days
