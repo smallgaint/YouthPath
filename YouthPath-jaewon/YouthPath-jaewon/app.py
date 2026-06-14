@@ -51,29 +51,24 @@ def load_single_column_options(filename: str) -> list[str]:
     return list(dict.fromkeys(value for value in values if value))
 
 
-@st.cache_data
-def load_region_options() -> list[str]:
-    path = BASE_DIR / "전국 시군구 행정구역 목록.csv"
-    df = pd.read_csv(path, encoding="utf-8-sig", skiprows=2)
-    first_col = df.columns[0]
-    second_col = df.columns[1]
+REGION_OPTIONS = [
+    "서울", "인천", "대전", "대구", "부산", "광주", "울산", "경기", "강원", 
+    "충남", "충북", "경북", "경남", "전남", "전북", "제주", "세종", "해외"
+]
 
-    options: list[str] = []
-    for _, row in df[[first_col, second_col]].dropna(how="all").iterrows():
-        province = str(row.get(first_col, "")).strip()
-        city = str(row.get(second_col, "")).strip()
-        if city and city.lower() != "nan":
-            value = f"{province} {city}".strip()
-        else:
-            value = province
-        if value and value.lower() != "nan":
-            options.append(value)
-    return list(dict.fromkeys(options))
+ROLE_OPTIONS = [
+    "사업관리", "경영.회계.사무", "금융.보험", "교육.자연.사회과학", 
+    "법률.경찰.소방.교도.국방", "보건.의료", "사회복지.종교", "문화.예술.디자인.방송", 
+    "운전.운송", "영업판매", "경비.청소", "이용.숙박.여행.오락.스포츠", 
+    "음식서비스", "건설", "기계", "재료", "화학", "섬유.의복", "전기.전자", 
+    "정보통신", "식품가공", "인쇄.목재.가구.공예", "환경.에너지.안전", "농림어업", "연구"
+]
 
+EDUCATION_OPTIONS = [
+    "학력무관", "중졸이하", "고졸", "대졸(2~3년)", "대졸(4년)", "석사", "박사"
+]
 
-REGION_OPTIONS = load_region_options()
 SKILL_OPTIONS = load_single_column_options("보유 기술.csv")
-ROLE_OPTIONS = load_single_column_options("희망직무.csv")
 
 # =========================
 # session state
@@ -205,7 +200,7 @@ with st.sidebar:
     region = st.selectbox(
         "거주지",
         region_options,
-        index=get_idx(region_options, user_profile.get("region", "서울특별시"), region_options.index("서울특별시") if "서울특별시" in region_options else 0)
+        index=get_idx(region_options, user_profile.get("region", "서울"), region_options.index("서울") if "서울" in region_options else 0)
     )
 
     income_options = [f"중위 {percent}% 이하" for percent in range(10, 101, 10)]
@@ -215,17 +210,18 @@ with st.sidebar:
         index=get_idx(income_options, user_profile.get("income", "중위 60% 이하"), 5)
     )
 
-    edu_options = ["고등학교 졸업", "전문대 졸업", "4년제 졸업", "대학원"]
+    edu_options = EDUCATION_OPTIONS
     education = st.selectbox(
         "학력",
         edu_options,
-        index=get_idx(edu_options, user_profile.get("education", "4년제 졸업"), 2)
+        index=get_idx(edu_options, user_profile.get("education", "대졸(4년)"), 4)
     )
 
+    saved_skills = user_profile.get("skills", [option for option in ["정보처리기사", "SQLD", "Python"] if option in SKILL_OPTIONS])
     skills = st.multiselect(
         "보유 기술 / 자격증 / Tool",
         SKILL_OPTIONS,
-        default=user_profile.get("skills", [option for option in ["정보처리기사", "SQLD", "Python"] if option in SKILL_OPTIONS])
+        default=[s for s in saved_skills if s in SKILL_OPTIONS]
     )
 
     exp_options = [0,1,2,3,4,5]
@@ -235,16 +231,18 @@ with st.sidebar:
         index=get_idx(exp_options, user_profile.get("experience", 0), 0)
     )
 
+    saved_roles = user_profile.get("target_roles", [])
     target_roles = st.multiselect(
         "희망 직무",
         ROLE_OPTIONS,
-        default=user_profile.get("target_roles", [])
+        default=[r for r in saved_roles if r in ROLE_OPTIONS]
     )
 
+    saved_companies = user_profile.get("target_companies", [])
     target_companies = st.multiselect(
         "관심 기업",
         COMPANY_OPTIONS,
-        default=user_profile.get("target_companies", [])
+        default=[c for c in saved_companies if c in COMPANY_OPTIONS]
     )
 
     if st.button("💾 프로필 저장", use_container_width=True):
