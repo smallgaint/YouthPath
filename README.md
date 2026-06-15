@@ -8,9 +8,7 @@
 
 ## 🎬 시연 영상
 
-<!-- 아래에 시연 영상 링크(YouTube 등) 또는 저장소 내 파일 경로를 넣으세요 -->
-- 시연 영상: **(여기에 링크 추가)**
-- 예) `docs/demo.mp4` 또는 `https://youtu.be/XXXXXXXX`
+- 시연 영상: docs/demo.mp4
 
 ---
 
