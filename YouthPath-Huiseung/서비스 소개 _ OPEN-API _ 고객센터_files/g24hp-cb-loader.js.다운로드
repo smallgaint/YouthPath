@@ -1,0 +1,98 @@
+// worknet-cb.js
+// worknet chatbot loader
+var __wncb_version = (new Date()).getTime();
+
+(function () {
+
+    console.log('- loader start.');
+
+    // var cssPath = 'http://127.0.0.1:8888/css/';
+    var cssPath = '/chatbot/res/css/';
+
+    // var jsPath = 'js/';
+    // var jsPath = 'http://127.0.0.1:8888/js/';
+    var jsPath = '/chatbot/res/js/';
+
+    // timestamp disable condition
+    if (window.location.href.indexOf('no_timestamp')) {
+        __wncb_version = '';
+    }
+
+
+    // ADD START
+    var detectMob = function() {
+        if (navigator.userAgent.match(/Android/i) ||
+            navigator.userAgent.match(/webOS/i) ||
+            navigator.userAgent.match(/iPhone/i) ||
+            navigator.userAgent.match(/iPad/i) ||
+            navigator.userAgent.match(/iPod/i) ||
+            navigator.userAgent.match(/BlackBerry/i) ||
+            navigator.userAgent.match(/Windows Phone/i)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // ADD END
+
+    // css loader
+    function loadCss(list, idx) {
+        if (typeof idx === 'undefined') { idx = 0; }
+        if (idx < list.length) {
+            var css = document.createElement('link');
+            css.setAttribute('href', cssPath + list[idx] + '?' + __wncb_version);
+            css.setAttribute('rel', 'stylesheet');
+            document.getElementsByTagName('head')[0].appendChild(css);
+            console.log('CSS Loaded : ' + list[idx]);
+            loadCss(list, idx + 1);
+        }
+    }
+    // js loader
+    function loadJs(list, idx) {
+        if (typeof idx === 'undefined') { idx = 0; }
+        if (idx < list.length) {
+            var e = document.createElement('script');
+            // e.src = jsPath + 'lib/require.js?' + __wncb_version;
+            if(detectMob()) {
+
+            } else {
+                e.src = jsPath + 'lib/require.js?' + __wncb_version;
+            }
+
+            e.setAttribute('data-main', jsPath + list[idx] +'?' + __wncb_version);
+            document.getElementsByTagName('head')[0].appendChild(e);
+            console.log('JS Loaded : ' + list[idx]);
+            loadJs(list, idx + 1);
+        }
+    }
+
+    // Upd START Uok Yoo 20190315
+    // 신규 디자인 css 적용
+    // loadCss(['G24hp-chatbot.css']);
+    loadCss(['G24hp-chatbot-new.css']);
+    // Upd END   Uok Yoo 20190315
+
+    if ( typeof(require) == 'function' ) {
+        var wncb_require_master_instance = {};
+        require.config({
+            // baseUrl : '/chatbot/res/js/module',
+            paths : {
+                'util': '/chatbot/res/js/module/util',
+                'Chatbot-init' : '/chatbot/res/js/module/Chatbot-init',
+                'wncb-html-obj' : '/chatbot/res/js/module/wncb-html-obj',
+                'tests' : '/chatbot/res/js/module/tests'
+				// ,'Chatbot-policy' : '/chatbot/res/js/module/Chatbot-policy' // 2024.01.16 정책정보 테스트
+				// ,'Chatbot-recruitment' : '/chatbot/res/js/module/Chatbot-recruitment' // 2024.01.16 채용정보 테스트
+				// ,'Chatbot-training' : '/chatbot/res/js/module/Chatbot-training' // 2024.01.16 훈련정보 테스트
+				// ,'Chatbot-center' : '/chatbot/res/js/module/Chatbot-center' // 2024.01.16 고용센터 테스트
+            }
+        });
+        require([ jsPath + "g24hp-cb-main.js?" + __wncb_version], function(pageHandler){
+            if ( typeof(pageHandler.process) == 'function') { pageHandler.process(wncb_require_master_instance); }
+        });
+    } else {
+        loadJs(['g24hp-cb-client.js?v=2']);
+    }
+
+})();

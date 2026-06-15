@@ -1,0 +1,3153 @@
+define(['util', 'Chatbot-init', 'wncb-html-obj', 'tests'
+		 // , 'Chatbot-policy' // 2024.01.16 추가
+		 // , 'Chatbot-recruitment' // 2024.01.16 추가
+		 // , 'Chatbot-training' // 2024.01.16 추가
+		 // , 'Chatbot-center' // 2024.01.16 추가
+		], function (util, cbInit, who, testModule) {
+
+    // jsp로 부터 고용정보가져오기
+    // hp-cm/src/main/webapp/WEB-INF/jsp/pc/layout/atype/atype_quickmenu.jsp
+    // for worknet server
+
+	// 2022.03.17. ojs80. 주석처리. 화면 로그 시 정보를 가져오지않고 개인추천 버튼 클릭시 호출할 수 있도록 수정함. --> 953번라인으로 이동.
+//    fn_getChatbotInfo();
+	// 2022.03.17. ojs80. 주석처리. 끝.
+
+     var hireCnt = [
+        /*workCnt,
+        trainCnt,
+        qualCnt,
+        busiCnt,
+        polyCnt,
+        psyCnt*/
+     ];
+
+    // for local testing
+//    var hireCnt = [
+//        workCnt = 1,
+//        polyCnt = 2,
+//        busiCnt = 3,
+//        trainCnt = 4,
+//        qualCnt = 5,
+//        psyCnt = 6
+//    ];
+
+
+    var recommendArray = [
+      /*{"name":"채용", "count":workCnt}
+      ,{"name":"훈련", "count":trainCnt}
+      ,{"name":"자격", "count":qualCnt}
+      ,{"name":"기업", "count":busiCnt}
+      ,{"name":"정책", "count":polyCnt}
+      ,{"name":"심리검사", "count":psyCnt}*/
+    ];
+
+    // 2022.03.21. ojs80. test code.
+//    console.log('recommendArray %o ', recommendArray);
+    // 2022.03.21. ojs80. test code. end.
+
+    var wncbHtmlObj = who.wncbHtmlObj;
+
+    var agent = navigator.userAgent.toLowerCase();
+
+    sessionStorage.setItem(util.wncbConst.ssid.minimum_status, 0);	//js 최초 로드시 최소화 상태 초기화(화면 전환이든 최소 호출이든 안 열린 상태)
+
+
+    function changeColor(targetTxt){
+		targetTxt = targetTxt.replaceAll("color:orange","color:#956917");
+		targetTxt = targetTxt.replaceAll("color:#999","color:#666");
+		targetTxt = targetTxt.replaceAll("color:#FF7F27","color:#af5d25");
+		targetTxt = targetTxt.replaceAll("color:#00B050","color:#04863f");
+		return targetTxt;
+	}
+
+    function process(instance) {
+
+        $.support.cors = true;
+
+        instance.userId = "";
+        instance.session_id = "";
+
+        var msgIndex = 0;
+        var stopDelayCount = 0;
+        var timerHalt = false;
+        var stopWarning = false;
+        var eventQueue = [];
+        var userInputHistory = [];
+        var surveyCount = 1;
+
+        // select agent
+        console.log("[instance.agent] ==================== " + util.wncbConst.setting.agent_server);
+
+		var uri = "[별지 제64호서식] 실업자취업훈련비 대부 신청서(고용보험법 시행규칙).hwp";
+		var res1 = encodeURIComponent(uri);
+
+
+        console.log("[URL.ENCODE] ==================== " + res1);
+
+        instance.agent = util.wncbConst.setting.agent_server; {
+
+			console.log("[window.location.href] ==================== " + window.location.href);
+
+            var urlKey = window.location.href.split("/");
+
+            console.log("[urlKey] ==================== " + urlKey);
+
+            for (c in urlKey) {
+                //if (urlKey[c] == "127.0.0.1:8080") {
+                if (urlKey[c] == "localhost:8098") {
+                    instance.agent = util.wncbConst.setting.agent_local;
+                    break;
+                }
+            }
+        }
+//        console.log("agent:", instance.agent);
+
+        var resetStopDelay = function () {
+            stopDelayCount = 0; // 중단 딜레이 초기화
+            stopWarning = false;
+        }
+
+        var updateSessionId = function () {
+            instance.session_id = util.generateUUID();
+            sessionStorage.setItem(util.wncbConst.ssid.session_id, instance.session_id);
+            // console.log(util.wncbConst.ssid.session_id);
+        }
+
+        var scrollToBottom = function () {
+            // animate 추가 - 손태진 20181129
+            // $('#chatbot-msgCon').stop().animate({
+            //     scrollTop: $('#chatbot-msgCon')[0].scrollHeight
+            // }, 500, 'swing');
+            $('#chatbot-msgCon').stop().animate({
+                scrollTop: $('#chatbot-msgCon')[0].scrollHeight
+            }, 500, 'swing');
+            setTimeout(function () {
+                $('#chatbot-msgCon').stop().animate({
+                    scrollTop: $('#chatbot-msgCon')[0].scrollHeight
+                }, 500, 'swing');
+            }, 500);
+
+
+        };
+
+        var saveMsgToSs = function (data) {
+            sessionStorage.setItem(util.wncbConst.ssid.msgid + msgIndex, JSON.stringify(data));
+            msgIndex++;
+        };
+
+        var updateMsgInSs = function (midx, data) {
+            // console.log(data);
+            // console.log(util.wncbConst.ssid.msgid + midx);
+            sessionStorage.setItem(util.wncbConst.ssid.msgid + midx, JSON.stringify(data));
+        };
+
+        var addUserChat = function (ucm, save) {
+            var userChatHtml =
+                // '<div class="chatbot-msg userMsg"><span class="ir">사용자</span><div>' + util.makeSafeText(ucm) + '</div></div>';
+				// 2024.01.11 사용자 제거
+				'<div class="chatbot-msg userMsg"><div> <span class="blind">질문</span>' + util.makeSafeText(ucm) + '</div></div>';
+            $('#chatbot-msgCon').append(userChatHtml);
+            scrollToBottom();
+
+            // pass save
+            if (save && save != '') {
+                return;
+            }
+
+            // save to session Storage
+            saveMsgToSs({
+                type: 'user',
+                data: ucm
+            });
+        }
+
+
+
+        var genTemplateHtml = {
+			//고용24 대민 웹
+
+			//----------------- 2024.08.23 고용24 챗봇 처음으로 코딩 -------------------
+            "G24_TPL_01": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var btnClsDic = {
+					"정책정보": "chatbot-policy",
+					"훈련정보": "chatbot-training",
+                    "채용정보": "chatbot-recruitment",
+                    "고용정책": "chatbot-employment",
+                    "기업정보": "chatbot-corpration",
+                    "직업정보": "chatbot-occupation",
+                    "기관찾기": "chatbot-center",
+                    "용어안내": "chatbot-term",
+                    "FAQ"	  : "chatbot-faq",
+                    "정보찾기": "chatbot-infomation",
+                    "사이트맵": "chatbot-sitemap",
+                    "이용가이드": "chatbot-sitemap",
+                    "이용 가이드": "chatbot-sitemap",
+                    "개인추천" : "chatbot-recommendation",
+                    "대화 TIP" : "chatbot-guide",
+                    "메뉴찾기" : "chatbot-sitemap",
+					"실업급여" : "chatbot-unemployment",
+					"사용툴팁" : "chatbot-pi_main_1",
+					"매뉴얼" : "chatbot-pi_main_2",
+					"서식안내" : "chatbot-pi_main_3",
+					"이용문의" : "chatbot-pi_main_4"
+                };
+                var ghArr = [];
+                var gh = '';
+                // console.log(msg);
+
+                for (var c = 0; c < msg.length; c++) {
+
+                    // description
+                    gh = '<div class="chatbot-msg chatbotMsg"><span class="ir">고용이</span>';
+					// console.log(msg[c].description)
+                    if (msg[c].description && msg[c].description.length > 0) {
+                        for (var d = 0; d < msg[c].description.length; d++) {
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            gh += '<div> <span class="blind">응답</span> <font size=14px>' + msg[c].description[d].text + '</font></div>';
+                            // console.log(gh);
+                        }
+                    }
+                    gh += "</div>";
+                    ghArr.push(gh.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+
+                    // carousal
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+                        gh = '<div class="chatbot-startMenu" data-navindex="0" data-max="230"><ul>';
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+
+                            var buttonClsName = '';
+                            if (typeof (btnClsDic[msg[c].carousel_button[d].title]) == 'string') {
+                                buttonClsName = btnClsDic[msg[c].carousel_button[d].title];
+                            }
+                            if (msg[c].carousel_button[d].use_yn == "N") {
+                                buttonClsName += " ready";
+                            }
+
+                            // 2022.03.15. ojs80. 개인추천 버튼 숨김코드
+//                            if(msg[c].carousel_button[d].title == "개인추천") {
+//                            	console.log("개인추천....!");
+//                            } else {
+//                            	gh += '<li><button type="button" class="' + buttonClsName +
+//	                                '" data-value="' + msg[c].carousel_button[d].value +
+//	                                '" data-url="' + msg[c].carousel_button[d].url + '">' +
+//	                                msg[c].carousel_button[d].title + '</button></li>';
+//                            }
+                            // 2022.03.15. ojs80. 개인추천 버튼 숨김코드. end.
+
+                            // 2022.03.15. ojs80. 원본.
+                            gh += '<li><button type="button" class="' + buttonClsName +
+                                '" data-value="' + msg[c].carousel_button[d].value +
+                                '" data-url="' + msg[c].carousel_button[d].url + '">' +
+                                msg[c].carousel_button[d].title + '</button></li>';
+                            // 2022.03.15. ojs80. 원본 끝.
+
+                            // console.log(gh);
+
+                            // gh += '<li><button type="button" class="chatbot-recruitment">채용정보</button></li>';
+                            // gh += '<li><button type="button" class="chatbot-employment ready">고용정책</button></li>';
+                            // gh += '<li><button type="button" class="chatbot-corpration ready">기업정보</button></li>';
+                            // gh += '<li><button type="button" class="chatbot-occupation ready">직업정보</button></li>';
+                            // gh += '<li><button type="button" class="chatbot-center ready">고용센터</button></li>';
+                            // gh += '<li><button type="button" class="chatbot-term ready">용어안내</button></li>';
+                        }
+                        gh += '</ul>';
+
+                        // gh += '<div class="chatbot-containerNav">';
+                        // gh += '<button type="button" class="prev">이전</button>';
+                        // gh += '<button type="button" class="next">다음</button>';
+                        // gh += '</div>';
+                        ghArr.push(gh.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        gh = wncbHtmlObj['containter-nav'];
+                        gh += '</div>';
+                        ghArr.push(gh);
+                    }
+                    gh = '';
+                }
+
+                // console.log(ghArr);
+                return ghArr;
+            },
+
+			//----------------- 2024.08.23 고용24 챗봇 정책정보 안내부분 코딩 -------------------
+			"G24_TPL_02": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = '';
+                // console.log(msg);
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+                var did = ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+
+                    var desc 		= '';
+                    var button 		= '';
+
+                    var surveyCls 	= '';
+                    var surveyHtml 	= '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls 	= ' hasSurvey';
+                        surveyHtml 	=
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//제도안내 버튼 css 분리적용 (그린색)
+                        button = '<div class="chatbot-btnCon-green">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+							if (msg[c].button[d].title != "처음으로" && msg[c].button[d].title != "훈련과정 통합검색" && msg[c].button[d].title != "실업급여 모의계산" &&  msg[c].button[d].title != "채용정보 통합검색" &&  msg[c].button[d].title != "기업 고용정책" &&  msg[c].button[d].title != "개인 고용정책" &&  msg[c].button[d].title != "청년 정책상담") {
+	                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+	                                '" data-url="' + msg[c].button[d].url + '">' +
+	                                msg[c].button[d].title + '</button> ';
+							}
+                        }
+                        button += '</div>';
+                    }
+
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//처음으로 버튼 css 분리적용 (파란색)
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+							if (msg[c].button[d].title == "처음으로" || msg[c].button[d].title == "훈련과정 통합검색" || msg[c].button[d].title == "실업급여 모의계산" || msg[c].button[d].title == "채용정보 통합검색" || msg[c].button[d].title == "기업 고용정책" || msg[c].button[d].title == "개인 고용정책" || msg[c].button[d].title == "청년 정책상담") {
+	                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+	                                '" data-url="' + msg[c].button[d].url + '">' +
+	                                msg[c].button[d].title + '</button> ';
+							}
+                        }
+                        button += '</div>';
+                    }
+
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    gh = '';
+                }
+                return ghArr;
+			},
+
+			//----------------- 2024.08.23 고용24 챗봇 정책정보 상세내역 보기 코딩 -------------------
+			"G24_TPL_03": function (ffmnt) {
+
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = "";
+                // console.log(msg);
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+
+                var did = ffmnt.dialogue_id;
+                for (var c = 0; c < msg.length; c++) {
+                    var desc = '';
+                    var carousal = '';
+                    var button = '';
+
+                    var surveyCls = '';
+                    var surveyHtml = '';
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls = ' hasSurvey';
+                        surveyHtml =
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+                    // description
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div></div>';
+								desc += '</div></div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+                    }
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+                        carousal += '<div class="chatbot-employmentReport" data-navindex="0" ><ul>';
+
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+                            carousal += '<li><article>';
+                            carousal += '<h4>' + msg[c].carousel_button[d].title + '</h4>';
+                            carousal += '<div>';
+							carousal += '<div>' + msg[c].carousel_button[d].category + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].contents + '</div>';
+                            carousal += '</div>';
+                            carousal += '<button type="button" class="showJobInfo" data-url="' + msg[c].carousel_button[d].url +
+                                '">해당 페이지로 이동</button>';
+                            carousal += '</article></li>';
+                        }
+                        carousal += '</ul>';
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//제도안내 버튼 css 분리적용 (그린색)
+                        button = '<div class="chatbot-btnCon-green">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+							if (msg[c].button[d].title != "처음으로" && msg[c].button[d].title != "훈련과정 통합검색" && msg[c].button[d].title != "실업급여 모의계산" &&  msg[c].button[d].title != "채용정보 통합검색" &&  msg[c].button[d].title != "기업 고용정책" &&  msg[c].button[d].title != "개인 고용정책" &&  msg[c].button[d].title != "청년 정책상담") {
+	                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+	                                '" data-url="' + msg[c].button[d].url + '">' +
+	                                msg[c].button[d].title + '</button> ';
+							}
+                        }
+                        button += '</div>';
+                    }
+
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//처음으로 버튼 css 분리적용 (파란색)
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+							if (msg[c].button[d].title == "처음으로" || msg[c].button[d].title == "훈련과정 통합검색" || msg[c].button[d].title == "실업급여 모의계산" || msg[c].button[d].title == "채용정보 통합검색" || msg[c].button[d].title == "기업 고용정책" || msg[c].button[d].title == "개인 고용정책" || msg[c].button[d].title == "청년 정책상담") {
+	                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+	                                '" data-url="' + msg[c].button[d].url + '">' +
+	                                msg[c].button[d].title + '</button> ';
+							}
+                        }
+                        button += '</div>';
+                    }
+
+					/* 20240903 임창경 주석처리
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+                            if (msg[c].button[d].title == util.wncbConst.text.youthPolicyCounseling ) {
+
+                                button += '<button type="button" ' +
+                                ' onClick="window.open(\'' + msg[c].button[d].url + '\')">' +
+                                msg[c].button[d].title + '</button> ';
+
+                            } else {
+                                button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url=' + msg[c].button[d].url + '>' +
+                                msg[c].button[d].title + '</button> ';
+                            }
+                            // Add END Uok Yoo 20190201
+
+                        }
+                        // Upd START Uok Yoo 20190315
+                        // button += '</div></div>';
+                        button += '</div>';
+                        // Upd END   Uok Yoo 20190315
+
+                    }
+
+					*/
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+                }
+                // console.log(ghArr);
+                return ghArr;
+                // return genTemplateHtml["g24_web_temp_03"](ffmnt);
+            },
+
+			//----------------- 2024.08.23 고용24 챗봇 채용정보 메뉴이동 코딩 -------------------
+			"G24_TPL_04": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = '';
+                // console.log(msg);
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+                var did = ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+
+                    var desc 		= '';
+                    var button 		= '';
+
+                    var surveyCls 	= '';
+                    var surveyHtml 	= '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls 	= ' hasSurvey';
+                        surveyHtml 	=
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                   // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//제도안내 버튼 css 분리적용 (그린색)
+                        button = '<div class="chatbot-btnCon-green">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+							if (msg[c].button[d].title != "처음으로" && msg[c].button[d].title != "훈련과정 통합검색" && msg[c].button[d].title != "실업급여 모의계산" &&  msg[c].button[d].title != "채용정보 통합검색" &&  msg[c].button[d].title != "기업 고용정책" &&  msg[c].button[d].title != "개인 고용정책" &&  msg[c].button[d].title != "청년 정책상담") {
+	                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+	                                '" data-url="' + msg[c].button[d].url + '">' +
+	                                msg[c].button[d].title + '</button> ';
+							}
+                        }
+                        button += '</div>';
+                    }
+
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//처음으로 버튼 css 분리적용 (파란색)
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+							if (msg[c].button[d].title == "처음으로" || msg[c].button[d].title == "훈련과정 통합검색" || msg[c].button[d].title == "실업급여 모의계산" || msg[c].button[d].title == "채용정보 통합검색" || msg[c].button[d].title == "기업 고용정책" || msg[c].button[d].title == "개인 고용정책" || msg[c].button[d].title == "청년 정책상담") {
+	                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+	                                '" data-url="' + msg[c].button[d].url + '">' +
+	                                msg[c].button[d].title + '</button> ';
+							}
+                        }
+                        button += '</div>';
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    gh = '';
+                }
+                return ghArr;
+			},
+
+			//----------------- 2024.08.23 고용24 챗봇 안내문 코딩 -------------------
+			"G24_TPL_05": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = '';
+                // console.log(msg);
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+                var did = ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+
+                    var desc 		= '';
+                    var button 		= '';
+
+                    var surveyCls 	= '';
+                    var surveyHtml 	= '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls 	= ' hasSurvey';
+                        surveyHtml 	=
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+
+                    gh = '';
+                }
+                return ghArr;
+			},
+
+			//----------------- 2024.08.23 고용24 챗봇 채용정보 변경 안내부분 코딩 -------------------
+			"G24_TPL_06": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = '';
+                // console.log(msg);
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+                var did = ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+
+                    var desc 		= '';
+                    var button 		= '';
+
+                    var surveyCls 	= '';
+                    var surveyHtml 	= '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls 	= ' hasSurvey';
+                        surveyHtml 	=
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//제도안내 버튼 css 분리적용
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url="' + msg[c].button[d].url + '">' +
+                                msg[c].button[d].title + '</button> ';
+
+                        }
+
+                        button += '</div>';
+
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    gh = '';
+                }
+                return ghArr;
+			},
+
+			//----------------- 2024.08.23 고용24 챗봇 채용정보 부분 코딩 -------------------
+			"G24_TPL_07": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr 	= [];
+                var carousal = '';
+                var cbss 	= 'chatbotSatisfactionSurvey';
+
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+
+                var did = ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+
+                    var desc 		= '';
+                    var button 		= '';
+
+                    var surveyCls 	= '';
+                    var surveyHtml 	= '';
+
+					var pcUrl 		= '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls 	= ' hasSurvey';
+                        surveyHtml 	=
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+                        carousal += '<div class="chatbot-employmentReport"data-navindex="0" ><ul>';
+
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+                            carousal += '<li><article>';
+                            carousal += '<h4>' + msg[c].carousel_button[d].title + '</h4>';
+                            carousal += '<div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].body + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].sal + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].region + '</div>';
+                            carousal += '</div>';
+
+							// mobile 경우 url을 m.work.go.kr로 분기되도록 수정
+                            if (util.detectMob()) {
+                                carousal += '<button type="button" class="showJobInfo" data-url="' + msg[c].carousel_button[d].url + '">공고 확인</button>';
+                            } else {
+								pcUrl = msg[c].carousel_button[d].url.replace('https://m.work.go.kr/regionJobsWorknet/jobDetailView.do?srchWantedAuthNo=','https://www.work.go.kr/empInfo/empInfoSrch/detail/empDetailAuthView.do?searchInfoType=VALIDATION&callPage=&wantedAuthNo=');
+
+                                //carousal += '<button type="button" class="showJobInfo" data-url="' + msg[c].carousel_button[d].url + '">공고 확인</button>';
+								carousal += '<button type="button" class="showJobInfo" data-url="' + pcUrl + '">공고 확인</button>';
+                            }
+
+                            carousal += '</article></li>';
+                        }
+                        carousal += '</ul>';
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//처음으로 버튼 css 분리적용 (파란색)
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url="' + msg[c].button[d].url + '">' +
+                                msg[c].button[d].title + '</button> ';
+
+                        }
+
+                        button += '</div><br>';
+
+                    }
+
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    gh = '';
+                }
+                return ghArr;
+			},
+
+			//----------------- 2024.08.23 고용24 챗봇 고용센터정보 부분 코딩 -------------------
+            "G24_TPL_08": function (ffmnt) {
+
+                var msg = ffmnt.messages;
+
+                var ghArr 	= [];
+                var gh 		= "";
+
+                var did 	= ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+                    var desc = '';
+                    var carousal = '';
+                    var button = '';
+
+                    // description
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+
+                            desc += '<div class="chatbot-msg chatbotMsg"><span class="ir">고용이</span>';
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text + '</div>';
+                            desc += '</div>';
+                        }
+
+                    }
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+
+                        carousal += '<div class="chatbot-employmentReport" data-navindex="0" data-max="550"><ul>';
+
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+
+                            carousal += '<li><article>';
+                            carousal += '<h4>' + msg[c].carousel_button[d].nmor + '</h4>';
+                            carousal += '<div>';
+                            carousal += '<div> ' + msg[c].carousel_button[d].fulladr + '</div>';
+
+							// mobile 경우 전화 걸수 있게 <tel> 적용할 것!
+                            if (util.detectMob()) {
+                                carousal += '<div> <font style="color:#0070C0;">[전화번호] <a href="tel:' + msg[c].carousel_button[d].telno + '">' + msg[c].carousel_button[d].cnnr +  '</a></font></div>';
+                            } else {
+                                carousal += '<div> <font style="color:#0070C0;">[전화번호] ' + msg[c].carousel_button[d].cnnr + '</font></div>';
+                            }
+
+							carousal += '<div> <font style="color:#0070C0;">[팩스번호] ' + msg[c].carousel_button[d].faxcnnr + '</font></div>';
+							carousal += '<div> <font style="color:#af5d25;">[찾아오시는 방법] </font></div>';
+							carousal += '<div> <font style="size:16;"> '+ msg[c].carousel_button[d].otmpcn +'</font></div>'
+
+                            carousal += '</div>';
+
+							carousal += '<button type="button" class="showJobInfo" data-url="https://' + msg[c].carousel_button[d].hmpgadr + '">홈페이지 바로가기</button>';
+
+                            carousal += '</article></li>';
+                        }
+                        carousal += '</ul>';
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                            '" data-url=' + msg[c].button[d].url + '>' +
+                            msg[c].button[d].title + '</button> ';
+                        }
+                        button += '</div>';
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+                }
+                // console.log(ghArr);
+                return ghArr;
+            },
+
+			//----------------- 2024.10.18 고용24 챗봇 직업소개소 안내부분 코딩 -------------------
+            "G24_TPL_09": function (ffmnt) {
+
+                var msg = ffmnt.messages;
+
+                var ghArr 	= [];
+                var gh 		= "";
+
+                var did 	= ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+                    var desc = '';
+                    var carousal = '';
+                    var button = '';
+
+                    // description
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+
+                            desc += '<div class="chatbot-msg chatbotMsg"><span class="ir">고용이</span>';
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text + '</div>';
+                            desc += '</div>';
+                        }
+
+                    }
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+
+                        carousal += '<div class="chatbot-employmentReport" data-navindex="0" data-max="550"><ul>';
+
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+
+                            carousal += '<li><article>';
+                            carousal += '<h4>' + msg[c].carousel_button[d].jobagentnm + '</h4>';
+                            carousal += '<div>';
+                            carousal += '<div> ' + msg[c].carousel_button[d].jobagentgbn + '</div>';
+
+							// mobile 경우 전화 걸수 있게 <tel> 적용할 것!
+                            if (util.detectMob()) {
+                                carousal += '<div> <font style="color:#0070C0;">[전화번호] <a href="tel:' + msg[c].carousel_button[d].cnnr + '">' + msg[c].carousel_button[d].cnnr +  '</a></font></div>';
+                            } else {
+                                carousal += '<div> <font style="color:#0070C0;">[전화번호] ' + msg[c].carousel_button[d].cnnr + '</font></div>';
+                            }
+
+							carousal += '<div> <font style="color:#0070C0;">[주 소개직종] ' + msg[c].carousel_button[d].jobknm + '</font></div>';
+							carousal += '<div> <font style="color:#af5d25;">[주소] </font></div>';
+							carousal += '<div> <font style="size:16;"> '+ msg[c].carousel_button[d].addr +'</font></div>'
+
+                            carousal += '</div>';
+
+                            carousal += '</article></li>';
+                        }
+                        carousal += '</ul>';
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                            '" data-url=' + msg[c].button[d].url + '>' +
+                            msg[c].button[d].title + '</button> ';
+                        }
+                        button += '</div>';
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+                }
+                // console.log(ghArr);
+                return ghArr;
+            },
+
+			//----------------- 2024.12.09 고용24 챗봇 훈련과정 안내부분 코딩 -------------------
+			"G24_TPL_11": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr 	= [];
+                var carousal = '';
+                var cbss 	= 'chatbotSatisfactionSurvey';
+
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+
+                var did = ffmnt.dialogue_id;
+
+                for (var c = 0; c < msg.length; c++) {
+
+                    var desc 		= '';
+                    var button 		= '';
+
+                    var surveyCls 	= '';
+                    var surveyHtml 	= '';
+
+					var pcUrl 		= '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls 	= ' hasSurvey';
+                        surveyHtml 	=
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+                        }
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+                        carousal += '<div class="chatbot-employmentReport"data-navindex="0" ><ul>';
+
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+
+                            carousal += '<li><article>';
+                            carousal += '<h4>' + msg[c].carousel_button[d].subtitle + '</h4>';
+                            carousal += '<div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].title + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].trastartdate + '  ~  ' + msg[c].carousel_button[d].traenddate + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].address + '</div>';
+                            carousal += '</div>';
+							carousal += '<button type="button" class="showJobInfo" data-url="' + msg[c].carousel_button[d].titlelink + '">공고 확인</button>';
+                            carousal += '</article></li>';
+                        }
+                        carousal += '</ul>';
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//처음으로 버튼 css 분리적용 (파란색)
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url="' + msg[c].button[d].url + '">' +
+                                msg[c].button[d].title + '</button> ';
+
+                        }
+                        button += '</div><br>';
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    gh = '';
+                }
+                return ghArr;
+			},
+
+            "template_02": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = '';
+
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+                var did = ffmnt.dialogue_id;
+
+                // text
+                for (var c = 0; c < msg.length; c++) {
+
+                    // description
+                    var desc = '';
+                    var button = '';
+
+                    var surveyCls = '';
+                    var surveyHtml = '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls = ' hasSurvey';
+                        surveyHtml =
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+                        button = '<div class="chatbot-btnCon-green">';
+
+                    for (var d = 0; d < msg[c].button.length; d++) {
+
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url="' + msg[c].button[d].url + '">' +
+                                msg[c].button[d].title + '</button> ';
+
+                        }
+
+                        button += '</div>';
+                    }
+
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//처음으로 버튼 css 분리적용 (파란색)
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = msg[c].button.length -1; d < msg[c].button.length; d++) {
+
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url="' + msg[c].button[d].url + '">' +
+                                msg[c].button[d].title + '</button> ';
+
+                        }
+
+                        button += '</div><br>';
+
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    gh = '';
+                }
+
+                return ghArr;
+            },
+
+            "template_03": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = "";
+                // console.log(msg);
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+                var did = ffmnt.dialogue_id;
+                for (var c = 0; c < msg.length; c++) {
+                    var desc = '';
+                    var carousal = '';
+                    var button = '';
+
+                    var surveyCls = '';
+                    var surveyHtml = '';
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls = ' hasSurvey';
+                        surveyHtml =
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+                    // description
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                // (d == d < (msg[c].description.length - 1) ? surveyCls : '') + '">';
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+                            // desc += '<div>' + msg[c].description[d].text + '</div>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div></div>';
+								desc += '</div></div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+                    // console.log(desc);
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+                        // Upd START Uok Yoo 20190315
+                        // carousal += '<div class="chatbot-employmentReport" data-navindex="0" data-max="550"><ul>';
+                        carousal += '<div class="chatbot-employmentReport"data-navindex="0" ><ul>';
+                        // Upd END   Uok Yoo 20190315
+
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+                            carousal += '<li><article>';
+                            carousal += '<h4>' + msg[c].carousel_button[d].title + '</h4>';
+                            carousal += '<div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].body + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].sal + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].region + '</div>';
+                            carousal += '</div>';
+                            carousal += '<button type="button" class="showJobInfo" data-url="' + msg[c].carousel_button[d].url +
+                                '">공고 확인</button>';
+                            carousal += '</article></li>';
+                        }
+                        carousal += '</ul>';
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+                        // Upd START Uok Yoo 20190315
+                        // button += '<div class="chatbot-msg chatbotMsg"><div class="chatbot-btnCon">';
+                        button += '<div class="chatbot-btnCon">';
+
+                        // Upd END   Uok Yoo 20190315
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url=' + msg[c].button[d].url + '>' +
+                                msg[c].button[d].title + '</button> ';
+
+                        }
+                        button += '</div>';
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+                }
+                // console.log(ghArr);
+                return ghArr;
+            },
+
+            "template_04": function (ffmnt) {
+                return genTemplateHtml["template_02"](ffmnt);
+            },
+
+            "template_05": function (ffmnt) {
+                return genTemplateHtml["template_02"](ffmnt);
+            },
+
+			//----------------- 2024.08.23 고용24 챗봇 일치하는 결과가 없을 경우 -------------------
+            "template_06": function (ffmnt) {
+
+                var msg 	= ffmnt.messages;
+                var ghArr 	= [];
+                var gh 		= '';
+
+ 				for (var c = 0; c < msg.length; c++) {
+
+                    var desc 		= '';
+                    var button 		= '';
+                    var surveyCls 	= '';
+
+                    // description
+        			desc += '<div class="chatbot-msg chatbotMsg"><span class="ir">고용이</span>';
+        			desc += '<div> <span class="blind">응답</span>' + "입력하신 지역의 고용센터 정보를 찾을 수 없습니다. <br>고용이가 제공하는 다른 정보를 사용하시려면 "+"'처음으로'"+" 버튼을 선택하여 첫 화면으로 이동하시기 바랍니다.";
+		            desc += '</div></div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    button += '<div class="chatbot-btnCon">';
+                    button += '<button type="button" data-value="' + "처음으로" +
+                                '" data-url=' + "chatbot" + '>' +
+                                "처음으로" + '</button> ';
+                    button += '</div>';
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+
+                }
+
+                return ghArr;
+
+            },
+
+            "template_07": function (ffmnt) {
+
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = "";
+                // console.log(msg);
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+
+                var did = ffmnt.dialogue_id;
+                for (var c = 0; c < msg.length; c++) {
+                    var desc = '';
+                    var carousal = '';
+                    var button = '';
+
+                    var surveyCls = '';
+                    var surveyHtml = '';
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls = ' hasSurvey';
+                        surveyHtml =
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+                    // description
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                // (d == d < (msg[c].description.length - 1) ? surveyCls : '') + '">';
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+                            // desc += '<div>' + msg[c].description[d].text + '</div>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div></div>';
+								desc += '</div></div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+                    }
+                    // console.log(desc);
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+                        // Upd START Uok Yoo 20190315
+                        // 검색결과 카드(채용공고 검색결과 카드와 분리/추가
+                        // carousal += '<div class="chatbot-employmentReport" data-navindex="0" data-max="550"><ul>';
+                        carousal += '<div class="chatbot-searchResult" data-navindex="0" data-max="550">'; // 2024.01.16 <ul> 제거
+                        // Upd END   Uok Yoo 20190315
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+							// carousal += '<li><article>';
+                            carousal += '<ul><li><article>'; // 2024.01.16 <ul> 추가
+                            carousal += '<h4>' + msg[c].carousel_button[d].title + '</h4>';
+                            // carousal += '<div>'; // 2024.01.16 주석 처리
+                            // carousal += '<div>' + msg[c].carousel_button[d].body + '</div>';
+                            // carousal += '<div>' + msg[c].carousel_button[d].sal + '</div>';
+                            // carousal += '<div>' + msg[c].carousel_button[d].region + '</div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].contents + '</div>';
+                            // carousal += '</div>'; // 2024.01.16 주석 처리
+                            // 타이틀이 통합기업정보일때는 새창으로 열어줌
+							if(msg[c].carousel_button[d].title == "통합기업정보") {
+                                carousal += '<button type="button" onclick=window.open("' + msg[c].carousel_button[d].url +
+                                '")>해당 페이지로 이동</button>';
+//                                console.log(carousal);
+                            } else {
+                                carousal += '<button type="button" class="showJobInfo" data-url="' + msg[c].carousel_button[d].url +
+                                '">해당 페이지로 이동</button>';
+                            }
+
+							// carousal += '</article></li>';
+                            carousal += '</article></li></ul>'; // 2024.01.16 <ul> 추가
+                        }
+                        // carousal += '</ul>'; // 2024.01.16 주석 처리
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+                        // Upd START Uok Yoo 20190315
+                        // button += '<div class="chatbot-msg chatbotMsg"><div class="chatbot-btnCon">';
+                        button += '<div class="chatbot-btnCon">';
+                        // Upd END   Uok Yoo 20190315
+
+                        for (var d = 0; d < msg[c].button.length; d++) {
+                            // Add START Uok Yoo 20190201
+                            // 버튼 타이틀이 '청년정책상담'일 경우 새창열기 추가
+                            // title = 청년정책상담
+                            // url = 청년정책상담 관련 url
+                            // value = ""
+                            if (msg[c].button[d].title == util.wncbConst.text.youthPolicyCounseling ) {
+
+                                button += '<button type="button" ' +
+                                ' onClick="window.open(\'' + msg[c].button[d].url + '\')">' +
+                                msg[c].button[d].title + '</button> ';
+
+                            } else {
+                                button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url=' + msg[c].button[d].url + '>' +
+                                msg[c].button[d].title + '</button> ';
+                            }
+                            // Add END Uok Yoo 20190201
+
+                        }
+                        // Upd START Uok Yoo 20190315
+                        // button += '</div></div>';
+                        button += '</div>';
+                        // Upd END   Uok Yoo 20190315
+
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+                }
+                // console.log(ghArr);
+                return ghArr;
+                // return genTemplateHtml["g24_web_temp_03"](ffmnt);
+            },
+
+            "template_08": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = "";
+                // console.log(msg);
+
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+
+                var did = ffmnt.dialogue_id;
+                for (var c = 0; c < msg.length; c++) {
+                    var desc = '';
+                    var carousal = '';
+                    var button = '';
+
+                    var surveyCls = '';
+                    var surveyHtml = '';
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls = ' hasSurvey';
+                        surveyHtml =
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+                    // description
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                // (d == d < (msg[c].description.length - 1) ? surveyCls : '') + '">';
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+                            // desc += '<div>' + msg[c].description[d].text + '</div>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div></div>';
+								desc += '</div></div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+                    // console.log(desc);
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousal
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+
+                        gh = '<div class="chatbot-recommendationCard">';
+                        gh += '<ul>';
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+                            // gh += '<li><button type="button" data-url="' + msg[c].carousel_button[d].url + '"> <span> ' + msg[c].carousel_button[d].contents + ' </span><span> '  + msg[c].carousel_button[d].title + ' </span></button></li>';
+                            // Upd START Uok Yoo 20190315
+                            // gh += '<li><button type="button" data-url="' + msg[c].carousel_button[d].url + '"> <span> ' + hireCnt[d] + ' </span><span> '  + msg[c].carousel_button[d].title + ' </span></button></li>';
+                            gh += '<li><button type="button" data-url="' + msg[c].carousel_button[d].url + '"> <span> ' + msg[c].carousel_button[d].title + ' </span><span> '  + hireCnt[d] + ' </span></button></li>';
+                            // Upd END   Uok Yoo 20190315
+                            // temp =  '<span>' + msg[c].carousel_button[d].contents + '</span><span>'  + msg[c].carousel_button[d].title + '</span>';
+                            // gh += '<li><button type="button" data-url="' + msg[c].carousel_button[d].url + '">' + temp + '</button></li>';
+                        }
+                        gh += '</ul>';
+                        ghArr.push(gh.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        gh += '</div>';
+                        gh = '';
+                    }
+
+
+                }
+
+                // console.log(ghArr);
+                return ghArr;
+            },
+
+            "template_09": function (ffmnt) {
+                return genTemplateHtml["template_02"](ffmnt);
+            },
+
+            "template_10": function (ffmnt) {
+                return genTemplateHtml["template_07"](ffmnt);
+            },
+
+
+            // Add END   Uok Yoo 20190215
+            // 2024.01.17 추가 시작
+            "template_12": function (ffmnt) {
+
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = "";
+                // console.log(msg);
+
+                var did = ffmnt.dialogue_id;
+                for (var c = 0; c < msg.length; c++) {
+                    var desc = '';
+                    var carousal = '';
+                    var button = '';
+
+                    // description
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+
+                            desc += '<div class="chatbot-msg chatbotMsg"><span class="ir">고용이</span>';
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text + '</div>';
+                            desc += '</div>';
+                        }
+
+                    }
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // carousel_button
+                    if (msg[c].carousel_button && msg[c].carousel_button.length > 0) {
+                        carousal += '<div class="chatbot-employmentReport" data-navindex="0" data-max="550"><ul>';
+                        for (var d = 0; d < msg[c].carousel_button.length; d++) {
+                            carousal += '<li><article>';
+                            carousal += '<h4>' + msg[c].carousel_button[d].title + '</h4>';
+                            carousal += '<div>';
+                            carousal += '<div>' + msg[c].carousel_button[d].contents + '</div>';
+                            // mobile 경우 전화 걸수 있게 <tel> 적용할 것!
+                            if (util.detectMob()) {
+                                carousal += '<div> TEL : <a href="tel:' + msg[c].carousel_button[d].tel + '">' + msg[c].carousel_button[d].tel +  '</a></div>';
+                            } else {
+                                carousal += '<div> TEL : ' + msg[c].carousel_button[d].tel + '</div>';
+                            }
+                            carousal += '</div>';
+							// 2024.01.17 버튼 추가 시작
+							carousal += '<button type="button" class="showHomepage" onclick="window.open(\''+ msg[c].carousel_button[d].homeUrl + '\');">홈페이지</button>';
+							carousal += '<button type="button" class="showMap" onclick="window.open(\'' + msg[c].carousel_button[d].kkoMapUrl + '\');">카카오 지도보기</button>';
+							// 2024.01.17 버튼 추가 종료
+                            carousal += '</article></li>';
+                        }
+                        carousal += '</ul>';
+                        ghArr.push(carousal.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                        ghArr.push(wncbHtmlObj['containter-nav'] + '</div>');
+                    }
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+                        // Upd START Uok Yoo 20190315
+                        // button += '<div class="chatbot-msg chatbotMsg"><div class="chatbot-btnCon">';
+                        button += '<div class="chatbot-btnCon">';
+                        // Upd END   Uok Yoo 20190315
+                        for (var d = 0; d < msg[c].button.length; d++) {
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                            '" data-url=' + msg[c].button[d].url + '>' +
+                            msg[c].button[d].title + '</button> ';
+                        }
+                        // Upd START Uok Yoo 20190315
+                        // button += '</div></div>';
+                        button += '</div>';
+                        // Upd END   Uok Yoo 20190315
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                    gh = '';
+                }
+                // console.log(ghArr);
+                return ghArr;
+            },
+            // 2024.01.17 추가 종료
+            "template_90": function (ffmnt) {
+                var msg = ffmnt.messages;
+                var ghArr = [];
+                var gh = "";
+                //                 console.log(msg);
+
+                if (msg && typeof (msg) == 'object' && msg.length > 0) {
+                    // console.log(msg[0].custom[0]);
+                    // console.log(msg[0].custom[0].command);
+
+                    var command = "";
+                    var c = 0;
+                    while (c < msg.length && command == "") {
+                        if (msg[c].custom && msg[c].custom.length > 0) {
+                            var d = 0;
+                            while (d < msg[c].custom.length && command == "") {
+                                if (msg[c].custom[d].command && msg[c].custom[d].command != "") {
+                                    command = msg[c].custom[d].command;
+                                }
+                                d++;
+                            }
+                        }
+                        c++;
+                    }
+                    // console.error("command");
+                    // console.log(command);
+
+                    if (command != "") {
+                        if (command == util.wncbConst.text.helpEventText ||
+                            command == util.wncbConst.text.helpEventText2
+                        ) {
+                            gh += wncbHtmlObj['help-msg'];
+                            ghArr.push(gh);
+                            // ghArr.push(gh.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+                            // console.log(typeof(ffmnt.save));
+                            if (command == util.wncbConst.text.helpEventText2 && typeof (ffmnt.save) != 'string') {
+                                eventQueue.push({
+                                    type: util.wncbConst.text.helpEventText2,
+                                    param: {}
+                                });
+                            }
+                        }
+                    } else {
+
+                    }
+                }
+                return ghArr;
+            },
+
+
+			//----------------- 2024.08.23 고용24 챗봇 고용센터안내 부분 코딩 -------------------
+			"template_21": function (ffmnt) {
+                var msg = ffmnt.messages;
+
+                var ghArr = [];
+                var gh = '';
+
+
+                var cbss = 'chatbotSatisfactionSurvey';
+                var surveyHtmlArray = [
+                    '<div class="chatbot-satisfactionSurvey" data-did="', // dialogue_id
+                    '"><input type="checkbox" id="', // chatbotSatisfactionSurvey1
+                    '"><label for="', // chatbotSatisfactionSurvey1
+                    '">만족도 조사</label><div><input type="radio" id="', // chatbotSatisfactionSurvey1positive
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="positive"><label for="', // chatbotSatisfactionSurvey1positive
+                    '">좋아요</label><input type="radio" id="', // chatbotSatisfactionSurvey1negative
+                    '" name="', // chatbot_satisfactionSurvey_1
+                    '" value="negative"><label for="', // chatbotSatisfactionSurvey1negative
+                    '">싫어요</label></div></div>'
+                ];
+                var did = ffmnt.dialogue_id;
+
+                // text
+                for (var c = 0; c < msg.length; c++) {
+
+                    // description
+                    var desc = '';
+                    var button = '';
+
+                    var surveyCls = '';
+                    var surveyHtml = '';
+
+                    if (ffmnt.response_type == 'answer') {
+                        surveyCls = ' hasSurvey';
+                        surveyHtml =
+                            surveyHtmlArray[0] + did +
+                            surveyHtmlArray[1] + cbss + surveyCount +
+                            surveyHtmlArray[2] + cbss + surveyCount +
+                            surveyHtmlArray[3] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[4] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[5] + cbss + surveyCount + 'positive' +
+                            surveyHtmlArray[6] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[7] + cbss + '_' + surveyCount +
+                            surveyHtmlArray[8] + cbss + surveyCount + 'negative' +
+                            surveyHtmlArray[9]
+                    }
+
+                    if (msg[c].description && msg[c].description.length > 0) {
+
+                        for (var d = 0; d < msg[c].description.length; d++) {
+
+                            desc += '<div class="chatbot-msg chatbotMsg' +
+                                (d == (msg[c].description.length - 1) ? surveyCls : '') + '"><span class="ir">고용이</span>';
+
+							msg[c].description[d].text = changeColor(msg[c].description[d].text);
+                            desc += '<div> <span class="blind">응답</span>' + msg[c].description[d].text;
+
+                            if(d == (msg[c].description.length - 1)) {
+                                //desc += surveyHtml + '</div>';
+								desc += '</div>';
+                                surveyCount++;
+                            } else {
+                                desc += '</div></div>';
+                            }
+
+                        }
+
+                    }
+
+                    desc += '</div>';
+
+                    ghArr.push(desc.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    // button
+                    if (msg[c].button && msg[c].button.length > 0) {
+
+						//처음으로 버튼 css 분리적용 (파란색)
+                        button += '<div class="chatbot-btnCon">';
+
+                        for (var d = msg[c].button.length -1; d < msg[c].button.length; d++) {
+
+                            button += '<button type="button" data-value="' + msg[c].button[d].value +
+                                '" data-url="' + msg[c].button[d].url + '">' +
+                                msg[c].button[d].text + '</button> ';
+
+                        }
+
+                        button += '</div><br>';
+
+                    }
+
+                    ghArr.push(button.replace(/(?:\r\n|\r|\n)/g, '<br>'));
+
+                    gh = '';
+                }
+
+                return ghArr;
+            }
+        }
+
+        var generateHtml = function (data) {
+
+            var genHtml = [];
+
+        for (var c = 0; c < data.length; c++) {
+                var dt = data[c];
+
+                if (dt.text && dt.text != "") { // 텍스트 처리
+					dt.text = changeColor(dt.text);
+                    genHtml.push('<div class="chatbot-msg chatbotMsg"><span class="ir">고용이</span><div> <span class="blind">응답</span>' + dt.text + '</div></div>');
+                }
+
+                if ( // 오브젝트 처리
+                    typeof (dt.data) == 'object' &&
+                    typeof (dt.data.result) == 'object' &&
+                    typeof (dt.data.result.fulfillment) == 'object') {
+
+	                var type = dt.data.result.fulfillment.template_id;
+
+	                console.log("generateHtml type ▶▶▶▶▶▶▶▶▶▶▶ " + type)
+	                console.log("typeof(genTemplateHtml[type] ▶▶▶▶▶▶▶▶▶▶▶ " + typeof(genTemplateHtml[type]));
+
+	                if (genTemplateHtml[type] && typeof (genTemplateHtml[type]) == 'function') {
+	                    dt.data.result.fulfillment.save = data.save;
+	                    genHtml = genHtml.concat(genTemplateHtml[type](dt.data.result.fulfillment));
+	                }
+              	}
+            }
+            // console.log(genHtml)
+            return genHtml;
+        }
+
+        var searchWaitTarget = function (uuid) {
+            var targetIdx = -1;
+            var waitItems = $('.chatbot-load');
+            for (var c = 0; c < waitItems.length; c++) {
+                if ($(waitItems[c]).attr("uuid") == uuid) {
+                    targetIdx = c;
+                }
+            }
+            if (targetIdx > -1) {
+                return waitItems[targetIdx];
+            }
+            return undefined;
+        }
+
+        var chatBotBtnEvent = function (e) {
+
+            var urlProcess = function (tUrl) {
+
+                if (tUrl == "chatbot") {
+                    tUrl = "";
+                }
+
+                if (tUrl && tUrl.length > 0) {
+                    // 웹 주소 변경
+//                    console.log(tUrl);
+                    window.location.href = url;
+                    // $("iframe").attr("src", url);
+
+                    // 모바일 처리
+                    if (util.detectMob()) {
+                        cbInit.minimize();
+                    }
+                }
+
+            }
+
+//             console.log(e.target)
+            var $btn = $(e.target);
+            var value = $btn.attr("data-value");
+            var url = $btn.attr("data-url");
+
+            // ojs80. test.
+//            console.log(">>>>>>>value : "+value);
+//            console.log(">>>>>>>url : "+url);
+            // ojs80. test. end
+
+            // 메시지 출력
+            if (value && value.length > 0) {
+                // Upd START Uok Yoo 20190218
+                // template_01 에서 카로셀로 나오는 챗봇 TIP을 선택시
+                // 챗봇도움말을 팝업으로 띄어줌
+                // 챗봇도움말 -> 대화 TIP
+                if (value == "챗봇도움말") {
+                    cbInit.openHelp('knowledgerange');
+
+                // 2022.03.18. ojs80. 추가.
+                }else if(value == "추천정보 알려줘"){
+//                	console.log("개인추천 실행 시 호출...");
+                	fn_getChatbotInfo();								//thework/getchatbotajax.do 호출.
+
+                 // 2022.03.15. ojs80. test code.
+//                    console.log('recommendArray2 %o ', recommendArray);
+                 // 2022.03.15. ojs80. test code. end.
+
+                	addAndSendChatMessage(value, function () {			// 챗봇 버튼 클릭시 이벤트 호출.
+                        urlProcess(url);
+                    });
+                // 2022.03.18. ojs80. 추가. 끝.
+                }else {
+                    addAndSendChatMessage(value, function () {
+                        urlProcess(url);
+                    });
+                }
+                // Upd END   Uok Yoo 20190218
+            } else {
+                urlProcess(url);
+            }
+
+        }
+
+        var setMsgEvent = function (newHtmlElem) {
+
+            // 이벤트 : 도움말 버튼
+            var evtTgt = newHtmlElem.find('.helpBtn');
+            if (evtTgt.length > 0) {
+                // console.log("-- help buttons")
+                // console.log(evtTgt);
+                $(evtTgt[0]).click(function (e) {
+                    cbInit.openHelp('talktip');
+                    sessionStorage.setItem(util.wncbConst.ssid.help_status, 0);
+                });
+                $(evtTgt[1]).click(function (e) {
+                    cbInit.openHelp('location');
+                    sessionStorage.setItem(util.wncbConst.ssid.help_status, 1);
+                });
+                $(evtTgt[2]).click(function (e) {
+                    cbInit.openHelp('knowledgerange');
+                    sessionStorage.setItem(util.wncbConst.ssid.help_status, 2);
+                });
+                $(evtTgt[3]).click(function (e) {
+                    cbInit.openHelp('hunting');
+                    sessionStorage.setItem(util.wncbConst.ssid.help_status, 3);
+                });
+            }
+
+            // 이벤트 : 시작 안내 메시지의 버튼들
+            // console.log(newHtmlElem);
+            // console.log( newHtmlElem.length );
+
+            evtTgt = newHtmlElem.find("button");
+            if (evtTgt.length > 0) {
+                evtTgt.click(chatBotBtnEvent);
+            }
+        }
+
+        var receiveFromServer = function (param) {
+//            console.log(param);
+
+            // search target
+            var targetElem = null;
+            if (param.uuid && param.uuid != "") {
+                targetElem = searchWaitTarget(param.uuid);
+            }
+
+            // prepare data
+            param.data.save = param.save;
+            var addHtml = generateHtml(param.data);
+            // console.log(addHtml);
+            if (addHtml.length > 0) {
+
+                var newHtml = '';
+                for (var c = 0; c < addHtml.length; c++) {
+
+                    newHtml += changeColor(addHtml[c]);
+                }
+
+                var newHtmlElem;
+                if (targetElem) { // 찾았음
+                    // 내용 적용
+                    var $target = $(targetElem).parent();
+                    $t2 = $target.replaceWithPush(newHtml);
+
+                    // 이벤트 할당 - cbInit에서 전체 초기화 하는 것들
+                    var et = $t2.find('.chatbot-containerNav').parent();
+                    if (et.length > 0) {
+                        cbInit.setNavEvent(et[0]);
+                    }
+                    // console.log($t2);
+                    var set = $t2.find('.chatbot-satisfactionSurvey');
+                    // console.log(set)
+                    if (set.length > 0) {
+                        cbInit.setSurveyEvent(set[0]);
+                    }
+
+                    // 찾기
+                    newHtmlElem = $t2;
+
+                } else { // 없음
+                    // 채팅 복구 시에만 사용되며, 이벤트는 한꺼번에 cbInit.process() 에서 처리
+                    newHtmlElem = $(newHtml);
+                    $('#chatbot-msgCon').append(newHtmlElem);
+                }
+
+                setMsgEvent(newHtmlElem);
+                scrollToBottom();
+
+                if (param.save && param.save != '') {} // pass save
+                else {
+                    // save data to session Storage
+                    var saveParam = $.extend({}, param);
+                    if (saveParam.uuid) {
+                        delete saveParam.uuid;
+                    }
+                    // console.log(param);
+                    updateMsgInSs(param.midx, {
+                        type: 'serv',
+                        data: param.data
+                    });
+                }
+
+                // console.log( "callback:", typeof(param.callback) );
+                if (typeof (param.callback) == 'function') {
+                    // console.log( "callback:", typeof(param.callback) );
+                    param.callback();
+                }
+
+            } else {
+                eventQueue.push({
+                    type: util.wncbConst.event.dataUnknown,
+                    param: {}
+                });
+            }
+
+            // event 처리
+            if (param.save && param.save != '') {} // pass event 처리
+            else {
+                // html generator에서 발생한 event queue 처리
+                // console.log(eventQueue);
+                // console.log(eventQueue.length);
+                while (eventQueue.length > 0) {
+                    var evtItem = eventQueue.shift();
+                    // console.log(evtItem);
+                    switch (evtItem.type) {
+
+                        case util.wncbConst.event.dataUnknown:
+                            if (targetElem) {
+                                $(targetElem).replaceWithPush(util.wncbConst.text.unknownDataErrorMsg);
+                            }
+                            break;
+
+                        case util.wncbConst.text.helpEventText2:
+                            console.error("--- help event")
+                            cbInit.openHelp('hunting');
+                            sessionStorage.setItem(util.wncbConst.ssid.help_status, 3);
+                            break;
+
+                    }
+                }
+            }
+
+        }
+
+        var disablePrevButtons = function () {
+            var $buttons = $('#chatbot-msgCon button');
+            // console.log($buttons);
+            for (var c = 0; c < $buttons.length; c++) {
+                // console.log($($buttons[c]).text());
+                if (
+                    $($buttons[c]).hasClass('showJobInfo') ||
+                    $($buttons[c]).hasClass('prev') ||
+                    $($buttons[c]).hasClass('next') ||
+                    $($buttons[c]).hasClass('helpBtn') ||
+                    $($buttons[c]).text() == '더 많은 채용공고 확인' ||
+					$($buttons[c]).text() == '더 많은 훈련정보 확인' || // 2024.01.17
+                    $($buttons[c]).text() == '처음으로'
+                ) {} else {
+                    // console.log($buttons[c]);
+                    $($buttons[c]).attr('disabled', true);
+                }
+            }
+
+            var $surveyInputs = $('.chatbot-satisfactionSurvey > input');
+            for (var c = 0; c < $surveyInputs.length; c++) {
+                $($surveyInputs[c]).attr('disabled', true);
+            }
+        }
+
+        var sendChatToServer = function (userCharMsg, callback) {
+
+            var uuid = util.generateUUID();
+            uuid = changeColor(uuid);
+            var waitingServerHtml =
+                '<div class="chatbot-msg chatbotMsg""><span class="ir">고용이</span><div class="chatbot-load" uuid="' + uuid +
+                '"><span></span><span></span><span></span></div></div>';
+
+            // Android 4.4.4 기기가 아닌 경우에만 로딩 채팅 화면 표시(animation css 속성으로 인해 비정상 종료 발생)
+            if(agent.indexOf('android 4.4.4') <= -1) {
+            	$('#chatbot-msgCon').append(waitingServerHtml);
+     		}
+            scrollToBottom();
+
+            // disable all buttons
+            disablePrevButtons();
+
+            // save temp message
+            var midx = msgIndex;
+            saveMsgToSs({
+                type: 'serv',
+                data: "wait",
+                midx: midx
+            });
+
+            // Add START Uok Yoo 20190209
+            // 모바일 체크
+            var selectMobile = "";
+
+            if (util.detectMob()) {
+                selectMobile = "G24_CHATBOT_HP";
+            } else {
+            	selectMobile = "G24_CHATBOT_HP";
+				//selectMobile = "G24_CHATBOT_PI";
+            }
+            // Add END Uok Yoo 20190209
+
+
+            // send msg to server
+            console.log("[1 instance.agent] ==================== " + instance.agent);
+            console.log("============== 1 send survey to server ========================");
+			console.log("[1 userCharMsg] ==================== " + userCharMsg);
+
+            var setting = {
+                type: "POST",
+                url: instance.agent,
+                crossDomain: true,
+                // contentType: 'application/json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    user_id: instance.userId,
+                    session_id: instance.session_id,
+                    // UPD START Uok Yoo 20190209
+                    // domain_id: "", // "G24_CHATBOT_HP", "g24_hp_mobile"
+                    domain_id: selectMobile,
+                     // UPD END Uok Yoo 20190209
+                    in_str: userCharMsg,
+                    // chat_id: uuid
+                    chat_id: uuid,
+                    parameters: {
+                        lang:"ko",
+                        recommend: recommendArray
+                    }
+                }),
+                success: function (res) {
+                	console.log("============== 1 success ========================");
+					/*2024.01.16 테스트 시작*/
+					/*if(userCharMsg == '정책정보메뉴이동') {
+						//안내문 - 버튼
+						//chatbot_policy_info_01.data.timestamp = res.data.timestamp;
+						//chatbot_policy_info_01.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						//chatbot_policy_info_01.data.chat_id = res.data.chat_id;
+						//res = chatbot_policy_info_01;
+
+						//안내문 - 카드형 버튼 - 버튼
+						chatbot_policy_info_02.data.timestamp = res.data.timestamp;
+						chatbot_policy_info_02.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						chatbot_policy_info_02.data.chat_id = res.data.chat_id;
+						res = chatbot_policy_info_02;
+					} else if(userCharMsg == '채용정보메뉴이동') {
+						//안내문 - 버튼
+						chatbot_recruitment_info_01.data.timestamp = res.data.timestamp;
+						chatbot_recruitment_info_01.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						chatbot_recruitment_info_01.data.chat_id = res.data.chat_id;
+						res = chatbot_recruitment_info_01;
+					} else if(userCharMsg == '서울 연봉 3000만원 요리사') {
+						//안내문 - 카드형 버튼 - 버튼
+						chatbot_recruitment_info_02.data.timestamp = res.data.timestamp;
+						chatbot_recruitment_info_02.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						chatbot_recruitment_info_02.data.chat_id = res.data.chat_id;
+						res = chatbot_recruitment_info_02;
+					} else if(userCharMsg == '훈련정보메뉴이동') {
+						//안내문 - 버튼
+						chatbot_training_info_01.data.timestamp = res.data.timestamp;
+						chatbot_training_info_01.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						chatbot_training_info_01.data.chat_id = res.data.chat_id;
+						res = chatbot_training_info_01;
+					} else if(userCharMsg == '서울 자바교육 과정') {
+						//안내문 - 카드형 버튼 - 버튼
+						chatbot_training_info_02.data.timestamp = res.data.timestamp;
+						chatbot_training_info_02.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						chatbot_training_info_02.data.chat_id = res.data.chat_id;
+						res = chatbot_training_info_02;
+					} else if(userCharMsg == '고용센터메뉴이동') {
+						//안내문 - 버튼
+						//chatbot_center_info_01.data.timestamp = res.data.timestamp;
+						//chatbot_center_info_01.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						//chatbot_center_info_01.data.chat_id = res.data.chat_id;
+						//res = chatbot_center_info_01;
+
+						//안내문 - 카드형 버튼 - 버튼
+						chatbot_center_info_02.data.timestamp = res.data.timestamp;
+						chatbot_center_info_02.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						chatbot_center_info_02.data.chat_id = res.data.chat_id;
+						res = chatbot_center_info_02;
+					} else if(userCharMsg == '서울 강남구 고용센터') {
+						//안내문 - 카드형 버튼 - 버튼
+						chatbot_center_info_03.data.timestamp = res.data.timestamp;
+						chatbot_center_info_03.data.result.fulfillment.dialogue_id = res.data.result.fulfillment.dialogue_id;
+						chatbot_center_info_03.data.chat_id = res.data.chat_id;
+						res = chatbot_center_info_03;
+					}*/
+					/*2024.01.16 테스트 종료*/
+                    var sendData = {
+                        uuid: res.data.chat_id,
+                        midx: midx,
+                        data: [res],
+                        callback: callback
+                    };
+                    // console.error(typeof(callback))
+                    receiveFromServer(sendData);
+                },
+                error: function (err) {
+                	console.log("============== 1 error ========================");
+                    console.error(err);
+                    // var errResposeText = JSON.parse(err.responseText);
+                    // console.log(errResposeText);
+
+                    // 에러난 대기상태 메시지 처리
+                    var targetElem = searchWaitTarget(uuid);
+                    // console.log(targetElem);
+                    $(targetElem).replaceWithPush(util.wncbConst.text.ajaxErrorMsg);
+                }
+            };
+            // console.log(setting);
+            $.ajax(setting);
+
+            // emulate server
+            // testModule.emulateServer({ uuid: uuid, midx: midx, userCharMsg: userCharMsg, resultCallback: receiveFromServer });
+        }
+
+        var addAndSendChatMessage = function (msg, callback) {
+
+            // input history
+            userInputHistory.push(msg);
+            if (userInputHistory.length > 10) {
+                userInputHistory.shift();
+            }
+//             console.log("userInputHistory======="+userInputHistory)
+
+            addUserChat(msg);
+            sendChatToServer(msg, callback);
+        }
+
+        // 메시지 전송 : html 처리 후 서버에 전송
+        var sendChatMessageInputBox = function () {
+
+            var userChatMsg = $('#chatbotSendmessage').val().trim();
+            if (userChatMsg.length == 0) {
+                return;
+            }
+            // console.log(userChatMsg);
+
+            // Upd START Uok Yoo 20190211
+            // 챗봇사용자가 "도움말" 입력시 도움말 창 실행
+            // 채팅창에 사용자 입력 텍스트 표시하지 않기 위해서
+            // sendChatMessageInputBox에서 처리
+            // $('#chatbotSendmessage').val('');
+            // addAndSendChatMessage(userChatMsg);
+            if(userChatMsg == util.wncbConst.text.menuText[2]) {
+                $('#chatbotSendmessage').val('');
+                cbInit.openHelp('knowledgerange');
+            }else {
+                $('#chatbotSendmessage').val('');
+                addAndSendChatMessage(userChatMsg);
+            }
+            // Upd END   Uok Yoo 20190211
+        }
+
+        // 헤더 mouse up 이벤트 (이동 위치 저장용)
+        // $("article.chatbot header").mouseup(function(e){
+        var chatBotMoveCallbackFunction = function () {
+            // console.log('pos')
+            var getPosInfo = function () {
+                elem = $('.chatbot-container');
+                return {
+                    x: parseInt(elem.css('right').replace('px', '')),
+                    y: parseInt(elem.css('bottom').replace('px', ''))
+                };
+            };
+            var oldPosStr = sessionStorage.getItem(util.wncbConst.ssid.position);
+            if (typeof (oldPosStr) == 'string') { // value exist
+                var oldPos = JSON.parse(oldPosStr);
+                var newPos = getPosInfo();
+                if (oldPos.x != newPos.x || oldPos.y != newPos.y) {
+                    sessionStorage.setItem(util.wncbConst.ssid.position, JSON.stringify(newPos));
+                }
+            } else {
+                // first-time
+                sessionStorage.setItem(util.wncbConst.ssid.position, JSON.stringify(getPosInfo()));
+            }
+
+        }
+
+        // 리사이즈 이벤트(크기 저장용)
+        // $('.chatbot-resizeHandler>span').mouseup(function(e){
+        var chatBotResizeCallbackFunction = function () {
+
+            // console.log('resize')
+            var getSizInfo = function () {
+                elem = $('.chatbot-container');
+                return {
+                    w: parseInt(elem.css('width').replace('px', '')),
+                    h: parseInt(elem.css('height').replace('px', ''))
+                };
+            };
+            var oldSizStr = sessionStorage.getItem(util.wncbConst.ssid.size);
+			if (typeof (oldSizStr) == 'string') { // value exist
+                var oldSiz = JSON.parse(oldSizStr);
+                var newSiz = getSizInfo();
+//                console.log(oldSiz)
+//                console.log(newSiz)
+                if (oldSiz.w != newSiz.w || oldSiz.h != newSiz.h) {
+                    sessionStorage.setItem(util.wncbConst.ssid.size, JSON.stringify(newSiz));
+                }
+            } else {
+                // first-time
+                sessionStorage.setItem(util.wncbConst.ssid.size, JSON.stringify(getSizInfo()));
+            }
+        }
+
+        var chatBotSurveyCallbackFunction = function (item) {
+
+            // console.log(item);
+            // console.log(item.value);
+            // console.log(item.parentElement.parentElement.getAttribute("data-did"));
+
+            var surveyValue = (item.value == 'positive' ? "Y" : "N");
+
+            var selectMobile = "";
+            if (util.detectMob()) {
+                selectMobile = "G24_CHATBOT_HP";
+            }else {
+            	selectMobile = "G24_CHATBOT_HP";
+				//selectMobile = "G24_CHATBOT_PI";
+            }
+
+            // send survey to server
+            //console.log("[2 instance.agent] ==================== " + instance.agent);
+            //console.log("============== 2 send survey to server ========================");
+
+            var setting = {
+                type: "POST",
+                url: instance.agent,
+                crossDomain: true,
+                // contentType: 'application/json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    user_id: instance.userId,
+                    session_id: instance.session_id,
+                    // domain_id: "", // "G24_CHT_HP", "g24_hp_mobile"
+                    domain_id: selectMobile,
+                    in_str: "",
+                    // dialogue_id: item.parentElement.parentElement.getAttribute("data-did"),
+                    param_like: surveyValue, // "Y" ; good, "N" : bad
+                    parameters: {
+                        lang:"ko",
+                        recommend: recommendArray,
+                        dialogue_id: item.parentElement.parentElement.getAttribute("data-did")
+                    }
+                }),
+                success: function (res) {
+//                    console.log(res);
+                },
+                error: function (err) {
+//                    console.error(err);
+                }
+            };
+            // console.log(setting);
+            $.ajax(setting);
+        }
+
+        var clearHelpCallbackFunction = function () {
+            sessionStorage.setItem(util.wncbConst.ssid.help_status, -1);
+        }
+
+        var clearInfoInSessionStorage = function () {
+            // 세션 내용 삭제 : 채팅이 복구되지 않으므로 챗봇에서도 삭제
+            var c = 0;
+            var tempData = sessionStorage.getItem(util.wncbConst.ssid.msgid + c);
+            while (tempData && typeof (tempData) == 'string') {
+                sessionStorage.removeItem(util.wncbConst.ssid.msgid + c);
+                c++;
+                tempData = sessionStorage.getItem(util.wncbConst.ssid.msgid + c);
+            }
+            sessionStorage.removeItem(util.wncbConst.ssid.start);
+            sessionStorage.removeItem(util.wncbConst.ssid.show);
+            sessionStorage.removeItem(util.wncbConst.ssid.position);
+            sessionStorage.removeItem(util.wncbConst.ssid.size);
+            sessionStorage.removeItem(util.wncbConst.ssid.login);
+            sessionStorage.removeItem(util.wncbConst.ssid.session_id);
+            sessionStorage.removeItem(util.wncbConst.ssid.help_status);
+            sessionStorage.removeItem(util.wncbConst.ssid.minimum_status);
+
+            instance.session_id = "";
+        }
+
+        var setChatBotEvents = function () {
+
+            // 입력 내용 전송, 이벤트 할당
+            $('#chatbotSendmessage').off('keypress').keypress(function (e) { // 키입력 엔터 처리
+                // console.log(e.keyCode)
+                if (e.keyCode == 13) {
+                    sendChatMessageInputBox();
+                }
+                resetStopDelay();
+            });
+            $(".chatbot-inputCon>button").off('click').click(function (e) { // '전송' 버튼 클릭 처리
+                sendChatMessageInputBox();
+                resetStopDelay();
+            });
+
+            // 챗봇 표시 상태 정보 저장 이벤트
+            $("article.chatbot header button.minimum").click(function (e) { // 감추기
+                sessionStorage.setItem(util.wncbConst.ssid.show, 0);
+                console.log("챗봇 아이콘 숨기기");
+               // $(".div_chatbot_area").html($(".chatbot-comeback").clone().wrapAll("<div/>").parent().html());
+                $(".div_chatbot_area").show();
+                $(".chatbot-comeback").hide();
+                $(".div_chatbot_area a.quick_chatbot").focus();
+
+            });
+            // $(".chatbot-init-button").click(function(e){ // 보이기
+            //     sessionStorage.setItem( util.wncbConst.ssid.show, 1 );
+            // });
+            $(".chatbot-comeback-btn").click(function (e) { // 보이기
+
+                sessionStorage.setItem(util.wncbConst.ssid.show, 1);
+                $(".div_chatbot_area").hide();
+            });
+
+            // 챗봇 닫기 - 버튼 이벤트
+            $("article.chatbot header button.close").click(function (e) { // 감추기
+                clearInfoInSessionStorage();
+                timerHalt = true;
+                // console.log(timerHalt);
+
+                if ($('body').hasClass('fix-for-chatbot')) {
+                    $('body').removeClass('fix-for-chatbot');
+                }
+
+                $(".chatbot-container").remove();
+                $(".chatbot-comeback").remove();
+                updateSessionId();
+
+                initChatBot();
+                $('#footer a.quick_chatbot').focus();
+            });
+
+            // 메뉴 버튼 처리
+            $("div.chatbot-menu").click(function (e) {
+                var idx = $(e.target).index();
+                if (idx == 1) {
+
+                    // 2021.10.25. ojs80. 구직신청 버튼 클릭시 연결되는 url을 웹, 모바일 분기처리.
+                	var url = "";
+                	var testUrl = window.location.origin;		// 2022.06.24. ojs80. 접속url 기준으로 구직신청 주소 구분.
+
+					// 2024.12.09 로그인 기능 관련 수정
+					url = "/cm/z/b/0210/openLginPage.do";
+
+					/*
+                	if (testUrl.includes("m.work.go.kr")) {
+                		url = "/member/myinfo/seekApply/seekApplyMainView/moveSeekApplySrvMain.do";
+                	} else if (testUrl.includes("work.go.kr")){
+                		url = "/indivMemberSrv/seekApplyAdmin/resumeMng/resumeMngMain.do";
+                	} else {
+                		// 접속주소로 구분이 안된다면
+	                	if (util.detectMob()) {
+	                		// 모바일
+	                        url = "/member/myinfo/seekApply/seekApplyMainView/moveSeekApplySrvMain.do";
+	                    } else {
+	                    	// 웹
+	                    	url = "/indivMemberSrv/seekApplyAdmin/resumeMng/resumeMngMain.do";
+	                    }
+                	}
+					*/
+
+                    addAndSendChatMessage(util.wncbConst.text.menuText[idx], function () {
+                        // 웹 주소 변경
+//                        console.log(url);
+                        window.location.href = url;
+                        // $("iframe").attr("src", url);
+
+                        // 모바일 처리
+                        if (util.detectMob()) {
+                            cbInit.minimize();
+                        }
+                    });
+                // Add START Uok Yoo 20190211
+                // 챗봇사용자가 "도움말" 메뉴 선택시 도움말 창 실행
+                } else if (idx == 2) {
+
+                    cbInit.openHelp('knowledgerange');
+                // Add END   Uok Yoo 20190211
+                } else {
+                    addAndSendChatMessage(util.wncbConst.text.menuText[idx]);
+                }
+                $("input#chatbotMemuToggle").trigger("click");
+            });
+
+            // 챗봇 재시작
+            var restartChatBot = function () {
+                $('#chatbotSendmessage').attr("disabled", false);
+                $('#chatbotMemuToggle').attr("disabled", false);
+
+                stopDelayCount = 0;
+                timerHalt = false;
+                setTimeout(timeoutHandler, 1000);
+
+                sendChatToServer(util.wncbConst.chatCmd.start);
+            };
+
+            // 챗봇 중지
+            var stopChatBot = function () {
+//                console.log("stop!")
+                $sh = $(wncbHtmlObj['stop']);
+                $('#chatbot-msgCon').append($sh);
+                scrollToBottom();
+
+                $('#chatbotSendmessage').attr("disabled", true);
+                $('#chatbotMemuToggle').attr("disabled", true);
+
+                for (var c = 0; c < $sh.length; c++) {
+                    $($sh[c]).find('button').click(restartChatBot);
+                }
+
+                // 대화가 중단되면 세션 아이디 갱신
+                updateSessionId();
+            }
+
+            // 중지 타이머 시작
+            var timeoutHandler = function (e) {
+                // console.log(timerHalt)
+                if (timerHalt) {
+                    // console.log("timer 취소")
+                    return;
+                }
+                stopDelayCount++;
+                // console.log(stopDelayCount);
+                // if ( stopDelayCount >= 5 )
+                if (stopDelayCount >= 180) {
+                    if (stopWarning) {
+                        // if ( stopDelayCount >= 8 )
+                        if (stopDelayCount >= 240) {
+                            stopChatBot();
+                        } else {
+                            setTimeout(timeoutHandler, 1000);
+                        }
+                    } else {
+                        // console.log("stop warning!");
+                        $swh = $(wncbHtmlObj['stopwarn']);
+                        $('#chatbot-msgCon').append($swh);
+                        scrollToBottom();
+                        stopWarning = true;
+                        setTimeout(timeoutHandler, 1000);
+                    }
+                } else {
+                    setTimeout(timeoutHandler, 1000);
+                }
+            }
+
+            // 타이머 시작
+            stopDelayCount = 0;
+            timerHalt = false;
+            setTimeout(timeoutHandler, 1000);
+
+        }
+
+        var chatbotStart = function (clickCd) {
+
+        	if(clickCd != 'auto'){
+
+	            // display on
+	            $('.chatbot-container').show();
+	            $('.chatbot-init-button').show();
+	            scrollToBottom();
+
+	            // gui 관련 함수 초기화
+	            cbInit.process(instance); // 초기화
+
+	            // 챗봇 창 상태 복원
+	            var cbWinStatus = sessionStorage.getItem(util.wncbConst.ssid.show);
+	            var cbWinStart = sessionStorage.getItem(util.wncbConst.ssid.start);
+	            var cbWinMiniStatus = sessionStorage.getItem(util.wncbConst.ssid.minimum_status);
+
+				console.log("cbWinStatus ::: " + cbWinStatus);
+				console.log("cbWinStart  ::: " + cbWinStart);
+				console.log("cbWinMiniStatus  ::: " + cbWinMiniStatus);
+
+	            if ( cbWinStatus == 0 && cbWinMiniStatus != 0 ) {
+	                cbInit.minimize();
+	            } else if ( (cbWinStart == null || cbWinMiniStatus == 0) || cbWinStatus == null && cbWinMiniStatus != 0 ) {
+
+	                cbInit.open();
+
+	                sessionStorage.setItem(util.wncbConst.ssid.minimum_status, 1);	//챗봇 창이 열리면 최소화상태 초기화
+
+	                // help status
+	                var hs = sessionStorage.getItem(util.wncbConst.ssid.help_status);
+	                if (hs && typeof (hs) == 'string') {
+	                    var hsInt = parseInt(hs);
+	                    if (hsInt > -1) {
+	                        switch (hsInt) {
+	                            case 0:
+	                                cbInit.openHelp('location');
+	                                break;
+	                            case 1:
+	                                cbInit.openHelp('talktip');
+	                                break;
+	                            case 2:
+	                                cbInit.openHelp('knowledgerange');
+	                                break;
+	                            case 3:
+	                                cbInit.openHelp('hunting');
+	                                break;
+	                        }
+	                        clearHelpCallbackFunction();
+	                    }
+	                } else {
+	                    clearHelpCallbackFunction();
+	                }
+	            } else {
+	                cbInit.minimize();
+	            }
+
+
+	            // 창 크기와 위치 복구
+	            var oldSizStr = sessionStorage.getItem(util.wncbConst.ssid.size); // 창 크기
+	            if (typeof (oldSizStr) == 'string') { // value exist
+	                var oldSiz = JSON.parse(oldSizStr);
+	                var elem = $('.chatbot-container');
+//	                console.log(oldSiz);
+	                elem.css('width', oldSiz.w + 'px');
+	                elem.css('height', oldSiz.h + 'px');
+	            }
+	            var oldPosStr = sessionStorage.getItem(util.wncbConst.ssid.position); //  창 위치
+	            if (typeof (oldPosStr) == 'string') { // value exist
+	                var oldPos = JSON.parse(oldPosStr);
+	                var elem = $('.chatbot-container');
+//	                console.log(oldPos);
+	                elem.css('right', oldPos.x + 'px');
+	                elem.css('bottom', oldPos.y + 'px');
+	            }
+
+	            // 시작 여부 확인
+	            var started = sessionStorage.getItem(util.wncbConst.ssid.start);
+	            if (started && typeof (started) == 'string') {} else { // 새로 시작함
+	                // 시작 상태를 session storage에 기록
+	                sessionStorage.setItem(util.wncbConst.ssid.start, 1);
+
+	                // session_id 생성 및 저장
+	                updateSessionId();
+
+	                // 처음 실행 시 안내 메시지
+	                sendChatToServer(util.wncbConst.chatCmd.start);
+	            }
+	            // 이벤트 할당
+	            setChatBotEvents();
+        	}
+        	if($('.chatbot-quickGuide')[0].className.indexOf('disabled') < 0){
+           		$('.chatbot_qgclose')[0].focus();
+			} else {
+            	$('.chatbot-container .chatbot button.close')[0].focus();
+			}
+        }
+
+
+        // 초기화
+        var initChatBot = function () {
+			console.log("initChatBot !!!");
+
+            var afterRestoreMessage = function () {
+
+                // 챗봇 시작 엘리먼트
+                var bannerForEnter = $('.quick_chatbot');
+
+                // 세션에 챗봇 실행 이력 확인
+                if (sessionStorage.getItem(util.wncbConst.ssid.start) == 1) { // 시작됨
+
+                    if (bannerForEnter.length > 0) {
+                        bannerForEnter.click(function (e) {
+//							console.log("click !!!");
+                            // 클릭하면 챗봇 창 표시
+//                            cbInit.open();
+							chatbotStart('click');
+                        });
+                    }
+
+                } else {
+					console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+                    // 챗봇 시작 안한 경우
+                    if (bannerForEnter.length > 0) {
+                        bannerForEnter.click(function (e) {
+                            // 클릭하면 챗봇 창 표시
+                            chatbotStart('click');
+                            //bannerForEnter.off('click');
+                        });
+                    }
+                }
+            }
+
+            // restore preserved chat data
+            var restoreSavedMsg = function (c) {
+
+                var savedMsg = sessionStorage.getItem(util.wncbConst.ssid.msgid + c);
+                if (savedMsg && typeof (savedMsg) == 'string') {
+                    // console.log(savedMsg);
+                    var obj = JSON.parse(savedMsg);
+                    // console.log(obj.type)
+                    if (obj.type == 'user') {
+                        addUserChat(obj.data, 'not');
+                        msgIndex++;
+                    } else if (obj.type == 'serv') {
+                        disablePrevButtons();
+                        receiveFromServer({
+                            save: 'not',
+                            data: obj.data
+                        });
+                        msgIndex++;
+                    } else {
+                        // error
+                    }
+                    restoreSavedMsg(c + 1);
+                } else { // 추가 완료
+                    afterRestoreMessage(); // 메시지 추가 완료 후 처리
+                }
+            }
+
+            //////////////
+            // entry point : initChatBot()
+
+            msgIndex = 0;
+            stopDelayCount = 0;
+            stopWarning = false;
+            eventQueue = [];
+            userInputHistory = [];
+            surveyCount = 1;
+
+            if ($(".chatbot-container").length == 0) { // chatbot html 이미 있는지 확인
+
+                // add chatbot html : use static string
+                // $('body').append(testModule.chatBotHtml); // 챗봇 html 추가
+
+                // prepare stop html
+                // util.getFileAsStringFromUrl( util.wncbConst.setting.cbRoot + "html/stop.html",
+                //     function(dt_from_srv){
+                //         stopHtml = dt_from_srv;
+                //         // console.log(stopHtml);
+                //     }
+                // );
+                // stopHtml = wncbHtmlObj['stop'];
+
+                // add chatbot html : get html string from server
+                var cbHtmlString = "";
+                var cbFileList = ['chatbot', 'menu', 'help', 'error', 'resize', 'quickguide'];
+                var getCbHtml = function (c) {
+                    if (c < cbFileList.length) {
+
+                        // util.getFileAsStringFromUrl( util.wncbConst.setting.cbRoot + "html/" + cbFileList[c] + ".html",
+                        //     function(dt_from_srv){
+                        //         cbHtmlString += dt_from_srv;
+                        //         getCbHtml(c+1);
+                        //     }
+                        // );
+
+                        cbHtmlString += wncbHtmlObj[cbFileList[c]];
+                        getCbHtml(c + 1);
+
+                    } else {
+
+                        // hmtl 추가
+                        var $cbHtml = $(
+                            // '<button type="button" class="chatbot-init-button" style="display:none">챗봇</button>' +
+                            wncbHtmlObj['comeback'] +
+                            '<div class="chatbot-container" tabindex="-1" style="display:none">' + cbHtmlString + '</div>');
+                        $('body').append($cbHtml);
+
+                        // 이벤트 : 마우스 클릭하면 타이머 리셋
+                        $cbHtml.click(function (e) {
+                            resetStopDelay();
+                        });
+
+                        // 저장 메시지 복구 시작
+                        restoreSavedMsg(0);
+                    }
+                }
+                getCbHtml(0);
+            } else {
+                restoreSavedMsg(0); // 저장된 메시지 복구
+            }
+        };
+
+        //////////////
+        // entry point : process()
+//        console.log('worknet-cb-main.js loaded.');
+
+        // web
+        // var chatbotUseParameterName = "<c:out value='${sessionScope.loginVO.custIdEncode}' />";
+        // mobile
+        // var chatbotUseParameterName = "<%=SessionUtil.getCustIdEncode() %>";
+
+        if (typeof (chatbotUseParameterName) == 'string' && chatbotUseParameterName.length > 0) { // login
+            instance.userId = chatbotUseParameterName;
+            sessionStorage.setItem(util.wncbConst.ssid.login, 1); // 로그인 상태 기록
+        } else { // not login
+
+            // 세션에 로그인 정보가 있는데 유저정보가 없는 경우 : 로그아웃 진행한 상황으로 판단
+            if (sessionStorage.getItem(util.wncbConst.ssid.login) == 1) {
+                clearInfoInSessionStorage();
+            }
+        }
+
+        // session id 복구 from session storage
+        var tempInfo = sessionStorage.getItem(util.wncbConst.ssid.session_id);
+        if (tempInfo && tempInfo != "") {
+            instance.session_id = tempInfo;
+        }
+
+        // jquery 추가 함수 replaceWithPush
+        $.fn.replaceWithPush = function (a) {
+            var $a = $(a);
+            this.replaceWith($a);
+            return $a;
+        };
+
+        // set callback functions
+        instance.rsCb = chatBotResizeCallbackFunction;
+        instance.wmCb = chatBotMoveCallbackFunction;
+        instance.survey = chatBotSurveyCallbackFunction;
+        instance.clearHelp = clearHelpCallbackFunction;
+
+        // init
+        initChatBot();
+
+        // test buttons
+        $('#wncb-start-button').click(function (e) {
+
+            // if already started, do nothing and return
+            // if ( sessionStorage.getItem(util.wncbConst.ssid.start) == 1 ) {
+            //     console.log('chatbot already started.')
+            //     return;
+            // }
+            // chatbotStart();
+
+            if (sessionStorage.getItem(util.wncbConst.ssid.start) == 1) {
+//                console.log('chatbot already started.')
+                cbInit.open();
+            } else {
+                chatbotStart();
+            }
+        });
+        $('#wncb-test-button').click(function (e) {
+            // console.log(testModule.sample);
+            // console.log(testModule.sample_msg);
+
+            // 재시작용
+            // sessionStorage.setItem( util.wncbConst.ssid.login, 1 );
+
+            // // send msg to server
+            // var setting = {
+            //     type: "POST",
+            //     url: instance.agent,
+            //     crossDomain: true,
+            //     // contentType: 'application/json',
+            //     contentType: 'application/json; charset=utf-8',
+            //     data: JSON.stringify({
+            //         user_id: instance.userId,
+            //         session_id: instance.session_id,
+            //         // domain_id: "", // "G24_CHT_HP", "g24_hp_mobile"
+            //         in_str: "",
+            //         dialogue_id: "5f05f7b3-ff20-4b99-bb3e-161b2405b5db", // dialogue_id
+            //         param_like: "Y", // "Y" ; good, "N" : bad
+            //     }),
+            //     success: function(res) {
+            //         console.log(res);
+            //     },
+            //     error: function(err) {
+            //         console.error(err);
+            //     }
+            // };
+            // // console.log(setting);
+            // $.ajax(setting);
+
+
+            // kakao test
+            {
+                var loadScript = function (url, callback) {
+                    var script = document.createElement("script");
+                    script.type = "text/javascript";
+
+                    if (script.readyState) {
+                        script.onreadystatechange = function () {
+                            if (script.readyState == "loaded" || script.readyState == "complete") {
+                                script.onreadystatechange = null;
+                                callback();
+                            }
+                        };
+                    } else {
+                        script.onload = function () {
+//                            console.log("123")
+                            callback();
+                        };
+                    }
+
+                    script.src = url;
+                    //  document.getElementsByTagName("head")[0].appendChild(script);
+                    document.getElementsByTagName("html")[0].appendChild(script);
+                };
+
+                // Kakao.cleanup();
+                // console.log(Kakao);
+                // console.log("Kakao");
+
+                // loadScript("https://developers.kakao.com/sdk/js/kakao.min.js", function() {
+                //     console.log(Kakao);
+                // //     // Kakao.init(worknet.snsLogin.kakaoApiKey);
+                // //     // Kakao.Auth.loginForm({
+                // //     //     success: function(authObj) {
+                // //     //         $("#snsLoginFrm #snsType").val("kakao");
+                // //     //         $("#snsLoginFrm #accessToken").val(authObj.access_token);
+                // //     //         $("#snsLoginFrm #redirectUrl").val(worknet.snsLogin.snsDomin+worknet.snsLogin.processUrl);
+                // //     //         $("#snsLoginFrm").submit();
+                // //     //     },fail: function(err) {
+                // //     //         alert("카카오 로그인에 실패하였습니다...");
+                // //     //     }
+                // //     // });
+                // });
+
+//                console.log(typeof (requirejs));
+                if (typeof (requirejs) == 'function')
+                    requirejs(["https://developers.kakao.com/sdk/js/kakao.min.js"], function (Kakao, print) {
+                        console.log(Kakao)
+                    });
+
+            }
+
+
+        });
+    }
+
+    return {
+        process: process
+    };
+});

@@ -1,0 +1,357 @@
+
+$.templates("filePolicy", `
+<p class="upload_tl filePolicy"><span class="t2_sb">첨부파일 {{if profile != 'prod' }}({{:athflMdulId}}){{/if}}</span></p>
+{{if viewMode != 'view' }}
+<div class="box_small_wrap">
+	<ul class="box_list_area">
+		<li class="txt_list">
+			{{if athflStupSecd == 'ERT01'}}
+				파일용량은 전체 {{:atchFlszMb}}MB 이하이며, {{:maxFileCnt}}개 파일 업로드 가능합니다.
+			{{else}}
+				파일용량과 파일갯수는 각 서식별로 다릅니다. 서식 옆에 있는 정보를 참고하시기 바랍니다.
+			{{/if}}
+		</li>
+		{{if athflStupSecd == 'ERT01'}}
+		<li class="txt_list">등록 가능 파일
+			<div class="box_tooltip type2 bottom">
+                <button type="button" class="btn_help dis vttop" aria-expanded="true"><span class="blind">등록 가능 파일</span></button>
+                <div class="box_help-data w_large">
+                    <p class="b1_sb">등록 가능 파일</p>
+					<p class="s1_r">{{:athflFnen2}}</p>
+					<button type="button" class="ico16_delete tooltip_close"><span class="blind">닫기</span></button>
+                </div>
+            </div>
+		</li>
+		{{/if}}
+	</ul>
+</div>
+{{/if}}
+`);
+
+$.templates("cvplFomtFile_layout", `
+	<div class="atfl_area">
+	    <div id="cvplFomtFileLayout_{{:id}}"></div>
+	</div>
+`);
+
+$.templates("fileGroup", `
+<div id="fileGroup_{{:athflMdulId}}" class="upload_box">
+</div>
+`);
+
+$.templates("paprGroup", `
+<div id="paprGroup_{{:athflMdulId}}">
+</div>
+`);
+
+$.templates("filePapr", `
+	<div id="filePapr_{{:athflMdulId}}_{{:atchPaprId}}" class="prfd_data" data-etc="{{:etc}}" data-athfl-stup-secd="{{:athflStupSecd}}">
+		<div class="atfl_data">
+			<div class="atfl_data_r">
+				<p class="atfl_data_tit" id="paprTitle" data-title="{{:atchPaprCn}}">{{:idx}}. {{:atchPaprCn}}
+
+				{{if profile != 'prod' }}
+				({{:atchPaprId}})
+				{{/if}}
+
+				{{if athflStupSecd == 'ERT02'}}
+				<div class="box_tooltip type2 bottom">
+	                <button type="button" class="btn_help dis vttop" aria-expanded="true"><span class="blind">등록 가능 파일</span></button>
+	                <div class="box_help-data w_large">
+	                	<p class="b1_sb">첨부파일 용량</p>
+						<p class="s1_r">{{:atchFlszMb}}MB</p>
+						<p class="b1_sb">첨부파일 갯수</p>
+						<p class="s1_r">{{:maxFileCnt}}개</p>
+	                    <p class="b1_sb">등록 가능 파일</p>
+						<p class="s1_r">{{:athflFnen2}}</p>
+						<button type="button" class="ico16_delete tooltip_close"><span class="blind">닫기</span></button>
+	                </div>
+	            </div>
+	            {{/if}}
+
+				{{if essYn == 'Y' }}
+					<span class="essential" ><i class="blind">필수</i></span>
+				{{/if}}
+				</p>
+			</div>
+			{{if smplAthflDownloadUrl != '' && smplAthflDownloadUrl != undefinded }}
+				<button type="button" class="btn small type01" name="btn_smplAthflDownloadUrlDownload" data-smplAthflDownloadUrl='{{:smplAthflDownloadUrl}}'><span>샘플서식다운로드</span></button>
+			{{/if}}
+
+			{{if inFileCnt != '' && inFileCnt > 0 }}
+				<button type="button" class="btn small type01" title="첨부파일 선택" id="btn_file_{{:athflMdulId}}_{{:atchPaprId}}"><span class="ico_file">첨부파일 등록</span></button>
+			{{/if}}
+		</div>
+
+		<div class="flup_wrap mt16">
+			{{if mdtEvdcPaprId != '' && mdtEvdcPaprId != undefinded }}
+			<div class="flup_box">
+                <div class="flup_box_txt">공공 마이데이터를 통해 민원신청에 필요한 각종 서식을 제출할 수 있습니다.</div>
+                <div class="flup_box_flex">
+                    <button type="button" class="btn small type02" name="viewMyData_{{:athflMdulId}}_{{:atchPaprId}}" id="viewMyData_{{:athflMdulId}}_{{:atchPaprId}}" data-value="{{:mdtEvdcPaprId}}" data-bndlfomtcd="{{:bndlFomtCn}}" data-mdt-gdsn="{{:mdtGdsn}}" data-mdt-gods-tycd="{{:mdtGodsTycd}}" title="가져올 수 있는 본인정보 보기">가져올 수 있는 본인정보 보기</button>
+                    <button type="button" class="btn small type01" name="addMyData_{{:athflMdulId}}_{{:atchPaprId}}" id="addMyData_{{:athflMdulId}}_{{:atchPaprId}}" data-value="{{:mdtEvdcPaprId}}" data-bndlfomtcd="{{:bndlFomtCn}}" data-mdt-gdsn="{{:mdtGdsn}}" data-mdt-gods-tycd="{{:mdtGodsTycd}}" title="공공 마이데이터 가져오기">공공마이데이터 가져오기</button>
+                    <button type="button" class="btn small type02" name="chkMyData_{{:mdtEvdcPaprId}}_{{:atchPaprId}}" id="chkMyData_{{:athflMdulId}}_{{:atchPaprId}}" data-value="{{:mdtEvdcPaprId}}" data-mdtgdsn="{{:mdtGdsn}}" data-mdtgodstycd="{{:mdtGodsTycd}}" title="제출서류 보기" style="display:none">제출서류보기</button>
+                </div>
+            </div>
+            {{/if}}
+            {{if elctProfDocKndCd != '' && elctProfDocKndCd != undefinded }}
+            <!--
+            <div class="flup_box">
+                <div class="flup_box_txt">행정·공공기관이 발급하는 전자문서 형태의 증명서를 민원신청 시 제출할 수 있습니다.</div>
+                <div class="flup_box_flex">
+                    <button type="button" class="btn small type02">전자증명신청</button>
+                    <button type="button" class="btn small type02">전자증명제출</button>
+                </div>
+            </div>
+            -->
+            {{/if}}
+		</div>
+	</div>
+`);
+
+$.templates("file_area", `
+	<div class="filegroup" id="div_fileArea">
+		<div class="filegroup_data">
+            <p class="filegroup_data_tit"><b class="b" tabindex="-1">첨부파일</b> <span class="clr_blue"><span id="fileTotCnt">0</span>개</span> / <span id="maxFileCnt">{{:maxFileCnt}}</span>개 <span class="mb">(<span id="fileTotSize"></span>)</span></p> <!-- 필요한곳에 span 태그 넣어서 사용하세요. -->
+            <div>
+                <button type="button" class="btn small type02" id="btn_deleteAll" onclick="ComFileLib.fn_deleteAllFiles(this);">전체 파일 삭제</button>
+            </div>
+        </div>
+
+        <div class="box_file_wrap" id="fileContainer_{{:fileGroupId}}">
+			<p class="text">원하는 파일을 마우스로 끌어오세요.</p><ul class="box_file_list"></ul>
+        </div>
+	</div>
+`);
+
+$.templates("upload_component", `
+	{{for files}}
+		<li class="template-upload atchfile">
+			<div class="box_file_flex">
+				<span class="atfl_data_tit">
+					<span class="fileIndex"></span>.
+					{{if ~root.fileMdulInfo.etc == "Y"}}
+	            		<span class="write_form_area">
+	            			<input type="text" class="input_txt" id="fileTxt_etc" title="기타 항목 입력" placeholder="항목을 입력해 주세요." />
+	            		</span>
+	            	{{else ~root.fileMdulInfo.athflStupSecd == "ERT01"}}
+						{{:~root.label }}
+					{{/if}}
+				</span>
+
+                <span class="clr_blue">{{:name}}</span>
+                <span class="mb" id="flsz" data-flsz="{{:size}}">({{:~formatFileSize(size)}})</span>
+			</div>
+			<button type="button" class="delbtn cancel" title="{{:name}} 삭제" onclick="ComFileLib.gfn_delFildDiv(this);"><i class="ico16_file del"></i></button>
+		</li>
+	{{/for}}
+`);
+
+$.templates("download_file", `
+	<li class="template-upload atchfile">
+		<div class="box_file_flex">
+			<input type="hidden" id="file-ncmnNo" value="{{:ncmnNo}}"/>
+			<input type="hidden" id="file-cvplRqutRcno" value="{{:cvplRqutRcno}}"/>
+			<input type="hidden" id="file-athflSeq" value="{{:athflSeq}}"/>
+			<input type="hidden" id="file-atchFsno" value="{{:atchFsno}}"/>
+
+			<span class="atfl_data_tit"><span class="fileIndex"></span>.
+				{{if etc == "Y"}}
+					<span class="write_form_area"><input type="text" class="input_txt" title="기타 항목 입력" id="fileTxt_etc" placeholder="항목을 입력해 주세요." value="{{:atchPaprCn}}" data-mode="U" /></span>
+				{{else athflStupSecd == "ERT01"}}
+					{{:atchPaprCn}}
+				{{/if}}
+			</span>
+
+			<a href="javascript:void(0);" onclick='gfn_downloadAttFile({{:mydriveFileDownloadUrl}});' class="clr_blue" download>{{:orgnlFlnm}}</a>
+			<span class="mb" id="flsz" data-flsz="{{:flsz}}">({{:~formatFileSize(flsz)}})</span>
+		</div>
+		<button type="button" class="delbtn" title="{{:orgnlFlnm}} 삭제" onclick="ComFileLib.gfn_delCurrent(this, '{{:fieldName}}');"><i class="ico16_file del"></i></button>
+	</li>
+`);
+
+$.templates("download_mydata", `
+	<li class="template-upload mydata">
+		<div class="box_file_flex">
+			<input type="hidden" id="file-mdtDlngSeq" value="{{:mdtDlngSeq}}"/>
+			<input type="hidden" id="file-cvplRqutRcno" value="{{:cvplRqutRcno}}"/>
+			<input type="hidden" id="file-athflSeq" value="{{:athflSeq}}"/>
+			<input type="hidden" id="file-atchFsno" value="{{:atchFsno}}"/>
+
+			<span class="atfl_data_tit"><span class="fileIndex"></span>.
+				{{if etc == "Y"}}
+					<span class="write_form_area"><input type="text" class="input_txt" title="기타 항목 입력" id="fileTxt_etc" placeholder="항목을 입력해 주세요." value="{{:atchPaprCn}}" data-mode="U" /></span>
+				{{else athflStupSecd == "ERT01"}}
+					{{:atchPaprCn}}
+				{{/if}}
+			</span>
+
+			<span class="label">공공마이데이터</span>
+			<a href="javascript:void(0);" onclick="gfn_downMyData(this);" class="clr_blue btn_filelist_name"  data-atch-fsno="{{:atchFsno}}" data-athfl-mdul-id="{{:athflMdulId}}" data-atch-papr-id="{{:atchPaprId}}" data-transkey="{{:mdtDlngSeq}}" data-mdtdlngbndlid="{{:bndlId}}" data-mdtdlngfomtlist="{{:bndlFomtCn}}">{{:orgnlFlnm}}</a>
+		</div>
+		{{if athflSeq}}
+			<button type="button" class="delbtn" title="공공마이데이터 삭제" onclick="ComFileLib.gfn_delCurrentMyData(this, '{{:athflMdulId}}','{{:atchPaprId}}','{{:fieldName}}');"><i class="ico16_file del"></i></button>
+		{{else}}
+			<button type="button" class="delbtn" title="공공마이데이터 삭제" onclick="ComFileLib.gfn_delFildDivMyData(this, '{{:athflMdulId}}','{{:atchPaprId}}');"><i class="ico16_file del"></i></button>
+		{{/if}}
+	</li>
+`);
+
+$.templates("download_elctCrtf", `
+	<li class="template-upload elctCrtf">
+		<div class="box_file_flex">
+			<input type="hidden" id="docPackageId_{{:athflMdulId}}_{{:atchPaprId}}" value="{{:docPackageId}}"/>
+			<input type="hidden" id="pinCode_{{:athflMdulId}}_{{:atchPaprId}}" value="{{:pinCode}}"/>
+			<input type="hidden" id="instPresentnUrl_{{:athflMdulId}}_{{:atchPaprId}}" value="{{:instPresentnUrl}}"/>
+			<input type="hidden" id="validDt_{{:athflMdulId}}_{{:atchPaprId}}" value="{{:validDt}}"/>
+			<input type="hidden" id="docId_{{:athflMdulId}}_{{:atchPaprId}}" value="{{:docId}}"/>
+			<input type="hidden" id="docKndCode_{{:athflMdulId}}_{{:atchPaprId}}" value="{{:docKndCode}}"/>
+
+			<span class="atfl_data_tit"><span class="fileIndex"></span>.
+				{{if etc == "Y"}}
+					<span class="write_form_area"><input type="text" class="input_txt" title="기타 항목 입력" id="fileTxt_etc" placeholder="항목을 입력해 주세요." value="{{:atchPaprCn}}" data-mode="U" /></span>
+				{{else athflStupSecd == "ERT01"}}
+					{{:atchPaprCn}}
+				{{/if}}
+			</span>
+
+			<span class="label">전자증명신청</span>
+			<span class="clr_blue">{{:orgnlFlnm}}</span>
+
+		</div>
+		<button type="button" class="delbtn" title="전자증명서 삭제" name="btn_del_elct" data-elctProfDocKndCd="{{:elctProfDocKndCd}}" data-seq="{{:seq}}" data-id="{{:athflMdulId}}_{{:atchPaprId}}"><i class="ico16_file del"></i></button>
+	</li>
+`);
+
+
+
+
+// 읽기 전용 파일 컴포넌트 영역
+$.templates("fileBody_template_view", `
+	<div class="flch_wrap mt24">
+		<div>
+			<span class="b1_sb">{{:idx}}. {{:atchPaprCn}}
+				{{if profile != 'prod' }}
+					({{:atchPaprId}})
+				{{/if}}
+			</span>
+		</div>
+		<div class="box_filelist_wrap mt0">
+			<div id="fileContainer_{{:athflMdulId}}_{{:atchPaprId}}">
+				<ul></ul>
+				{{if elctProfDocKndCd != '' && elctProfDocKndCd != undefinded }}
+					<div class="box_file_wrap type2" id="ecidArea_{{:athflMdulId}}_{{:atchPaprId}}" style="display: none;">
+	    				<div class="box_add_file">
+	        				<p id="ecidAreaP_{{:athflMdulId}}_{{:atchPaprId}}" >전자증명파일이 제출되었습니다.</p>
+	    				</div>
+					</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+`);
+
+
+$.templates("download_file_view", `
+	<li class="atchfile">
+		<div class="desc_box">
+        	<input type="hidden" id="file-ncmnNo" value="{{:ncmnNo}}"/>
+			<input type="hidden" id="file-cvplRqutRcno" value="{{:cvplRqutRcno}}"/>
+			<input type="hidden" id="file-athflSeq" value="{{:athflSeq}}"/>
+			<input type="hidden" id="file-atchFsno" value="{{:atchFsno}}"/>
+
+			{{if etc == "Y"}}
+			<span class="etc">
+				{{:atchPaprCn}}
+			</span>
+			{{/if}}
+			<a href="javaScript:void(0);" onclick='gfn_downloadAttFile({{:mydriveFileDownloadUrl}});' class="btn_filelist_name">{{:orgnlFlnm}}</a>
+			<span class="txt_databyte" id="flsz" data-flsz="{{:flsz}}">({{:~formatFileSize(flsz)}})</span>
+		</div>
+	</li>
+`);
+
+$.templates("download_mydata_view", `
+	<li class="mydata">
+		<input type="hidden" id="file-mdtDlngSeq" value="{{:mdtDlngSeq}}"/>
+		<input type="hidden" id="file-cvplRqutRcno" value="{{:cvplRqutRcno}}"/>
+		<input type="hidden" id="file-athflSeq" value="{{:athflSeq}}"/>
+		<input type="hidden" id="file-atchFsno" value="{{:atchFsno}}"/>
+		<div class="desc_box">
+			{{if etc == "Y"}}
+				<span class="etc">
+					{{:atchPaprCn}}
+				</span>
+			{{/if}}
+			<a href="javaScript:void(0);" onclick="gfn_downMyData(this);" class="btn_filelist_name m_data" data-atch-fsno="{{:atchFsno}}" data-athfl-mdul-id="{{:athflMdulId}}" data-atch-papr-id="{{:atchPaprId}}" data-transkey="{{:mdtDlngSeq}}" data-mdtdlngbndlid="{{:bndlId}}" data-mdtdlngfomtlist="{{:bndlFomtCn}}" class="btn_filelist_name"><span class="trait">공공 마이데이터</span><span class="desc">{{:orgnlFlnm}}</span></a>
+		</div>
+	</li>
+`);
+
+$.templates("download_elctCrtf_view", `
+	<li class="elctCrtf">
+		<div class="desc_box">
+			{{if etc == "Y"}}
+				<span class="etc">
+					{{:atchPaprCn}}
+				</span>
+			{{/if}}
+			<a href="javaScript:void(0);" class="btn_filelist_name m_data" data-atch-fsno="{{:atchFsno}}" data-athfl-mdul-id="{{:athflMdulId}}" data-atch-papr-id="{{:atchPaprId}}" data-transkey="{{:mdtDlngSeq}}" data-mdtdlngbndlid="{{:bndlId}}" data-mdtdlngfomtlist="{{:bndlFomtCn}}" class="btn_filelist_name">
+				<span class="trait">전자증명신청</span>
+				<span class="desc">{{:orgnlFlnm}}</span>
+			</a>
+		</div>
+	</li>
+`);
+
+
+
+$.templates("popup_atchPapr", `
+	<div id="popup_atchPaprDiv" class="box_btn_wrap layer">
+		<section class="full_pop middle layer_gfile" id="popup_atchPapr">
+			<header class="head">
+				<h1 class="h2_sb">첨부파일</h1>
+			</header>
+
+			<div class="cont" id="divIdcdCont">
+				<article class="box_form_content">
+					<table class="search_table">
+						<caption>파일 구분 을(를) 제공하는 표</caption>
+						<colgroup>
+	                        <col style="width: 180px;">
+	                        <col>
+	                    </colgroup>
+	                    <tbody>
+	                        <tr>
+	                            <th scope="row">파일 구분 <span class="essential"><i class="blind">필수</i></span></th>
+	                            <td>
+	                                <div class="sel">
+	                                    <select title="첨부파일 구분 선택" id="sel_atchPapr" name="atchPapr">
+	                                        <option value="" selected="selected">선택하세요</option>
+	                                        {{for fileInfo}}
+	                                            <option value="{{:atchPaprId}}">{{:atchPaprCn}}</option>
+	                                        {{/for}}
+	                                    </select>
+	                                </div>
+	                            </td>
+	                        </tr>
+	                    </tbody>
+					</table>
+				</article>
+			</div>
+			<!--// 본문 컨텐츠 -->
+			<!-- 버튼 -->
+			<div class="box_btn_wrap flex_al_r">
+				<a href="javascript:void(0);" class="btn big type02  closed" ><span>닫기</span></a>
+				<a href="javascript:void(0);" class="btn big type01 fill" id="btn_atchPapr"><span>선택</span></a>
+			</div>
+			<!--// 버튼 -->
+
+			<!-- 닫기 -->
+			<a href="javascript:void(0);" class="closed">
+				<span class="blind">팝업 닫기</span>
+			</a>
+			<!--// 닫기 -->
+		</section>
+	</div>
+`);

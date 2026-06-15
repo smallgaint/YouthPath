@@ -1,12 +1,38 @@
+# ===== 민감 정보 (절대 커밋 금지) =====
 .env
+.env.*
+!.env.sample
+*.key
+*_secret*
+**/users.json
+
+# ===== 파이썬 / 가상환경 =====
 venv/
 .venv/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# ===== 생성물 / 캐시 / 대용량 (재생성 가능) =====
 chroma_data/
+chroma_db/
+disclosure_data/
+docs_cache/
+*.log
+logo_t.png
+
+# ===== 로컬 정책 수집 데이터 =====
 data/policies/*.json
 !data/policies/.gitkeep
+
+# ===== 발표/임시 자료 =====
 기획안발표/*
+기획안 발표/
 week0/*
 *.zip
+.DS_Store
+
+# OMC 툴 상태 / 에이전트 출력 (커밋 금지)
+.omc/
+agent_outputs/
+*.mp4

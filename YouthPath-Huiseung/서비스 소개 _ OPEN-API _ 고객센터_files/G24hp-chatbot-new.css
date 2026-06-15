@@ -1,0 +1,3932 @@
+@charset "UTF-8";
+@font-face {
+  font-family: "g24hp-chatbot";
+  src: url("../font/g24hp-chatbot.eot?77506127");
+  src: url("../font/g24hp-chatbot.eot?77506127#iefix") format("embedded-opentype"), url("../font/g24hp-chatbot.woff?77506127") format("woff"), url("../font/g24hp-chatbot.ttf?77506127") format("truetype"), url("../font/g24hp-chatbot.svg?77506127#g24hp-chatbot") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 2024.01.23 추가 */
+.ir {text-indent:-9999px; position:fixed; top:-9999px; font-size:1px; width:1px; height:1px; opacity:0;}
+
+.chatbot-container .chatbot-containerNav > button:before, .chatbot-container article.chatbot header h2:before, .chatbot-container article.chatbot header button:before, .chatbot-container article.chatbot footer > label:before, .chatbot-container article.chatbot footer .chatbot-menu button:before, .chatbot-container article.chatbot footer .chatbot-inputCon button:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > label:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-load > span:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg > div:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.userMsg > div:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:before, .chatbot-container article.chatbot-popup > header:before, .chatbot-container article.chatbot-popup > header > h3:before, .chatbot-container article.chatbot-popup > header > h3:after, .chatbot-container article.chatbot-popup > header > button:before, .chatbot-container article.chatbot-popup.chatbot-error > div > span:before, .chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(1)::after, .chatbot-container article.chatbot-popup.chatbot-helper > div > section h4:before, .chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5:before, .chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case > p::before, .chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h6:before, .chatbot-container div.chatbot-quickGuide > button:before, .chatbot-container div.chatbot-quickGuide > article div.chatbot-recruitment::before, .chatbot-container div.chatbot-quickGuide > article div.chatbotMenuToggle::before, .chatbot-container div.chatbot-quickGuide > article div.chatbot-helper::before {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  font-family: "g24hp-chatbot";
+  font-size: 3rem;
+  line-height: 1em;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+  speak: none;
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 챗봇 컴백,스타트 버튼 */
+div.chatbot-comeback,
+div.chatbot-start {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  z-index: 20;
+  margin-left: -680px;
+  width: 100px;
+  height: 130px;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background: transparent;
+}
+
+div.chatbot-comeback.disabled,
+div.chatbot-start.disabled {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+div.chatbot-comeback.disabled button,
+div.chatbot-start.disabled button {
+  display: none;
+}
+
+div.chatbot-comeback button,
+div.chatbot-start button {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+div.chatbot-comeback button:before,
+div.chatbot-start button:before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70px;
+  background: url("../images/chatbot/chatbot_link_icon5.png") center center no-repeat;
+  background-size: auto 100%;
+  -webkit-transform: translate(36px, 21px) rotate(-30deg);
+          transform: translate(36px, 21px) rotate(-30deg);
+}
+
+div.chatbot-comeback button:disabled,
+div.chatbot-start button:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+div.chatbot-comeback button span,
+div.chatbot-start button span {
+  position: absolute;
+  bottom: 45%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.5;
+  padding: 0.5rem;
+  background: #3071A6;
+  border-radius: 1rem;
+  opacity: 0;
+}
+
+div.chatbot-comeback button span:after,
+div.chatbot-start button span:after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  right: 15px;
+  width: 0;
+  height: 0;
+  border: 0 solid transparent;
+  border-left-width: 15px;
+  border-right-width: 0px;
+  border-top: 10px solid #3071A6;
+}
+
+div.chatbot-comeback button span:nth-of-type(1),
+div.chatbot-start button span:nth-of-type(1) {
+  -webkit-animation: chatbotStartBtnAni1 60s infinite;
+          animation: chatbotStartBtnAni1 60s infinite;
+}
+
+div.chatbot-comeback button span:nth-of-type(2),
+div.chatbot-start button span:nth-of-type(2) {
+  -webkit-animation: chatbotStartBtnAni2 60s infinite;
+          animation: chatbotStartBtnAni2 60s infinite;
+}
+
+div.chatbot-comeback button span:nth-of-type(3),
+div.chatbot-start button span:nth-of-type(3) {
+  -webkit-animation: chatbotStartBtnAni3 60s infinite;
+          animation: chatbotStartBtnAni3 60s infinite;
+}
+
+div.chatbot-comeback button span:nth-of-type(4),
+div.chatbot-start button span:nth-of-type(4) {
+  -webkit-animation: chatbotStartBtnAni4 60s infinite;
+          animation: chatbotStartBtnAni4 60s infinite;
+}
+
+body > footer#quickbar ~ div.chatbot-comeback,
+body > div#side-manu ~ div.chatbot-comeback, body > footer#quickbar ~
+div.chatbot-start,
+body > div#side-manu ~
+div.chatbot-start {
+  display: block;
+  z-index: 999999;
+  bottom: 5rem;
+  left: auto;
+  right: 0.5rem;
+  width: 3rem;
+  height: 3rem;
+  margin-left: 0;
+  background: transparent;
+  padding: 0;
+}
+
+body > footer#quickbar ~ div.chatbot-comeback.chatbot-start,
+body > div#side-manu ~ div.chatbot-comeback.chatbot-start, body > footer#quickbar ~
+div.chatbot-start.chatbot-start,
+body > div#side-manu ~
+div.chatbot-start.chatbot-start {
+  display: none;
+}
+
+body > footer#quickbar ~ div.chatbot-comeback button,
+body > div#side-manu ~ div.chatbot-comeback button, body > footer#quickbar ~
+div.chatbot-start button,
+body > div#side-manu ~
+div.chatbot-start button {
+  display: inline-block;
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  background: url("../images/chatbot/chatbot_m_comeback.png") center no-repeat;
+  background-size: 100% auto;
+}
+
+body > footer#quickbar ~ div.chatbot-comeback button:before,
+body > div#side-manu ~ div.chatbot-comeback button:before, body > footer#quickbar ~
+div.chatbot-start button:before,
+body > div#side-manu ~
+div.chatbot-start button:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: url("../images/chatbot/chatbot_m_comeback_ani.gif") center no-repeat;
+  background-size: 100% auto;
+  -webkit-animation: none;
+          animation: none;
+  -webkit-transform: none;
+          transform: none;
+}
+
+body > footer#quickbar ~ div.chatbot-comeback button span,
+body > div#side-manu ~ div.chatbot-comeback button span, body > footer#quickbar ~
+div.chatbot-start button span,
+body > div#side-manu ~
+div.chatbot-start button span {
+  display: none;
+}
+
+.transparentDimmed {
+  position: fixed;
+  z-index: 9999999998;
+  background: rgba(0, 0, 0, 0);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.chatbot-container {
+  font-family: NanumGothic, "나눔고딕", "Malgun Gothic", "맑은 고딕", "appleSD", "Apple SD Gothic Neo", "Noto Sans CJK KR", Dotum, "돋움", sans-serif;
+  position: fixed;
+  z-index: 9999999999;
+  right: 55px;
+  bottom: 1rem;
+  width: 38rem;
+  height: 58rem;
+  min-width: 38rem;
+  min-height: 40rem;
+  background: #f1f1f1;
+  -webkit-box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+  font-size: 62.5%;
+  font-size: 1.6rem;
+  line-height: 1.7em;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  color: #222;
+  -webkit-animation: chatbotFadeIn 0.5s;
+          animation: chatbotFadeIn 0.5s;
+  outline: none;
+}
+
+body.switch ~ .chatbot-container {
+  position: absolute;
+}
+
+body > footer#quickbar ~ .chatbot-container,
+body > div#side-manu ~ .chatbot-container {
+  font-family: "appleSD", "Apple SD Gothic Neo", NanumGothic, "나눔고딕", "Malgun Gothic", "맑은 고딕", "Noto Sans CJK KR", sans-serif;
+  right: 1rem;
+}
+
+@media only screen and (max-height: 768px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  body > footer#quickbar ~ .chatbot-container,
+  body > div#side-manu ~ .chatbot-container {
+    height: 75%;
+  }
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .chatbot-container {
+    font-family: "appleSD", "Apple SD Gothic Neo", "Noto Sans CJK KR", sans-serif;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    max-height: auto !important;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-box-flex: 1;
+  }
+}
+
+.chatbot-container > * {
+  font-family: NanumGothic, "나눔고딕", "Malgun Gothic", "맑은 고딕", "appleSD", "Apple SD Gothic Neo", "Noto Sans CJK KR", Dotum, "돋움", sans-serif;
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .chatbot-container > * {
+    font-family: "appleSD", "Apple SD Gothic Neo", "Noto Sans CJK KR", sans-serif;
+  }
+}
+
+.chatbot-container.disabled {
+  bottom: -100% !important;
+  max-height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-animation: none;
+          animation: none;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.chatbot-container header,
+.chatbot-container footer,
+.chatbot-container article,
+.chatbot-container section {
+  all: unset;
+  position: static;
+  display: block;
+  -webkit-text-fill-color: initial;
+}
+
+.chatbot-container button {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  cursor: pointer;
+  letter-spacing: -0.02em;
+}
+
+.chatbot-container ul,
+.chatbot-container li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chatbot-container .chatbot-containerNav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  pointer-events: none;
+}
+
+.chatbot-container .chatbot-containerNav > button {
+  position: absolute;
+  width: 3.6rem;
+  height: 100%;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: none;
+  opacity: 0.8;
+  overflow: hidden;
+  pointer-events: all;
+  background: #fff;
+  color: transparent;
+  -webkit-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+}
+
+.chatbot-container .chatbot-containerNav > button.prev {
+  left: 0;
+  border-radius: 0 1.5rem 1.5rem 0;
+}
+
+.chatbot-container .chatbot-containerNav > button.next {
+  right: 0;
+  border-radius: 1.5rem 0 0 1.5rem;
+}
+
+.chatbot-container .chatbot-containerNav > button:before {
+  content: "";
+  padding: 0.3rem;
+  color: #027d9c;
+  display: inline-block;
+}
+
+.chatbot-container .chatbot-containerNav > button.prev:before {
+  content: "\e827";
+}
+
+.chatbot-container .chatbot-containerNav > button.next:before {
+  content: "\e828";
+}
+
+.chatbot-container .chatbot-containerNav > button:hover, .chatbot-container .chatbot-containerNav > button:focus {
+  opacity: 1;
+  background: #027d9c;
+}
+
+.chatbot-container .chatbot-containerNav > button:hover:before, .chatbot-container .chatbot-containerNav > button:focus:before {
+  color: #fff;
+}
+
+.chatbot-container .drag + .chatbot-containerNav button {
+  pointer-events: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="0"] > .chatbot-containerNav > button:first-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="0"][data-max="0"] > .chatbot-containerNav > button {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="0"][data-maxindex="0"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="1"][data-maxindex="1"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="2"][data-maxindex="2"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="3"][data-maxindex="3"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="4"][data-maxindex="4"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="5"][data-maxindex="5"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="6"][data-maxindex="6"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="7"][data-maxindex="7"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="8"][data-maxindex="8"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="9"][data-maxindex="9"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container [data-navindex][data-navindex="10"][data-maxindex="10"] > .chatbot-containerNav > button:last-child {
+  display: none;
+}
+
+.chatbot-container article.chatbot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.chatbot-container article.chatbot header {
+  height: 4.5rem;
+  border-bottom: 1px #dfdfdf solid;
+  background: transparent;
+}
+
+.chatbot-container article.chatbot header h2 {
+  position: relative;
+  display: block;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem 0 0 0;
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1em;
+  font-weight: 600;
+  text-align: center;
+  background: #fff;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  cursor: all-scroll;
+}
+
+.chatbot-container article.chatbot header h2:before {
+  content: "\e997";
+  display: inline-block;
+  font-size: 1.6rem;
+  color: #3071A6;
+  width: 2rem;
+  position: absolute;
+  margin: -1rem 0 0 3.2em;
+}
+
+.chatbot-container article.chatbot header h2 > span {
+  font-size: 1.6rem;
+  color: #ababab;
+  margin-left: 1rem;
+}
+
+.chatbot-container article.chatbot header button {
+  position: absolute;
+  z-index: 2;
+  right: 0.4rem;
+  top: 0.4rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  border: none;
+  background: transparent;
+  overflow: hidden;
+  color: #666;
+}
+
+.chatbot-container article.chatbot header button:before {
+  content: "\e824";
+  margin: 0.3rem auto;
+}
+
+.chatbot-container article.chatbot header button:hover:before, .chatbot-container article.chatbot header button:focus:before {
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot header button.close {
+  right: auto;
+  left: 0.4rem;
+}
+
+.chatbot-container article.chatbot header button.close:before {
+  content: "\e823";
+}
+
+.chatbot-container article.chatbot footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4rem;
+  background: #fff;
+  font-size: 0;
+}
+
+.chatbot-container article.chatbot footer > input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.chatbot-container article.chatbot footer > label {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  width: 4rem;
+  height: 4rem;
+  background: #fff;
+  cursor: pointer;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.chatbot-container article.chatbot footer > label:before {
+  content: "\e821";
+  margin: 0.5rem;
+  border-radius: 50%;
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot footer > input + label:hover:before,
+.chatbot-container article.chatbot footer > input:focus + label:before {
+  color: #027d9c;
+}
+
+.chatbot-container article.chatbot footer > input:checked + label:before {
+  content: "\e822";
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  border-bottom: 1px #dfdfdf solid;
+  background: #fff;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button {
+  display: none;
+  /* 2024.01.11 with 33.33% -> 32.5% */
+  width: 32.5%;
+  height: 6.4rem;
+  border: none;
+  background: #fff;
+  font-size: 1.6rem;
+  color: #666666;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button:before {
+  content: "\e801";
+  margin: 0.5rem auto;
+  color: #027d9c;
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button:nth-of-type(1):before {
+  content: "\e801";
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button:nth-of-type(2):before {
+  content: "\e802";
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button:nth-of-type(3):before {
+  content: "\e803";
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button:nth-of-type(4):before {
+  content: "\e804";
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button:hover, .chatbot-container article.chatbot footer .chatbot-menu button:focus {
+  background: #027d9c;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot footer .chatbot-menu button:hover:before, .chatbot-container article.chatbot footer .chatbot-menu button:focus:before {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot footer > input:checked:not(:disabled) ~ .chatbot-menu {
+  z-index: 1;
+  top: -6.5rem;
+  height: 6.5rem;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.chatbot-container article.chatbot footer > input:checked:not(:disabled) ~ .chatbot-menu button {
+  display: inline-block;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  width: calc(100% - 4rem);
+  background: #fff;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea,
+.chatbot-container article.chatbot footer .chatbot-inputCon input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: calc(100% - 1rem);
+  height: 3.2rem;
+  padding: 0.7rem 3.5rem 0.7rem 1.5rem;
+  margin: 0.4rem 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px #3071A6 solid;
+  background: #fff;
+  border-radius: 1.6rem !important;
+  resize: none;
+  font-size: 1.6rem;
+  color: #222;
+  outline: none;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea::-ms-clear,
+.chatbot-container article.chatbot footer .chatbot-inputCon input::-ms-clear {
+  display: none;
+  visibility: hidden;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea:disabled,
+.chatbot-container article.chatbot footer .chatbot-inputCon input:disabled {
+  background: #f1f1f1;
+  border-color: #dddddd;
+}
+
+@media all and (min-width: 0\0) and (min-resolution: 0.001dpcm) {
+  .chatbot-container article.chatbot footer .chatbot-inputCon textarea,
+  .chatbot-container article.chatbot footer .chatbot-inputCon input {
+    padding-right: 1rem;
+    overflow: hidden;
+  }
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete {
+  position: absolute;
+  z-index: -1;
+  bottom: -1000%;
+  left: -4rem;
+  right: 0;
+  border-bottom: 1px solid #dfdfdf;
+  background: #fff;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-transition: opacity 0.5s;
+  transition: opacity 0.5s;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete.active,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete.active {
+  z-index: 1;
+  bottom: 100%;
+  pointer-events: all;
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete.active > ul li a,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete.active > ul li a {
+  display: none;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font-size: 1.6rem;
+  line-height: 3rem;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li {
+  height: 3rem;
+  border-bottom: 1px solid #dddddd;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li:last-child,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li:last-child {
+  border-bottom: none;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a {
+  display: none;
+  padding: 0 1rem;
+  height: 100%;
+  color: #222;
+  text-decoration: none;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a strong,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a strong {
+  color: #3071A6;
+  font-weight: 600;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a:hover, .chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a:focus, .chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a:active,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a:hover,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a:focus,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a:active {
+  background: #3071A6;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a:hover strong, .chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a:focus strong, .chatbot-container article.chatbot footer .chatbot-inputCon textarea ~ .chatbot-autoComplete > ul li a:active strong,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a:hover strong,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a:focus strong,
+.chatbot-container article.chatbot footer .chatbot-inputCon input ~ .chatbot-autoComplete > ul li a:active strong {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea:focus,
+.chatbot-container article.chatbot footer .chatbot-inputCon input:focus {
+  border-color: #027d9c;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon button {
+  position: absolute;
+  right: 1.6rem;
+  bottom: 0.5rem;
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  outline: none;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon button:before {
+  content: "\e998";
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon button:hover:before, .chatbot-container article.chatbot footer .chatbot-inputCon button:focus:before {
+  color: #027d9c;
+}
+
+.chatbot-container article.chatbot footer .chatbot-inputCon textarea:disabled,
+.chatbot-container article.chatbot footer .chatbot-inputCon input:disabled ~ button:before {
+  color: #dddddd;
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot footer .chatbot-disabledFooter {
+  display: none;
+}
+
+.chatbot-container article.chatbot footer.disabled > .chatbot-disabledFooter,
+.chatbot-container article.chatbot footer > input:disabled ~ .chatbot-disabledFooter {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  background: #dddddd;
+  font-size: 1.6rem;
+  color: #fff;
+  text-align: center;
+  line-height: 4rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon {
+  padding: 0;
+  height: calc(100% - 4.5rem - 4rem);
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg {
+  position: relative;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg > div + div {
+  margin-top: 0.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg {
+  margin: 2rem 4.2rem 0 4.2rem;
+  max-width: 42rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg:before {
+  content: "고용이";
+  font-size: 0;
+  color: transparent;
+  position: absolute;
+  top: 0.4rem;
+  left: -3.6rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  background: url("../images/chatbot/persona.png") 0 0 no-repeat;
+  background-size: 100% auto;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg + .chatbotMsg:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg + .chatbotMsg:after {
+  content: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg strong {
+  font-weight: 600;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg em {
+  font-style: normal;
+  color: #3071A6;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg.disabled,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .disabled {
+  -webkit-animation: disabledOut 0.5s forwards;
+          animation: disabledOut 0.5s forwards;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-load.disabled {
+  position: absolute;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey input {
+  position: absolute;
+  left: -999em;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey label {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey.positive > input + label:before {
+  content: "\e832";
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey.negative > input + label:before {
+  content: "\e833";
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label {
+  position: relative;
+  z-index: 3;
+  display: block;
+  width: 2.4rem;
+  height: 0;
+  padding: 2.4rem 0 0 0;
+  border-radius: 0.5rem 0 1.5rem 0;
+  background: #027d9c;
+  overflow: hidden;
+  -webkit-box-shadow: 0 0 0.6rem #ccc;
+  box-shadow: 0 0 0.6rem #ccc;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label:before {
+  content: "\e831";
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.3rem;
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: block;
+  width: 0;
+  height: 0;
+  border-radius: 0.5rem 0 1.5rem 0;
+  overflow: hidden;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > input {
+  display: none;
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > label {
+  width: 3.6rem;
+  height: 0;
+  padding: 3.6rem 0 0 0;
+  margin: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > label:nth-of-type(1) {
+  bottom: 0.3rem;
+  left: 0.7rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > label:nth-of-type(2) {
+  right: 0.3rem;
+  top: 0.7rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > label:before {
+  content: "\e832";
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.3rem;
+  border-radius: 50%;
+  color: #666;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > label:nth-last-of-type(1):before {
+  content: "\e833";
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > input + label:hover:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > input:focus + label:before {
+  color: #fff;
+  background: #027d9c;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > input:checked + label:before {
+  color: #fff;
+  background: #3071A6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label ~ div > input:disabled + label {
+  pointer-events: none;
+  color: #fff;
+  background: #dddddd;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input + label:hover,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input:focus + label {
+  background: #3071A6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input:checked + label {
+  border-radius: 2.5rem 0 1.5rem 0;
+  width: 3.2rem;
+  padding-top: 3.2rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input:checked + label:before {
+  content: "\e822";
+  font-size: 3rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input:checked + label ~ div {
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: 7.5rem 0 1.5rem 0;
+  text-align: center;
+  background: #fff;
+  -webkit-box-shadow: 0 0 0.6rem #ccc;
+  box-shadow: 0 0 0.6rem #ccc;
+  -webkit-animation: msgFadeIn 0.5s;
+          animation: msgFadeIn 0.5s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input:checked + label ~ div > input {
+  display: block;
+  pointer-events: all;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-satisfactionSurvey > input:disabled + label {
+  pointer-events: none;
+  background: #dddddd;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-load > span {
+  position: relative;
+  display: inline-block;
+  width: 1rem;
+  height: 0;
+  padding-top: 1rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-load > span:before {
+  content: "\e845";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: auto;
+  margin: -1rem 0;
+  text-align: center;
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-load > span:nth-of-type(1):before {
+  -webkit-animation: loadBounce 0.6s 0.2s infinite;
+          animation: loadBounce 0.6s 0.2s infinite;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-load > span:nth-of-type(2):before {
+  -webkit-animation: loadBounce 0.6s 0.4s infinite;
+          animation: loadBounce 0.6s 0.4s infinite;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg .chatbot-load > span:nth-of-type(3):before {
+  -webkit-animation: loadBounce 0.6s 0.6s infinite;
+          animation: loadBounce 0.6s 0.6s infinite;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.userMsg {
+  margin: 2rem 2.5rem 0 8.5rem;
+  text-align: right;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg + .chatbotMsg,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.userMsg + .userMsg {
+  margin-top: 0.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg > div {
+  display: table;
+  max-width: 42rem;
+  padding: 0.5rem 1rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg > div {
+  border-radius: 0 1.5rem 1.5rem 1.5rem;
+  background: #fff;
+  width:107%;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg > div:before {
+  content: "\e843";
+  font-size: 1.6rem;
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  left: -2rem;
+  top: 0;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg + .chatbotMsg > div,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg > div + div {
+  border-radius: 1.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg + .chatbotMsg > div:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg > div + div:before {
+  content: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.chatbotMsg.hasSurvey > div {
+  position: relative;
+  z-index: 1;
+  padding-right: 2rem;
+  width: 107%;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.userMsg > div {
+  display: inline-block;
+  word-break: break-all;
+  border-radius: 1.5rem 0 1.5rem 1.5rem;
+  background: #5C7884;
+  color: #fff;
+  text-align: left;
+  font-size: 1.6rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.userMsg > div:before {
+  content: "\e844";
+  font-size: 1.6rem;
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  right: -2rem;
+  top: 0;
+  color: #027d9c;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.userMsg + .userMsg > div,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-msg.userMsg > div + div {
+  border-radius: 1.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard + .chatbot-btnCon,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult + .chatbot-btnCon,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport + .chatbot-btnCon {
+  margin-top: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard + .chatbot-btnCon:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult + .chatbot-btnCon:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport + .chatbot-btnCon:before {
+  content: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon {
+  margin: 1rem 2.5rem 0 4.2rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon button {
+  background: #4D65E1;
+  color: #fff;
+  font-size: 1.6rem;
+  padding: 0.85rem 1rem;
+  margin: 0 0 0.5rem 0;
+  border-radius: 1.5rem;
+  border: none;
+  -webkit-box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  text-align: center;
+  width:47%;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon button * {
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon button:not(:disabled):hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon button:not(:disabled):focus {
+  -webkit-transition: background 0.3s;
+  transition: background 0.3s;
+  background: #6A8AE8;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon button:disabled {
+  background: #dddddd;
+  pointer-events: none;
+}
+
+
+/********************************* 2024.08.23 임창경 추가 *********************************/
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon-green {
+  margin: 1rem 2.5rem 0 4.2rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon-green button {
+  background: #FFFFFF;
+  color: #084621;
+  font-size: 1.6rem;
+  padding: 0.85rem 1rem;
+  margin: 0 0 0.5rem 0;
+  border-radius: 1.5rem;
+  border: 0.1rem solid #22B14C;
+  -webkit-box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  text-align: left;
+  width:100%;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon-green button * {
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon-green button:not(:disabled):hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon button:not(:disabled):focus {
+  -webkit-transition: background 0.3s;
+  transition: background 0.3s;
+  text-decoration: underline;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-btnCon-green button:disabled {
+  background: #dddddd;
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult {
+  position: relative;
+  padding: 0;
+  margin: 0.5rem 0;
+  font-size: 0;
+  white-space: nowrap;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav {
+  height: calc(100% - 1rem);
+  top: 0.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button {
+  background: #fff;
+  opacity: 0.6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:first-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:first-child {
+  border-radius: 0 1.5rem 1.5rem 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:last-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:last-child {
+  border-radius: 1.5rem 0 0 1.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:before {
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:focus,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:hover,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:focus {
+  opacity: 1;
+  background: #3071A6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:hover:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:focus:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:hover:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:focus:before {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul {
+  padding: 0.5rem 4.2rem 0.5rem 4.2rem;
+  font-size: 0;
+  line-height: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li {
+  list-style: none;
+  display: inline-block;
+  width: 100%;
+  max-width: 42rem;
+  padding: 0;
+  margin-right: 0.6rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li:last-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li:last-child {
+  margin-right: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li:first-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li:first-child {
+  -webkit-transition: margin 0.5s;
+  transition: margin 0.5s;
+}
+
+/* 2024.03.21 text-align: center; 주석 처리,  white-space: normal; 추가 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article {
+  line-height: 1.7em;
+  border-radius: 1.5rem;
+  border: 0.2rem #3071A6 solid;
+  background: #fff;
+  font-size: 1.6rem;
+  /* text-align: center; */
+  overflow: hidden;
+  -webkit-box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  white-space: normal;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > h4,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > h4 {
+  padding: 0.7rem 1rem;
+  margin: 0;
+  background: #ebf6ff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #3071A6;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* 2024.01.16 내부에서 문자 자동 줄바꿈 */
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > div {
+  padding: 1.5rem 1rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div > div:only-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > div > div:only-child {
+  display: -webkit-box;
+  height: 8.2rem;
+  margin: 0.2rem 0;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: #222;
+  text-align: left;
+  line-height: 1.5em;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button {
+  display: block;
+  width: calc(100% - 2rem);
+  padding: 0.5rem 1rem;
+  margin: 0 1rem 1rem 1rem;
+  border: 1px #ccc solid;
+  border-radius: 1.6rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #fff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #666;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button:not(:disabled):hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button:not(:disabled):focus,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button:not(:disabled):hover,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button:not(:disabled):focus {
+  background: #027d9c;
+  color: #fff;
+  border-color: #027d9c;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button:disabled,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button:disabled {
+  border-color: #dddddd;
+  color: #dddddd;
+  background: #fff;
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul.drag li:first-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul.drag li:first-child {
+  -webkit-transition: none;
+  transition: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > h4 {
+  font-size: 1.6rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div > div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #666;
+  font-size: 1.3rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div > div:first-child {
+  display: -webkit-box;
+  height: 4.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #222;
+  white-space: normal;
+  line-height: 1.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/***************************************************************************************/
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu {
+  position: relative;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+  font-size: 0;
+  white-space: nowrap;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu.disabled {
+  -webkit-animation: disabledOut 0.5s forwards;
+          animation: disabledOut 0.5s forwards;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul {
+  padding: 0 3.6rem 0 4.2rem;
+  margin: 0;
+  list-style: none;
+  -webkit-box-sizing: content-box;
+          box-sizing: content-box;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li {
+  display: inline-block;
+  margin-right: 0.5rem;
+  vertical-align: top;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li:last-child {
+  margin-right: 0;
+  -webkit-transition: margin 0.5s;
+  transition: margin 0.5s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li:first-child {
+  -webkit-transition: margin 0.5s;
+  transition: margin 0.5s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button {
+  position: relative;
+  display: block;
+  width: 7rem;
+  height: 7rem;
+  padding-top: 4rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: none;
+  border-radius: 1.5rem;
+  background: #fff;
+  font-size: 1.6rem;
+  text-align: center;
+  overflow: hidden;
+  color: #666;
+  outline: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:not(.ready):not(.disabled):not(:disabled):hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:not(.ready):not(.disabled):not(:disabled):focus {
+  background: #C8EBFA;
+  color: #000000;
+}
+
+/* 2024.02.13 background, color 수정 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.ready, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.disabled, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:disabled {
+  background: rgb(255, 255, 255); /* #dddddd -> rgb(255, 255, 255) */
+  color: rgb(102, 102, 102); /* #fff -> rgb(102, 102, 102) */
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.ready:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.disabled:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:disabled:before {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:before {
+  content: "\e811"; /* 시작메뉴 이미지 */
+  position: absolute;
+  top: 0;
+  padding: 1rem 2rem;
+  color: #027d9c;
+}
+
+/* 2024.01.12 정책정보 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-policy:before {
+  content: url("../images/chatbot/ico_1_policy_blue.png");
+}
+
+/* 2024.01.12 훈련정보 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-training:before {
+  content: url("../images/chatbot/ico_3_train_blue.png");
+}
+
+/* 채용정보 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-recruitment:before {
+  /* content: "\e811"; */
+  content: url("../images/chatbot/ico_2_employ_blue.png");
+}
+
+/* 고용정책 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-employment:before {
+  content: url("../images/chatbot/ico_1_policy_blue.png");
+}
+
+/* 기업정보 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-corpration:before {
+  content: "\e813";
+}
+
+/* 직업정보 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-occupation:before {
+  content: "\e814";
+}
+
+/* 실업급여 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-unemployment:before {
+  content: url("../images/chatbot/ico_4_pay_blue.png");
+}
+
+/* 고용센터 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-center:before {
+  content: url("../images/chatbot/center.png");
+}
+
+/* 용어안내 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-term:before {
+  content: "\e816";
+}
+
+/* FAQ 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-faq:before {
+  content: "\e817";
+}
+
+/* 정보찾기 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-information:before {
+  content: "\e818";
+}
+
+/* 메뉴찾기 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-sitemap:before {
+  content: "\e819";
+}
+
+/* 개인추천 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-recommendation:before {
+  content: "\e851";
+}
+
+/* 행정포털 메인 아이콘 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-pi_main_1:before {
+  content: url("../images/chatbot/pi_main_1.png");
+}
+
+/* 행정포털 메인 아이콘 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-pi_main_2:before {
+  content: url("../images/chatbot/pi_main_2.png");
+}
+
+/* 행정포털 메인 아이콘 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-pi_main_3:before {
+  content: url("../images/chatbot/pi_main_3.png");
+}
+
+/* 행정포털 메인 아이콘 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-pi_main_4:before {
+  content: url("../images/chatbot/pi_main_4.png");
+}
+
+/* 대화 TIP 이미지 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button.chatbot-guide:before {
+  content: "\e852";
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:not(.ready):not(.disabled):not(:disabled):hover:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:not(.ready):not(.disabled):not(:disabled):focus:before {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul.drag li:first-child {
+  -webkit-transition: none;
+  transition: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult {
+  position: relative;
+  padding: 0;
+  margin: 0.5rem 0;
+  font-size: 0;
+  white-space: nowrap;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav {
+  height: calc(100% - 1rem);
+  top: 0.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button {
+  background: #fff;
+  opacity: 0.6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:first-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:first-child {
+  border-radius: 0 1.5rem 1.5rem 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:last-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:last-child {
+  border-radius: 1.5rem 0 0 1.5rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:before {
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:focus,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:hover,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:focus {
+  opacity: 1;
+  background: #3071A6;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:hover:before, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport .chatbot-containerNav > button:focus:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:hover:before,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult .chatbot-containerNav > button:focus:before {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul {
+  padding: 0.5rem 4.2rem 0.5rem 4.2rem;
+  font-size: 0;
+  line-height: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li {
+  list-style: none;
+  display: inline-block;
+  width: 100%;
+  max-width: 42rem;
+  padding: 0;
+  margin-right: 0.6rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li:last-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li:last-child {
+  margin-right: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li:first-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li:first-child {
+  -webkit-transition: margin 0.5s;
+  transition: margin 0.5s;
+}
+
+/* 2024.03.21 text-align: center; 주석 처리,  white-space: normal; 추가 */
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article {
+  line-height: 1.7em;
+  border-radius: 1.5rem;
+  border: 0.2rem #3071A6 solid;
+  background: #fff;
+  font-size: 1.3rem;
+  /* text-align: center; */
+  overflow: hidden;
+  -webkit-box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  white-space: normal;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > h4,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > h4 {
+  padding: 0.7rem 1rem;
+  margin: 0;
+  background: #ebf6ff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #3071A6;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* 2024.01.16 내부에서 문자 자동 줄바꿈 */
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > div {
+  padding: 1.5rem 1rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div > div:only-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > div > div:only-child {
+  display: -webkit-box;
+  height: 8.2rem;
+  margin: 0.2rem 0;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: #222;
+  text-align: left;
+  line-height: 1.5em;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button {
+  display: block;
+  width: calc(100% - 2rem);
+  padding: 0.5rem 1rem;
+  margin: 0 1rem 1rem 1rem;
+  border: 1px #ccc solid;
+  border-radius: 1.6rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #fff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #666;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button:not(:disabled):hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button:not(:disabled):focus,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button:not(:disabled):hover,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button:not(:disabled):focus {
+  background: #027d9c;
+  color: #fff;
+  border-color: #027d9c;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > button:disabled,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul > li > article > button:disabled {
+  border-color: #dddddd;
+  color: #dddddd;
+  background: #fff;
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul.drag li:first-child,
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-searchResult ul.drag li:first-child {
+  -webkit-transition: none;
+  transition: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > h4 {
+  font-size: 1.6rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div > div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #666;
+  font-size: 1.3rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-employmentReport ul > li > article > div > div:first-child {
+  display: -webkit-box;
+  height: 4.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #222;
+  white-space: normal;
+  line-height: 1.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard {
+  margin: 1rem 4.2rem 0.5rem 4.2rem;
+  max-width: 42rem;
+  font-size: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li {
+  position: relative;
+  display: inline-block;
+  width: calc(33.33% - 0.5rem);
+  margin: 0 0 0.5rem 0.5rem;
+}
+
+body > footer#quickbar ~ .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li,
+body > div#side-manu ~ .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li {
+  margin-bottom: 1rem;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li:nth-of-type(3n-2) {
+  margin-left: 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  background: #fff;
+  border-radius: 1.5rem;
+  -webkit-box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  box-shadow: 0.1rem 0.1rem 0.2rem #ccc;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  outline: none;
+  text-align: center;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button span {
+  display: block;
+  pointer-events: none;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button span:first-child:after {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 0.2rem;
+  background: #f1f1f1;
+  margin: 0.6rem auto;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button span:nth-of-type(2) {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #027d9c;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button:hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button:focus {
+  background: #027d9c;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button:hover span, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-recommendationCard li button:focus span {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon > hr {
+  display: block;
+  height: 0.7rem;
+  margin: 4rem 0;
+  border: none;
+  background: #dddddd;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn {
+  margin: 0 0 4rem 0;
+  text-align: center;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > button {
+  display: block;
+  width: 12rem;
+  height: 3rem;
+  margin: 0 auto;
+  border: none;
+  border-radius: 1.5rem;
+  background: #3071A6;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #fff;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > button:not(:disabled):hover, .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > button:not(:disabled):focus {
+  background: #027d9c;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > button:disabled {
+  background: #dddddd;
+  pointer-events: none;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > p {
+  font-size: 1.2rem;
+  margin: 1em 0;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > p > strong {
+  color: #3071A6;
+  font-weight: 600;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > p:before {
+  content: "i";
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.3em;
+  font-size: 1rem;
+  background: #3071A6;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startBtn > p:before {
+    line-height: 1.5em;
+  }
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon > * {
+  -webkit-animation: msgFadeIn 0.5s;
+          animation: msgFadeIn 0.5s;
+}
+
+.chatbot-container article.chatbot div.chatbot-msgCon:after {
+  content: "";
+  display: block;
+  height: 3rem;
+}
+
+.chatbot-container article.chatbot-popup {
+  position: absolute;
+  z-index: 99;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 100%;
+  height: 0;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  display: none;
+}
+
+.chatbot-container article.chatbot-popup.active {
+  height: auto;
+  top: 0;
+  opacity: 1;
+  display: block;
+  -webkit-animation: msgFadeIn 0.5s;
+          animation: msgFadeIn 0.5s;
+}
+
+.chatbot-container article.chatbot-popup > header {
+  padding: 1rem 1rem 0 1rem;
+  height: 3rem;
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  overflow: hidden;
+}
+
+.chatbot-container article.chatbot-popup > header:before {
+  /* content: "\e999"; */
+  position: absolute;
+  z-index: 2;
+  top: 1.5rem;
+  left: 1.5rem;
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #3071A6;
+  font-size: 1.5rem;
+  line-height: 1.3em;
+  text-align: center;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup > header > h3 {
+  position: relative;
+  display: inline-block;
+  min-width: 18rem;
+  height: 3rem;
+  padding: 0.8rem 2rem 0.7rem 3.2rem;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 1rem 1rem 0 0;
+  background: #fff;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.2em;
+}
+
+.chatbot-container article.chatbot-popup > header > h3 > span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatbot-container article.chatbot-popup > header > h3:before, .chatbot-container article.chatbot-popup > header > h3:after {
+  position: absolute;
+  bottom: 0;
+  width: 1rem;
+  height: 1rem;
+  font-size: 1rem;
+  line-height: 1em;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup > header > h3:before {
+  content: "\e841";
+  left: -0.95rem;
+}
+
+.chatbot-container article.chatbot-popup > header > h3:after {
+  content: "\e842";
+  right: -0.95rem;
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .chatbot-container article.chatbot-popup > header > h3:before {
+    bottom: -0.1rem;
+  }
+  .chatbot-container article.chatbot-popup > header > h3:after {
+    bottom: -0.1rem;
+  }
+}
+
+.chatbot-container article.chatbot-popup > header > button {
+  position: absolute;
+  z-index: 3;
+  width: 2rem;
+  height: 2rem;
+  margin: 0.5rem 0 0 -2.5rem;
+  border: none;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.chatbot-container article.chatbot-popup > header > button:before {
+  content: "\e823";
+  margin: -0.5rem;
+  color: #222;
+}
+
+.chatbot-container article.chatbot-popup > header > button:hover:before, .chatbot-container article.chatbot-popup > header > button:focus:before {
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot-popup > div {
+  height: calc(100% - 4rem);
+  background: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error.active > div {
+  margin: -4.5rem auto;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error > h3 {
+  font-size: 0;
+  color: transparent;
+  opacity: 0;
+  position: absolute;
+  top: -9999em;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error > div {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: auto;
+  background: transparent;
+  color: #fff;
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1.5em;
+  text-align: center;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error > div > span {
+  position: relative;
+  display: inline-block;
+  margin: 1rem;
+  border-radius: 50%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error > div > span:before {
+  content: "\e818";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: auto;
+  margin: -3rem 0;
+  font-size: 6rem;
+  text-align: center;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error > div > span:nth-of-type(1):before {
+  -webkit-animation: loadBounce 0.6s 0.2s infinite;
+          animation: loadBounce 0.6s 0.2s infinite;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error > div > span:nth-of-type(2):before {
+  -webkit-animation: loadBounce 0.6s 0.4s infinite;
+          animation: loadBounce 0.6s 0.4s infinite;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-error > div > span:nth-of-type(3):before {
+  -webkit-animation: loadBounce 0.6s 0.6s infinite;
+          animation: loadBounce 0.6s 0.6s infinite;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div {
+  position: relative;
+  height: calc(100% - 3.98rem);
+  margin-top: -0.02rem;
+  font-size: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div:before {
+  content: "";
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  right: 4rem;
+  display: block;
+  height: 3.6rem;
+  background: #3071A6;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input {
+  position: absolute;
+  left: -9999em;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input[name="chatbotHelperSelector"] {
+  display: none;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label {
+  position: absolute;
+  z-index: 9;
+  right: 1.5rem;
+  display: none;
+  width: 14rem;
+  padding: 0.25rem 1rem 0.23rem 1rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px #3071a6 solid;
+  border-radius: 1.8rem;
+  background: #fff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 2.1em;
+  color: #3071a6;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .chatbot-container article.chatbot-popup.chatbot-helper > div > input + label {
+    padding: 0.3rem 1rem 0.2rem 1rem;
+  }
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(1) {
+  display: inline-block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(1)::after {
+  content: "\e824";
+  position: absolute;
+  right: 0;
+  top: 0.2rem;
+  color: #3071A6;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:hover,
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:focus + label {
+  color: #fff;
+  background: #027d9c;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:hover::after,
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:focus + label::after {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:nth-of-type(1):checked ~ label {
+  display: inline-block;
+  border-radius: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:nth-of-type(1):checked ~ label ~ [name="chatbotHelperSelector"] {
+  display: inline-block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:nth-of-type(1):checked ~ label:nth-of-type(1) {
+  border-radius: 1.8rem 1.8rem 0 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:nth-of-type(1):checked ~ label:nth-of-type(1)::after {
+  content: "\e825";
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:nth-of-type(1):checked ~ label:nth-last-of-type(1) {
+  border-radius: 0 0 1.8rem 1.8rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:nth-of-type(1) ~ input:checked + label {
+  background: #3071A6;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input:disabled + label {
+  display: none;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(1) {
+  top: 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(2) {
+  top: 5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(3) {
+  top: 8.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(4) {
+  top: 12rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(5) {
+  top: 15.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input + label:nth-of-type(6) {
+  top: 19rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section {
+  display: none;
+  position: relative;
+  height: 100%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section h4 {
+  position: fixed;
+  margin: 1.5rem 0;
+  padding: 0.7rem 2rem 0.7rem 0;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .chatbot-container article.chatbot-popup.chatbot-helper > div > section h4 {
+    padding: 0.85rem 2rem 0.85rem 0;
+  }
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section h4:before {
+  content: "\e803";
+  display: inline-block;
+  color: #fff;
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0 0.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div {
+  position: relative;
+  z-index: 1;
+  top: 5.1rem;
+  overflow: hidden;
+  overflow-y: auto;
+  padding: 1rem 1.5rem 0 1.5rem;
+  height: calc(100% - 5.1rem);
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  font-size: 0;
+  background: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > * {
+  font-size: 1.6rem;
+  line-height: 1.5em;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > *:last-child {
+  padding-bottom: 3rem !important;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[type="radio"] {
+  position: absolute;
+  left: -999em;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[type="radio"] + label {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  padding: 0 0.5rem;
+  margin: 1rem 0.4rem;
+  width: calc(50% - 0.8rem);
+  height: 2.4rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  text-align: center;
+  line-height: 2.4rem;
+  background: #fff;
+  color: #027d9c;
+  font-weight: 600;
+  border: none;
+  border-radius: 1.2rem;
+  cursor: pointer;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[type="radio"]:checked + label {
+  background: #027d9c;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[type="radio"] + label:hover,
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[type="radio"]:focus + label {
+  background: #3071A6;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[type="radio"]:disabled + label {
+  background: #dddddd;
+  color: #fff;
+  border-color: #dddddd;
+  opacity: 0.5;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[name^="chatbotHelperSubSwitch"] ~ article {
+  display: none;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[name^="chatbotHelperSubSwitch"] ~ article:before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  margin-top: -3.7rem;
+  height: 2.6rem;
+  border: 0.2rem #dddddd solid;
+  border-radius: 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div article {
+  padding-bottom: 0.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[name^="chatbotHelperSubSwitch"]:nth-of-type(1):checked ~ article:nth-of-type(1) {
+  display: block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > input[name^="chatbotHelperSubSwitch"]:nth-of-type(2):checked ~ article:nth-of-type(2) {
+  display: block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div p {
+  margin: 0;
+  color: #222;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5 {
+  margin: 0;
+  padding: 1rem 0;
+  font-size: 1.6rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5:before {
+  content: "\e828";
+  display: inline-block;
+  font-size: 1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5 > strong {
+  font-weight: 800;
+  color: #027d9c;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5 + p,
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5 + div + p {
+  padding: 0 0 0 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5.ready {
+  color: #dddddd;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5.ready::after {
+  content: "(제공예정)";
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h5.ready ~ p {
+  color: #dddddd;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div.chatbot_helper1 h5,
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div.chatbot_helper4 h5 {
+  height: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div.chatbot_helper1 h5::before,
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div.chatbot_helper4 h5::before {
+  content: "";
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case {
+  width: 100%;
+  margin: 1rem 0 0 0;
+  padding: 0 0 0 3rem;
+  max-width: 54rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-spacing: 1rem;
+  font-size: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case > p {
+  position: relative;
+  padding: 0.6rem 1rem 0.4rem 2rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 0.2rem #027d9c solid;
+  border-radius: 1.6rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.5em;
+  vertical-align: middle;
+  color: #027d9c;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case > p::before {
+  content: "\e835";
+  position: absolute;
+  top: -1rem;
+  left: -1.5rem;
+  border-radius: 50%;
+  background: #fff;
+  font-weight: 400;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case > p:nth-of-type(2) {
+  margin-top: 1rem;
+  border-color: #cb3d07;
+  color: #cb3d07;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case > p:nth-of-type(2)::before {
+  content: "\e837";
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case-bubble {
+  position: relative;
+  display: inline-block;
+  margin: 0 0 1rem 1rem;
+  padding: 1rem 2rem 1rem 1.5rem;
+  background: #027d9c;
+  border-radius: 5rem 5rem 0 5rem;
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case-bubble:after {
+  content: "";
+  position: absolute;
+  right: -0.9rem;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border: 0 solid transparent;
+  border-top-width: 1rem;
+  border-bottom-width: 0px;
+  border-left: 1rem solid #027d9c;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div p + h5,
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-helper-case + h5 {
+  margin-top: 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h6 {
+  margin: 0;
+  padding: 1rem 0;
+  font-size: 1.6rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h6:before {
+  content: "\845";
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: 1rem;
+  font-size: 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div h6 ~ p {
+  padding: 0 0 0 2.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div article > section {
+  margin-bottom: 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon {
+  position: relative;
+  width: 100%;
+  max-width: 64rem;
+  min-height: 10rem;
+  margin: 0 auto;
+  padding: 1rem 0 2rem 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 1rem;
+  background: #f0f2f5;
+  font-size: 0;
+  line-height: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon::before, .chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon::after {
+  content: "";
+  position: absolute;
+  bottom: -1rem;
+  left: 50%;
+  margin: 0 -2rem;
+  display: block;
+  width: 4rem;
+  height: 1rem;
+  background: #f0f2f5;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon::after {
+  bottom: -2rem;
+  width: 6rem;
+  margin: 0 -3rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul {
+  display: block;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul li {
+  display: inline-block;
+  width: 100%;
+  margin: 0;
+  padding: 0 1rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  vertical-align: top;
+  opacity: 0;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul li img {
+  display: block;
+  max-width: 100%;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 1px #dfdfdf solid;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul li > div {
+  background: #fff;
+  border: 1px #dfdfdf solid;
+  height: 100%;
+  text-align: center;
+  overflow: hidden;
+  padding: 1em 0;
+  line-height: 1em;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul li > div h6 {
+  padding: 0.3em 0;
+  color: #3071A6;
+  font-size: 3.2em;
+  font-weight: 200;
+  line-height: 1em;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul li > div h6::before {
+  content: none;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul li > div p {
+  padding: 0.5em 0;
+  color: #ababab;
+  font-weight: 400;
+  letter-spacing: -0.06em;
+  line-height: 1.3em;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon ul.drag li:first-child {
+  -webkit-transition: none;
+  transition: none;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="0"] > ul > li:first-child {
+  margin-left: 0%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="0"] > ul > li:nth-of-type(1) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="1"] > ul > li:first-child {
+  margin-left: -100%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="1"] > ul > li:nth-of-type(2) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="2"] > ul > li:first-child {
+  margin-left: -200%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="2"] > ul > li:nth-of-type(3) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="3"] > ul > li:first-child {
+  margin-left: -300%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="3"] > ul > li:nth-of-type(4) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="4"] > ul > li:first-child {
+  margin-left: -400%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="4"] > ul > li:nth-of-type(5) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="5"] > ul > li:first-child {
+  margin-left: -500%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="5"] > ul > li:nth-of-type(6) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="6"] > ul > li:first-child {
+  margin-left: -600%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="6"] > ul > li:nth-of-type(7) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="7"] > ul > li:first-child {
+  margin-left: -700%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="7"] > ul > li:nth-of-type(8) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="8"] > ul > li:first-child {
+  margin-left: -800%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="8"] > ul > li:nth-of-type(9) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="9"] > ul > li:first-child {
+  margin-left: -900%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="9"] > ul > li:nth-of-type(10) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="10"] > ul > li:first-child {
+  margin-left: -1000%;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon[data-navindex="10"] > ul > li:nth-of-type(11) {
+  opacity: 1;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon .chatbot-containerNav {
+  top: 50%;
+  margin-top: -1.8rem;
+  height: 3.6rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon .chatbot-containerNav > button {
+  background: #027d9c;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon .chatbot-containerNav > button:before {
+  color: #fff;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div div.chatbot-imgCon + p {
+  margin-top: 3rem;
+  padding-bottom: 1.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div figure {
+  margin: 0;
+  padding: 0;
+  background: #027d9c;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div figure figcaption {
+  position: absolute;
+  width: 100%;
+  height: 13rem;
+  padding: 1.5rem;
+  margin: 4rem 0 0 -1rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #fff;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.5em;
+  white-space: normal;
+  font-weight: 400;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div figure figcaption strong {
+  color: #cb3d07;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div figure figcaption cite {
+  font-style: normal;
+  color: #ababab;
+  font-size: 1.3rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon {
+  border: none;
+  padding: 5rem 0 0 0;
+  border-radius: 3rem 3rem 0 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon::before, .chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon::after {
+  content: "";
+  position: absolute;
+  top: 2.3rem;
+  left: 50%;
+  margin: 0 -4.5rem;
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: #dfdfdf;
+  border-radius: 0.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon::after {
+  width: 6rem;
+  margin: 0 -3rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon ul li {
+  padding: 0 2rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon ul li img {
+  border-bottom-width: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon ul li figcaption {
+  position: static;
+  width: auto;
+  height: 11rem;
+  padding: 2rem 1.5rem 0 1.5rem;
+  margin: 0 -2rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section > div > article.chatbot_helper_app > div.chatbot-imgCon + p {
+  margin-top: 1rem;
+  padding-bottom: 3.5rem;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > section.chatbot_helper_hunting > div > article.chatbot_helper_app > div.chatbot-imgCon ul li:first-child figcaption {
+  font-size: 0;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input#chatbotHelper_location:checked ~ section.chatbot_helper_location {
+  display: block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input#chatbotHelper_talktip:checked ~ section.chatbot_helper_talktip {
+  display: block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input#chatbotHelper_knowledgerange:checked ~ section.chatbot_helper_knowledgerange {
+  display: block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input#chatbotHelper_resume:checked ~ section.chatbot_helper_resume {
+  display: block;
+}
+
+.chatbot-container article.chatbot-popup.chatbot-helper > div > input#chatbotHelper_hunting:checked ~ section.chatbot_helper_hunting {
+  display: block;
+}
+
+.chatbot-container div.chatbot-resizeHandler {
+  position: absolute;
+  z-index: 9;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .chatbot-container div.chatbot-resizeHandler {
+    display: none;
+  }
+}
+
+.chatbot-container div.chatbot-resizeHandler > span {
+  position: absolute;
+  z-index: 998;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: transparent;
+  pointer-events: all;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-lt, .chatbot-container div.chatbot-resizeHandler > span.chatbot-rt, .chatbot-container div.chatbot-resizeHandler > span.chatbot-lb, .chatbot-container div.chatbot-resizeHandler > span.chatbot-rb {
+  z-index: 999;
+  width: 1rem;
+  height: 1rem;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-t, .chatbot-container div.chatbot-resizeHandler > span.chatbot-b {
+  cursor: row-resize;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-l, .chatbot-container div.chatbot-resizeHandler > span.chatbot-r {
+  cursor: col-resize;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-lt, .chatbot-container div.chatbot-resizeHandler > span.chatbot-rb {
+  cursor: nwse-resize;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-lb, .chatbot-container div.chatbot-resizeHandler > span.chatbot-rt {
+  cursor: nesw-resize;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-lt {
+  left: 0;
+  top: 0;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-rt {
+  right: 0;
+  top: 0;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-lb {
+  left: 0;
+  bottom: 0;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-rb {
+  right: 0;
+  bottom: 0;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-t {
+  top: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-r {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  height: auto;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-b {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+}
+
+.chatbot-container div.chatbot-resizeHandler > span.chatbot-l {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: auto;
+}
+
+.chatbot-container.disabled div.chatbot-quickGuide,
+.chatbot-container div.chatbot-quickGuide.disabled {
+  opacity: 0;
+  display: none;
+}
+
+.chatbot-container div.chatbot-quickGuide {
+  position: absolute;
+  display: block;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 0;
+  color: #fff;
+  opacity: 1;
+  outline: none;
+  -webkit-transition: opacity 0.5s;
+  transition: opacity 0.5s;
+}
+
+.chatbot-container div.chatbot-quickGuide > button {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+  white-space: nowrap;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.chatbot-container div.chatbot-quickGuide > button:before {
+  content: "\e822";
+  color: #fff;
+}
+
+.chatbot-container div.chatbot-quickGuide > input {
+  position: absolute;
+  left: -9999em;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.chatbot-container div.chatbot-quickGuide > input + label {
+  position: relative;
+  z-index: 3;
+  cursor: pointer;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin: 100px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  -webkit-transition: width 0.5s;
+  transition: width 0.5s;
+}
+
+.chatbot-container div.chatbot-quickGuide > input + label::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin: 5px;
+  background: #fff;
+  border-radius: 5px;
+  opacity: 0.5;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+}
+
+.chatbot-container div.chatbot-quickGuide > input:focus + label::before,
+.chatbot-container div.chatbot-quickGuide > input + label:hover::before {
+  -webkit-box-shadow: 0px 0px 5px #fff;
+  box-shadow: 0px 0px 5px #fff;
+}
+
+.chatbot-container div.chatbot-quickGuide > input:checked + label {
+  width: 50px;
+}
+
+.chatbot-container div.chatbot-quickGuide > input:checked + label::before {
+  width: 40px;
+  opacity: 1;
+}
+
+.chatbot-container div.chatbot-quickGuide > article {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.chatbot-container div.chatbot-quickGuide > article.chatbot {
+  display: block;
+  opacity: 0;
+  font-size: 1.45rem;
+  line-height: 1.5em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: #222;
+  text-align: left;
+  background: #f1f1f1;
+}
+
+.chatbot-container div.chatbot-quickGuide > article.chatbot > * {
+  pointer-events: none;
+}
+
+.chatbot-container div.chatbot-quickGuide > article h3 {
+  margin: 0;
+  font-size: 3rem;
+  line-height: 3rem;
+  padding: 14rem 0 1.5rem 0;
+}
+
+.chatbot-container div.chatbot-quickGuide > article > button {
+  width: 9.5rem;
+  height: 3rem;
+  border-radius: 1.5rem;
+  border: none;
+  background: #fff;
+  color: #3071A6;
+  font-size: 1.7rem;
+  cursor: pointer;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div {
+  text-align: left;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div strong {
+  display: block;
+  color: #f9f902;
+  font-size: 2rem;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div p {
+  font-size: 1.7rem;
+  color: #fff;
+  margin: 1rem 0;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-recruitment {
+  position: absolute;
+  left: 4.2rem;
+  top: 27.9rem;
+  width: 7rem;
+  height: 7rem;
+  padding-top: 4.4rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border: none;
+  border-radius: 1.5rem;
+  background: #fff;
+  font-size: 1.6rem;
+  text-align: center;
+  color: #666;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-recruitment::before {
+  content: "\e811";
+  position: absolute;
+  top: 0;
+  padding: 1rem 2rem;
+  color: #027d9c;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-recruitment::after {
+  content: "";
+  position: absolute;
+  display: block;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  margin: -0.4rem;
+  border: 0.4rem #cb3d07 solid;
+  border-radius: 2rem;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-recruitment + div {
+  position: absolute;
+  top: 37rem;
+  left: 10rem;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-recruitment + div::before {
+  content: "";
+  position: absolute;
+  top: -0.7rem;
+  left: -4.5rem;
+  display: inline-block;
+  width: 4rem;
+  height: 4.9rem;
+  background: url("../images/chatbot/arr.png") 0 0 no-repeat;
+  background-size: auto 100%;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbotMenuToggle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: inline-block;
+  width: 4rem;
+  height: 4rem;
+  background: #fff;
+  overflow: hidden;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbotMenuToggle::before {
+  content: "\e821";
+  margin: 0.5rem;
+  border-radius: 50%;
+  color: #3071A6;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbotMenuToggle::after {
+  content: "";
+  position: absolute;
+  display: block;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  border: 0.4rem #fc8421 solid;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbotMenuToggle + div {
+  position: absolute;
+  bottom: 6rem;
+  left: 6.6rem;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbotMenuToggle + div::before {
+  content: "";
+  position: absolute;
+  top: 5rem;
+  left: -4.7rem;
+  display: inline-block;
+  width: 4rem;
+  height: 4.9rem;
+  background: url("../images/chatbot/arr.png") -4rem 0 no-repeat;
+  background-size: auto 100%;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-helper {
+  position: absolute;
+  bottom: 4.1rem;
+  right: 0;
+  width: 33.3%;
+  height: 6.4rem;
+  border: none;
+  background: #fff;
+  color: #ababab;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-helper::before {
+  content: "\e803";
+  margin: 0.8rem auto 0.3rem auto;
+  color: #027d9c;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-helper::after {
+  content: "";
+  position: absolute;
+  display: block;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  border: 0.4rem #fc8421 solid;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-helper + div {
+  position: absolute;
+  bottom: 14rem;
+  right: 3.5rem;
+}
+
+.chatbot-container div.chatbot-quickGuide > article div.chatbot-helper + div::before {
+  content: "";
+  position: absolute;
+  top: 6rem;
+  right: 0;
+  display: inline-block;
+  width: 4rem;
+  height: 4.9rem;
+  background: url("../images/chatbot/arr.png") -8rem 0 no-repeat;
+  background-size: auto 100%;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-1:checked ~ article.chatbot {
+  opacity: 1;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-1:checked ~ article.chatbot-quickGuide-1 {
+  display: block;
+  -webkit-animation: qgFadeIn 2s;
+          animation: qgFadeIn 2s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-1:checked ~ article.chatbot-quickGuide-1 > * {
+  -webkit-animation: qgFadeInA 2s;
+          animation: qgFadeInA 2s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-1:checked ~ article.chatbot-quickGuide-1 > div:nth-of-type(1) {
+  -webkit-animation: qgFadeInB 1.5s;
+          animation: qgFadeInB 1.5s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-2:checked ~ article.chatbot-quickGuide-2 {
+  display: block;
+  -webkit-animation: qgFadeIn 2s;
+          animation: qgFadeIn 2s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-2:checked ~ article.chatbot-quickGuide-2 > * {
+  -webkit-animation: qgFadeInA 2s;
+          animation: qgFadeInA 2s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-2:checked ~ article.chatbot-quickGuide-2 > div:nth-of-type(1) {
+  -webkit-animation: qgFadeInB 1.5s;
+          animation: qgFadeInB 1.5s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-3:checked ~ article.chatbot-quickGuide-3 {
+  display: block;
+  -webkit-animation: qgFadeIn 2s;
+          animation: qgFadeIn 2s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-3:checked ~ article.chatbot-quickGuide-3 > * {
+  -webkit-animation: qgFadeInA 2s;
+          animation: qgFadeInA 2s;
+}
+
+.chatbot-container div.chatbot-quickGuide input#chatbot-quickGuide-nav-3:checked ~ article.chatbot-quickGuide-3 > div:nth-of-type(1) {
+  -webkit-animation: qgFadeInB 1.5s;
+          animation: qgFadeInB 1.5s;
+}
+
+@-webkit-keyframes chatbotStartBtnBg {
+  0% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  28% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  30% {
+    -webkit-transform: translate(31px, 16px) rotate(-30deg);
+            transform: translate(31px, 16px) rotate(-30deg);
+  }
+  32% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  64% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  66% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  68% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  69% {
+    -webkit-transform: translate(12px, -20px) rotate(0deg);
+            transform: translate(12px, -20px) rotate(0deg);
+  }
+  70% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  71% {
+    -webkit-transform: translate(12px, -20px) rotate(0deg);
+            transform: translate(12px, -20px) rotate(0deg);
+  }
+  72% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  78% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  80% {
+    -webkit-transform: translate(-36px, 21px) rotate(30deg);
+            transform: translate(-36px, 21px) rotate(30deg);
+  }
+  85% {
+    -webkit-transform: translate(-36px, 21px) rotate(30deg);
+            transform: translate(-36px, 21px) rotate(30deg);
+  }
+  88% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  90% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  91% {
+    -webkit-transform: translate(56px, 21px) rotate(-10deg);
+            transform: translate(56px, 21px) rotate(-10deg);
+  }
+  92% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  96% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  100% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+}
+
+@keyframes chatbotStartBtnBg {
+  0% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  28% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  30% {
+    -webkit-transform: translate(31px, 16px) rotate(-30deg);
+            transform: translate(31px, 16px) rotate(-30deg);
+  }
+  32% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  64% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+  66% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  68% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  69% {
+    -webkit-transform: translate(12px, -20px) rotate(0deg);
+            transform: translate(12px, -20px) rotate(0deg);
+  }
+  70% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  71% {
+    -webkit-transform: translate(12px, -20px) rotate(0deg);
+            transform: translate(12px, -20px) rotate(0deg);
+  }
+  72% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  78% {
+    -webkit-transform: translate(12px, 0) rotate(0deg);
+            transform: translate(12px, 0) rotate(0deg);
+  }
+  80% {
+    -webkit-transform: translate(-36px, 21px) rotate(30deg);
+            transform: translate(-36px, 21px) rotate(30deg);
+  }
+  85% {
+    -webkit-transform: translate(-36px, 21px) rotate(30deg);
+            transform: translate(-36px, 21px) rotate(30deg);
+  }
+  88% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  90% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  91% {
+    -webkit-transform: translate(56px, 21px) rotate(-10deg);
+            transform: translate(56px, 21px) rotate(-10deg);
+  }
+  92% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  96% {
+    -webkit-transform: translate(68px, 21px) rotate(0deg);
+            transform: translate(68px, 21px) rotate(0deg);
+  }
+  100% {
+    -webkit-transform: translate(36px, 21px) rotate(-30deg);
+            transform: translate(36px, 21px) rotate(-30deg);
+  }
+}
+
+@-webkit-keyframes chatbotStartBtnAni1 {
+  6.67% {
+    opacity: 0;
+  }
+  7.505% {
+    opacity: 1;
+  }
+  12.515% {
+    opacity: 1;
+  }
+  14.185% {
+    opacity: 0;
+  }
+}
+
+@keyframes chatbotStartBtnAni1 {
+  6.67% {
+    opacity: 0;
+  }
+  7.505% {
+    opacity: 1;
+  }
+  12.515% {
+    opacity: 1;
+  }
+  14.185% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes chatbotStartBtnAni2 {
+  31.72% {
+    opacity: 0;
+  }
+  32.555% {
+    opacity: 1;
+  }
+  37.565% {
+    opacity: 1;
+  }
+  39.235% {
+    opacity: 0;
+  }
+}
+
+@keyframes chatbotStartBtnAni2 {
+  31.72% {
+    opacity: 0;
+  }
+  32.555% {
+    opacity: 1;
+  }
+  37.565% {
+    opacity: 1;
+  }
+  39.235% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes chatbotStartBtnAni3 {
+  56.77% {
+    opacity: 0;
+  }
+  57.605% {
+    opacity: 1;
+  }
+  62.615% {
+    opacity: 1;
+  }
+  64.285% {
+    opacity: 0;
+  }
+}
+
+@keyframes chatbotStartBtnAni3 {
+  56.77% {
+    opacity: 0;
+  }
+  57.605% {
+    opacity: 1;
+  }
+  62.615% {
+    opacity: 1;
+  }
+  64.285% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes chatbotStartBtnAni4 {
+  81.82% {
+    opacity: 0;
+  }
+  82.655% {
+    opacity: 1;
+  }
+  87.665% {
+    opacity: 1;
+  }
+  89.335% {
+    opacity: 0;
+  }
+}
+
+@keyframes chatbotStartBtnAni4 {
+  81.82% {
+    opacity: 0;
+  }
+  82.655% {
+    opacity: 1;
+  }
+  87.665% {
+    opacity: 1;
+  }
+  89.335% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes chatbotFadeIn {
+  0% {
+    opacity: 0;
+    height: 0;
+    min-height: 0;
+    display: block;
+    bottom: -100%;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes chatbotFadeIn {
+  0% {
+    opacity: 0;
+    height: 0;
+    min-height: 0;
+    display: block;
+    bottom: -100%;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes chatbotFadeOut {
+  0% {
+    opacity: 1;
+  }
+  99.9% {
+    display: block;
+  }
+  100% {
+    opacity: 0;
+    height: 0;
+    min-height: auto;
+    display: none;
+    bottom: -100%;
+    right: 1rem;
+  }
+}
+
+@keyframes chatbotFadeOut {
+  0% {
+    opacity: 1;
+  }
+  99.9% {
+    display: block;
+  }
+  100% {
+    opacity: 0;
+    height: 0;
+    min-height: auto;
+    display: none;
+    bottom: -100%;
+    right: 1rem;
+  }
+}
+
+@-webkit-keyframes msgFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes msgFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes qgFadeInA {
+  0% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes qgFadeInA {
+  0% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes qgFadeInB {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes qgFadeInB {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes qgFadeIn {
+  0% {
+    background: rgba(0, 0, 0, 0.85);
+  }
+  40% {
+    background: rgba(0, 0, 0, 0);
+  }
+  70% {
+    background: rgba(0, 0, 0, 0);
+  }
+  100% {
+    background: rgba(0, 0, 0, 0.85);
+  }
+}
+
+@keyframes qgFadeIn {
+  0% {
+    background: rgba(0, 0, 0, 0.85);
+  }
+  40% {
+    background: rgba(0, 0, 0, 0);
+  }
+  70% {
+    background: rgba(0, 0, 0, 0);
+  }
+  100% {
+    background: rgba(0, 0, 0, 0.85);
+  }
+}
+
+@-webkit-keyframes loadBounce {
+  0% {
+    top: 0.2rem;
+  }
+  50% {
+    top: -0.3rem;
+  }
+  100% {
+    top: 0.2rem;
+  }
+}
+
+@keyframes loadBounce {
+  0% {
+    top: 0.2rem;
+  }
+  50% {
+    top: -0.3rem;
+  }
+  100% {
+    top: 0.2rem;
+  }
+}
+
+@-webkit-keyframes disabledOut {
+  0% {
+    max-height: 15rem;
+    opacity: 1;
+    overflow: hidden;
+  }
+  99.9% {
+    display: block;
+  }
+  100% {
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    display: none;
+  }
+}
+
+@keyframes disabledOut {
+  0% {
+    max-height: 15rem;
+    opacity: 1;
+    overflow: hidden;
+  }
+  99.9% {
+    display: block;
+  }
+  100% {
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    display: none;
+  }
+}
+
+/* from worknet */
+html.web {
+  font-size: 62.5%;
+}
+
+@media only screen and (max-width: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait), only screen and (max-height: 414px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  body.fix-for-chatbot {
+    position: fixed;
+  }
+  body.switch {
+    position: static;
+  }
+}
+
+/* rem 기준 폰트 사이즈 */
+/* 하드웨어 가속화 백그라운드 설정
+body {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  display: box;
+  box-orient: vertical;
+  -webkit-box-flex: 1;
+}
+*/
+/* =====================  Media Query ==================== *
+
+/* iPhone Plus *
+@media only screen and (max-width: 414px) {
+  /*html{font-size:83.2%;} 임의 조정*
+}
+
+/* Android *
+@media only screen and (max-width: 360px) {
+  /*html{font-size:72.5%;} 임의 조정*
+}
+
+/* iPhone *
+@media only screen and (max-width: 320px) {
+  /*html{font-size:62.5%;} 임의 조정*
+}
+
+/* iPhoneX *
+@media only screen and (min-width: 375px) {
+  html {
+    font-size: 62.5%;
+  }
+
+  /*임의 조정*
+}
+
+/* Tablet 이상 *
+@media only screen and (min-width: 768px) {
+  html {
+    font-size: 62.5%;
+  }
+
+  /* 임의 조정*
+}
+*/
+/* IE9+10 Hack */
+@media screen and (min-width: 0\0) {
+  html {
+    font-size: 63%;
+  }
+}
+
+/* start 웹접근성 조치 */
+#chatbotMenuToggle {
+	width: 4rem;
+	height: 4rem;
+	z-index: 3;
+	border: initial;
+	background-color: initial;
+	opacity: initial;
+}
+input[type="checkbox"]#chatbotMenuToggle:checked {
+    background: none;
+}
+#chatbotMenuToggle:focus
+,#chatbotMsgSubmitBtn:focus{
+	outline: 2px dashed #111;
+}
+
+.chatbot-quickGuide >input[type=radio]::before,
+.chatbot-quickGuide >input[type=radio]::after { display: none !important;}
+
+.chatbot-container article.chatbot div.chatbot-msgCon .chatbot-startMenu > ul > li button:not(.ready):not(.disabled):not(:disabled):focus {
+    outline: 2px dashed var(--col_dis);
+}
+
+/* end 웹접근성 조치 */

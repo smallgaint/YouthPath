@@ -93,12 +93,20 @@ class LuxiaProvider(LLMProvider):
                 "metadata": {"purpose": purpose},
             }
 
+        system_content = "You are YouthPath's Korean assistant. Follow the requested output format exactly."
+        if purpose == "classification" or "JSON" in prompt:
+            system_content = (
+                "You are a routing agent. You must analyze the query and respond in valid JSON format. "
+                "If the query asks about policies (정책, 복지, 지원금, 월세, 수당 등), you MUST include 'policy' in the 'agents' list."
+                "If the query asks about jobs (채용, 공고, 취업 등), you MUST include 'job' in the 'agents' list."
+            )
+
         payload = {
             "model": self.model,
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are YouthPath's Korean assistant. Follow the requested output format exactly.",
+                    "content": system_content,
                 },
                 {"role": "user", "content": prompt},
             ],
@@ -150,7 +158,7 @@ class LuxiaProvider(LLMProvider):
 class MockLuxiaProvider(LLMProvider):
     def invoke(self, prompt: str, **kwargs: Any) -> str:
         prompt_lower = prompt.lower()
-        if "agents" in prompt_lower or "분류" in prompt_lower:
+        if "agents" in prompt_lower or "분류" in prompt_lower or "json" in prompt_lower:
             agents: list[str] = []
             policy_keywords = ["정책", "지원금", "월세", "복지", "청년", "주거", "수당", "장학"]
             job_keywords = ["채용", "공고", "취업", "직무", "회사", "신입", "경력", "일자리"]
@@ -168,8 +176,6 @@ class MockLuxiaProvider(LLMProvider):
             if "target_company" in prompt_lower or "관심 기업" in prompt_lower:
                 if "resume" not in agents:
                     agents.append("resume")
-            if not agents:
-                agents = ["policy", "job"]
 
             return json.dumps(
                 {"agents": agents, "reasoning": "mock luxia keyword classification"},

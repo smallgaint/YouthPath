@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 try:
     from A.clients.ontong_api import fetch_policies, normalize_policy
@@ -66,7 +67,7 @@ W_INCOME = 0.3
 def policy_search(profile: dict[str, Any], query: str) -> dict[str, Any]:
     from A.core.rag import search
 
-    api_response = fetch_policies(query=query, page=1, display=10)
+    api_response = _fetch_policies_smart(query, display=10)
     candidates = [normalize_policy(item) for item in api_response["items"]]
     chunks = search("policies", query, k=5)
     matched = [
@@ -189,17 +190,73 @@ def _category_major(policy: dict[str, Any]) -> str:
     return value or "기타"
 
 
-def _link(policy: dict[str, Any], chunks_by_pid: dict[str, list[dict[str, Any]]]) -> str | None:
-    for key in ("APLY_URL_ADDR", "aplyUrlAddr", "REF_URL_ADDR1", "refUrlAddr1"):
+# 안내/참고 URL: 보통 로그인 없이 열람 가능한 정보 페이지
+_INFO_URL_KEYS = ("REF_URL_ADDR1", "refUrlAddr1", "rfcSiteUrla1", "rfcSiteUrla2", "link")
+# 신청 URL: 복지로/정부24/고용24 등 본인인증·로그인을 요구하는 신청 페이지
+_APPLY_URL_KEYS = ("APLY_URL_ADDR", "aplyUrlAddr", "rqutUrla")
+
+
+def _link_with_kind(
+    policy: dict[str, Any], chunks_by_pid: dict[str, list[dict[str, Any]]]
+) -> tuple[str | None, str]:
+    """정책 링크와 종류를 반환한다.
+
+    반환 kind:
+      - "info"  : 로그인 없이 보기 쉬운 안내/참고 URL (우선)
+      - "apply" : 로그인이 필요한 신청 URL (안내 URL이 없을 때만)
+      - ""      : 링크 없음
+    """
+    # 1순위: 안내/참고 URL (로그인 불필요한 경우가 많음)
+    for key in _INFO_URL_KEYS:
         value = _raw_field(policy, key)
         if value and value != "0":
-            return _ensure_scheme(value)
+            url = _ensure_scheme(value)
+            # youthcenter.go.kr 딥링크는 외부에서 :8080으로 깨져 연결 불가 → 건너뜀
+            if "youthcenter.go.kr" in url:
+                continue
+            return url, "info"
+    # 2순위: RAG 청크의 출처 URL도 안내 성격으로 취급
     pid = policy.get("policy_id") or ""
     for chunk in chunks_by_pid.get(pid, []):
         url = (chunk.get("metadata") or {}).get("source_url", "")
         if url:
-            return _ensure_scheme(str(url))
-    return None
+            return _ensure_scheme(str(url)), "info"
+    # 3순위: 신청 URL (로그인 필요 가능성 높음)
+    for key in _APPLY_URL_KEYS:
+        value = _raw_field(policy, key)
+        if value and value != "0":
+            return _ensure_scheme(value), "apply"
+    return None, ""
+
+
+def _link(policy: dict[str, Any], chunks_by_pid: dict[str, list[dict[str, Any]]]) -> str | None:
+    return _link_with_kind(policy, chunks_by_pid)[0]
+
+
+def _fetch_policies_smart(query: str, *, display: int = 20) -> dict[str, Any]:
+    """정책 검색: 키워드(plcyKywdNm) 우선 + 정책명(plcyNm) 폴백.
+
+    plcyNm은 정책 '이름' 정확매칭이라 자연어 문장에서 0건이 되기 쉽다.
+    plcyKywdNm 키워드 검색이 문장에도 훨씬 견고하므로 이를 1순위로 쓴다.
+    """
+    if fetch_policies is None:  # type: ignore[truthy-function]
+        raise RuntimeError("Ontong API client dependencies are unavailable")
+    by_keyword = fetch_policies(query=None, keywords=query, page=1, display=display)
+    if by_keyword.get("items"):
+        return by_keyword
+    return fetch_policies(query=query, page=1, display=display)
+
+
+def _search_fallback_url(title: str) -> str:
+    """로그인 없이 열람 가능한 정부24 통합검색 폴백 URL.
+
+    온통청년 포털 딥링크는 외부에서 :8080으로 리다이렉트되어 동작하지 않으므로,
+    안내 URL이 없는 정책은 정책명으로 정부24를 검색하도록 한다.
+    """
+    title = (title or "").strip()
+    if not title:
+        return ""
+    return "https://www.gov.kr/search?srhQuery=" + quote(title)
 
 
 def _build_other_conditions(policy: dict[str, Any]) -> list[dict[str, str]]:
@@ -410,7 +467,7 @@ def build_policy_response(profile: dict[str, Any], query: str) -> dict[str, Any]
     try:
         if fetch_policies is None:
             raise RuntimeError("Ontong API client dependencies are unavailable")
-        api_response = fetch_policies(query=query, page=1, display=10)
+        api_response = _fetch_policies_smart(query, display=20)
         candidates = [normalize_policy(item) for item in api_response.get("items", [])]
         if candidates:
             api_path = "official"
@@ -492,6 +549,13 @@ def build_policy_response(profile: dict[str, Any], query: str) -> dict[str, Any]
             (matched if crit["ok"] else unmatched).append(crit)
 
         deadline, deadline_type, deadline_raw = _parse_deadline(cand)
+        
+        if deadline:
+            try:
+                if datetime.strptime(deadline, "%Y-%m-%d").date() < datetime.today().date():
+                    continue
+            except ValueError:
+                pass
 
         if pid in api_pids and pid in rag_pids:
             src = "api+rag"
@@ -499,6 +563,11 @@ def build_policy_response(profile: dict[str, Any], query: str) -> dict[str, Any]
             src = "api"
         else:
             src = "rag"
+
+        link_url, link_kind = _link_with_kind(cand, chunks_by_pid)
+        # 로그인 없는 안내 링크가 없으면(신청 URL만 있거나 링크 없음) 정부24 검색 폴백 제공
+        title_text = _clean_text(cand.get("title") or "")
+        search_url = _search_fallback_url(title_text) if link_kind != "info" else ""
 
         items.append({
             "policy_id": pid,
@@ -518,7 +587,9 @@ def build_policy_response(profile: dict[str, Any], query: str) -> dict[str, Any]
             "other_conditions": _build_other_conditions(cand),
             "apply_method": _apply_method(cand),
             "exclusion": _exclusion(cand),
-            "link": _link(cand, chunks_by_pid),
+            "link": link_url,
+            "link_kind": link_kind,
+            "search_url": search_url,
             "source": src,
         })
 

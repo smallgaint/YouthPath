@@ -74,12 +74,16 @@ def _deadline_event(item: dict[str, Any], *, source: str, title_suffix: str) -> 
     if not deadline:
         return None
     title = item.get("title") or item.get("company") or "마감 일정"
+    # 로그인 없이 열 수 있는 링크 우선: 정책 신청(apply) URL이면 검색 폴백으로 대체
+    link = item.get("link") or item.get("url") or ""
+    if item.get("link_kind") == "apply" and item.get("search_url"):
+        link = item.get("search_url")
     event = {
         "title": f"{title} {title_suffix}",
         "deadline": deadline,
         "type": source,
         "source": source,
-        "link": item.get("link") or item.get("url") or "",
+        "link": link,
         "days_remaining": item.get("days_remaining"),
     }
     if event["days_remaining"] is None:

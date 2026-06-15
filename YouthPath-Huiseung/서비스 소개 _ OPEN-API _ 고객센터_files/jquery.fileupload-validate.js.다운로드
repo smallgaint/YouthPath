@@ -1,0 +1,147 @@
+/*
+ * jQuery File Upload Validation Plugin
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2013, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * https://opensource.org/licenses/MIT
+ */
+
+/* global define, require */
+
+(function (factory) {
+  'use strict';
+  if (typeof define === 'function' && define.amd) {
+    // Register as an anonymous AMD module:
+    define(['jquery', './jquery.fileupload-process'], factory);
+  } else if (typeof exports === 'object') {
+    // Node/CommonJS:
+    factory(require('jquery'), require('./jquery.fileupload-process'));
+  } else {
+    // Browser globals:
+    factory(window.jQuery);
+  }
+})(function ($) {
+  'use strict';
+
+  // Append to the default processQueue:
+  $.blueimp.fileupload.prototype.options.processQueue.push({
+    action: 'validate',
+    // Always trigger this action,
+    // even if the previous action was rejected:
+    always: true,
+    // Options taken from the global options map:
+    acceptFileTypes: '@',
+    maxFileSize: '@',
+    minFileSize: '@',
+    maxNumberOfFiles: '@',
+    disabled: '@disableValidation',
+    totFileSize: '@',
+    athflStupSecd: '@'
+  });
+
+  // The File Upload Validation plugin extends the fileupload widget
+  // with file validation functionality:
+  $.widget('blueimp.fileupload', $.blueimp.fileupload, {
+    options: {
+      /*
+            // The regular expression for allowed file types, matches
+            // against either file type or file name:
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            // The maximum allowed file size in bytes:
+            maxFileSize: 10000000, // 10 MB
+            // The minimum allowed file size in bytes:
+            minFileSize: undefined, // No minimal file size
+            // The limit of files to be uploaded:
+            maxNumberOfFiles: 10,
+            */
+
+      // Function returning the current number of files,
+      // has to be overridden for maxNumberOfFiles validation:
+      getNumberOfFiles: $.noop,
+
+      // Error and info messages:
+      messages: {
+        maxNumberOfFiles: '첨부가능한 최대 파일 갯수를 초과 하였습니다.',
+	    acceptFileTypes: '파일명 [{fileNm}] 허용하지 않는 파일 확장자 입니다. (사용 가능한 확장자 : {ext})',
+	    maxGroupFileSize: '파일명 [{fileNm}] 첨부할 수 있는 파일 사이즈가 초과 하였습니다. 총 {size}',
+	    maxFileSize: '파일명 [{fileNm}] 파일 크기가 너무 큽니다. 현재 파일 크기 {size}',
+	    minFileSize: '파일명 [{fileNm}] 파일 크기가 너무 작습니다. 현재 파일 크기 {size}',
+	    incorrectFileName: '파일명 [{fileNm}] 첨부파일 이름에 제한된 문자열[;] 이 포함되어 있습니다. 파일명을 변경하여 다시 등록해주세요.'
+      }
+    },
+
+    processActions: {
+      validate: function (data, options) {
+        if (options.disabled) {
+          return data;
+        }
+        // eslint-disable-next-line new-cap
+        var dfd = $.Deferred(),
+          settings = this.options,
+          file = data.files[data.index],
+          fileSize;
+        if (options.minFileSize || options.maxFileSize) {
+          fileSize = file.size;
+        }
+
+        // 2024.07.12 파일 업로드 시 파일명 [;] 들어가면 불가 처리 - HI
+        if (file.name.indexOf(";") > -1) {
+		  file.error = settings.i18n('incorrectFileName', {fileNm: file.name});
+		}
+
+		// 모듈 전체 제한 로직 추가
+		if(options.athflStupSecd == 'ERT01'){
+			var totFileSize = settings.totFileSize + fileSize;
+			if(options.maxFileSize < totFileSize){
+				file.error = settings.i18n('maxGroupFileSize', {fileNm: file.name, size : $.blueimp.fileupload.prototype._formatFileSize(options.maxFileSize)});
+			}else{
+				settings.totFileSize = totFileSize;
+			}
+
+		}else{
+			// 2025.01.07 파일 업로드 시 첨부파일 사이즈 제대로 확인되지 않음. - HI
+			if (fileSize > options.maxFileSize) {
+	          file.error = settings.i18n('maxFileSize', {fileNm: file.name, size : $.blueimp.fileupload.prototype._formatFileSize(fileSize)});
+	        }
+		}
+
+        if (
+          $.type(options.maxNumberOfFiles) === 'number' &&
+          (settings.getNumberOfFiles() || 0) + data.files.length >
+            options.maxNumberOfFiles
+        ) {
+          file.error = settings.i18n('maxNumberOfFiles');
+        } else if (options.acceptFileTypes) {
+			//console.log("options.acceptFileTypes", options.acceptFileTypes);
+			var accptFiletype = options.acceptFileTypes;
+			if(typeof options.acceptFileTypes == "string") {
+				var strRegExp = '(\.|\/)('+options.acceptFileTypes.toLowerCase().replace(/,/g,"|").replace(/\s/g,"")+')$'
+				options.acceptFileTypes = new RegExp(strRegExp, 'i');
+			}
+			if(!(options.acceptFileTypes.test(file.type) || options.acceptFileTypes.test(file.name)) ) {
+          		file.error = settings.i18n('acceptFileTypes', {fileNm: file.name, ext: accptFiletype});
+			}
+        } else if (fileSize > options.maxFileSize) {
+          file.error = settings.i18n('maxFileSize', {fileNm: file.name, size: $.blueimp.fileupload.prototype._formatFileSize(fileSize)});
+        } else if (
+          $.type(fileSize) === 'number' &&
+          fileSize < options.minFileSize
+        ) {
+          file.error = settings.i18n('minFileSize', {fileNm: file.name, size: $.blueimp.fileupload.prototype._formatFileSize(fileSize)});
+		} else {
+          delete file.error;
+        }
+        if (file.error || data.files.error) {
+          data.files.error = true;
+          dfd.rejectWith(this, [data]);
+        } else {
+          dfd.resolveWith(this, [data]);
+        }
+        return dfd.promise();
+      }
+    }
+  });
+});

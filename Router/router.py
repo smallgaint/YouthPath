@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from dataclasses import asdict
 from typing import Any
@@ -43,40 +44,48 @@ class YouthPathRouter:
         )
         state.classification = self._parse_classification(classification_raw)
 
-        wanted_agents = self._normalize_agents(state.classification.get("agents", ["policy", "job"]))
+        wanted_agents = self._normalize_agents(state.classification.get("agents", []))
 
         policy_result = {}
         job_result = {}
         resume_result = {}
         calendar_result = {}
 
-        if "policy" in wanted_agents:
-            policy_result = run_policy_agent(state.profile, state.query)
-            state.agents["policy"] = policy_result
-        if "job" in wanted_agents:
-            job_result = run_job_agent(state.profile, state.query)
-            state.agents["job"] = job_result
-        if "resume" in wanted_agents:
-            resume_result = run_resume_agent(state.profile, state.query)
-            state.agents["resume"] = resume_result
-        if "calendar" in wanted_agents:
-            calendar_result = run_calendar_agent(policy_result, job_result)
-            state.agents["calendar"] = calendar_result
+        if not wanted_agents:
+            state.final_answer = "질문이 너무 포괄적이거나 명확하지 않습니다. 청년 정책, 채용 공고, 자소서 작성 가이드, 마감 일정 중 어떤 도움이 필요하신지 조금 더 구체적으로 질문해 주세요."
+        else:
+            if "policy" in wanted_agents:
+                policy_result = run_policy_agent(state.profile, state.query)
+                state.agents["policy"] = policy_result
+            if "job" in wanted_agents:
+                job_result = run_job_agent(state.profile, state.query)
+                state.agents["job"] = job_result
+            if "resume" in wanted_agents:
+                resume_result = run_resume_agent(state.profile, state.query)
+                state.agents["resume"] = resume_result
+            # 분류기가 calendar를 고르지 않아도, 정책/채용에 마감일이 있으면 항상 병합한다.
+            if (
+                "calendar" in wanted_agents
+                or policy_result.get("items")
+                or job_result.get("items")
+            ):
+                calendar_result = run_calendar_agent(policy_result, job_result)
+                state.agents["calendar"] = calendar_result
 
-        state.formatted_context = {
-            "policy": format_policies_to_text(policy_result),
-            "job": format_jobs_to_text(job_result),
-            "resume": format_resume_to_text(resume_result),
-            "calendar": format_calendar_to_text(calendar_result),
-        }
+            state.formatted_context = {
+                "policy": format_policies_to_text(policy_result),
+                "job": format_jobs_to_text(job_result),
+                "resume": format_resume_to_text(resume_result),
+                "calendar": format_calendar_to_text(calendar_result),
+            }
 
-        final_prompt = self._build_final_prompt(state)
-        state.final_answer = self.llm_provider.invoke(
-            final_prompt,
-            purpose="final",
-            temperature=0.4,
-            max_tokens=1200,
-        )
+            final_prompt = self._build_final_prompt(state)
+            state.final_answer = self.llm_provider.invoke(
+                final_prompt,
+                purpose="final",
+                temperature=0.4,
+                max_tokens=1200,
+            )
         state.metadata = {
             "classification": state.classification,
             "agents_called": list(state.agents.keys()),
@@ -145,17 +154,21 @@ class YouthPathRouter:
             "1. 친근하지만 전문적인 어조\n"
             "2. 정책/채용/일정 결과를 구분해서 설명\n"
             "3. 불확실한 내용은 추측하지 말고 '확인 필요'로 표시\n"
+            "4. 에이전트 결과가 '없음'인 항목에 대해서는 절대 임의로 지어내어 답변하지 말 것\n"
         )
 
     @staticmethod
     def _parse_classification(raw_text: str) -> dict[str, Any]:
         try:
-            parsed = json.loads(raw_text)
-            if isinstance(parsed, dict):
-                return parsed
+            # LLM이 마크다운(```json)이나 불필요한 텍스트를 붙여도 중괄호 내부만 추출
+            match = re.search(r"\{.*\}", raw_text, re.DOTALL)
+            if match:
+                parsed = json.loads(match.group(0))
+                if isinstance(parsed, dict):
+                    return parsed
         except json.JSONDecodeError:
             pass
-        return {"agents": ["policy", "job"], "reasoning": "fallback classification"}
+        return {"agents": [], "reasoning": "fallback classification"}
 
     @staticmethod
     def _normalize_agents(raw_agents: Any) -> list[str]:
@@ -163,11 +176,11 @@ class YouthPathRouter:
         if isinstance(raw_agents, str):
             raw_agents = [raw_agents]
         if not isinstance(raw_agents, list):
-            return ["policy", "job"]
+            return []
 
         agents: list[str] = []
         for agent in raw_agents:
             agent_name = str(agent).strip().lower()
             if agent_name in valid and agent_name not in agents:
                 agents.append(agent_name)
-        return agents or ["policy", "job"]
+        return agents

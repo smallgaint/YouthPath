@@ -5,6 +5,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+# Load root .env before constructing the router so the LLM provider and
+# every agent see their keys (load_dotenv elsewhere runs too late).
+from dotenv import load_dotenv
+load_dotenv(project_root / ".env")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

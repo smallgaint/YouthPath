@@ -1,0 +1,864 @@
+// for requirejs - start
+define(['util'], function (util) {
+    // for requirejs - end
+
+    // for callback function
+    var cbFunc = {};
+
+    /*************************
+     * chatbot initialization
+     * 한글과 컴퓨터 손태진
+     *************************/
+
+	function _chatbot_moveList_for_focus(obj, nowIndex, msg){
+		/* start 웹접근성 조치  - 조현*/
+			var firstYn = msg == "btn" ? true : false;
+			obj.querySelectorAll('.chatbot-startMenu li').forEach(function(el,idx){
+			    if((parseInt(idx/4)) != nowIndex){
+			        el.setAttribute('aria-hidden','true');
+			        el.querySelector('button').setAttribute('tabindex','-1');
+			    } else {
+			        el.removeAttribute('aria-hidden');
+			        el.querySelector('button').removeAttribute('tabindex');
+			        if(firstYn){
+						firstYn = false;
+						el.querySelector('button').focus();
+					}
+			    }
+			})
+			obj.querySelectorAll('.chatbot-employmentReport li').forEach(function(el,idx){
+			    if(idx != nowIndex){
+			        el.setAttribute('aria-hidden','true');
+			        el.querySelector('button').setAttribute('tabindex','-1');
+			    } else {
+			        el.removeAttribute('aria-hidden');
+			        el.querySelector('button').removeAttribute('tabindex');
+			        if(firstYn){
+						firstYn = false;
+						el.querySelector('button').focus();
+					}
+			    }
+			})
+			/* end 웹접근성 조치 */
+	}
+
+    //가로 네비게이션 콘텐츠 초기화
+    function _chatbot_initContainerNav(obj) {
+        _chatbot_initContainerNavMax(obj);
+        _chatbot_moveList_for_focus(obj, parseInt(obj.getAttribute("data-navindex")), "init"); //2026.01.21 추가
+
+        var navs = Array.prototype.slice.call(
+            obj.querySelectorAll(".chatbot-containerNav>button")
+        );
+        navs.map(function (item) {
+            item.addEventListener("click", function () {
+                var nowIndex = parseInt(obj.getAttribute("data-navindex"));
+                nowIndex = item.className.indexOf("next") ? nowIndex - 1 : nowIndex + 1;
+                nowIndex = nowIndex < 0 ? 0 : nowIndex;
+                var listyle = window.getComputedStyle(obj.querySelector("ul li:first-child")) || obj.querySelector("ul li:first-child").currentStyle;
+                if (parseInt(obj.getAttribute("data-slidewidth")) != parseInt(listyle.width) + parseInt(listyle.marginRight)) {
+                    _chatbot_initContainerNavMax(obj);
+                }
+                _chatbot_moveList(obj, nowIndex); // 2019.03.15 추가
+                _chatbot_moveList_for_focus(obj, nowIndex, "btn"); //2026.01.21 추가
+            });
+        });
+
+        // 채용공고 등 팝업 연결이 있는 콘텐츠 내 버튼 스크립트
+        /*
+        // 채용공고 클릭 시 처리를 팝업으로 하지 않기로 함
+        if (obj.className.indexOf("employmentReport") > -1) {
+            var btns = Array.prototype.slice.call(obj.querySelectorAll(".showJobInfo"));
+            btns.map(function (btn) {
+                btn.addEventListener("click", function () {
+                    var popup = document.querySelectorAll("article.chatbot-popup")[0];
+                    _chatbot_toggleClassName("add", popup, "active");
+                });
+            });
+        }
+        */
+
+        // 리스트 스윕 2019.03.15 추가
+        var listCon = obj.querySelector('ul'),
+            fl = listCon.querySelector('li'),
+            n;
+
+        var i = 0,
+            w = 0,
+            ml = 0,
+            x0 = null,
+            locked = false;
+
+        function unify(e) {
+            return e.changedTouches ? e.changedTouches[0] : e;
+        }
+
+        function lock(e) {
+            _chatbot_initContainerNavMax(obj);
+            n = parseInt(obj.getAttribute('data-maxindex'));
+            x0 = unify(e).clientX;
+            // w = listCon.offsetWidth;
+            w = parseInt(window.getComputedStyle(listCon).width || listCon.currentStyle.width);
+            ml = window.getComputedStyle(fl).marginLeft || fl.currentStyle.marginLeft;
+            i = parseInt(obj.getAttribute('data-navindex'));
+            if (!n) {
+                n = Math.ceil(w / (w + parseInt(obj.getAttribute('data-max'))));
+                // console.log(w, n);
+            }
+            // listCon.classList.toggle('drag', (locked = true));
+            locked = true;
+            _chatbot_toggleClassName('add', listCon, 'drag');
+
+            window.addEventListener('mousemove', drag, false);
+            window.addEventListener('touchmove', drag, false);
+
+            window.addEventListener('mouseup', move, false);
+            window.addEventListener('touchend', move, false);
+        }
+
+        function drag(e) {
+            if (e.type == 'mousemove') e.preventDefault();
+            if (locked) {
+                fl.style.setProperty('margin-left', parseInt(ml) + Math.round(unify(e).clientX - x0) + 'px');
+            }
+        }
+
+        function move(e) {
+            if (locked) {
+                var dx = unify(e).clientX - x0,
+                    s = dx ? dx < 0 ? -1 : 1 : 0,
+                    // s = Math.sign(dx), ie not support
+                    f = +(s * dx / w).toFixed(2);
+                f = w >= 400 ? (f * 1.8).toFixed(2) : f;
+                if ((i > 0 || s < 0) && (i < n || s > 0) && f > .2) {
+                    i -= s;
+                    // obj.setAttribute('data-navindex', i);
+                    // _chatbot_moveList(obj, i);
+                    f = 1 - f;
+                }
+                _chatbot_moveList(obj, i);
+                // fl.removeAttribute('style');
+                // listCon.classList.toggle('drag', (locked = false));
+                locked = false;
+                _chatbot_toggleClassName('remove', listCon, 'drag');
+                x0 = null;
+
+                window.removeEventListener('mousemove', drag, false);
+                window.removeEventListener('touchmove', drag, false);
+
+                window.removeEventListener('mouseup', move, false);
+                window.removeEventListener('touchend', move, false);
+            }
+        }
+
+        listCon.addEventListener('mousedown', lock, false);
+        listCon.addEventListener('touchstart', lock, false);
+    }
+
+    // 네비게이션에 따라 리스트 위치 조정 2019.03.15 추가
+    function _chatbot_moveList(obj, nowIndex) {
+        if (obj.className != "chatbot-imgCon") {
+
+            obj.querySelector("ul>li:first-child").removeAttribute("style");
+            var sw = parseInt(obj.getAttribute("data-slidewidth"));
+            var ss = parseInt(obj.getAttribute("data-slidestep"));
+            var maxIndex = parseInt(obj.getAttribute("data-maxIndex"));
+            nowIndex = nowIndex > maxIndex ? maxIndex : nowIndex;
+            var ml = sw * ss * nowIndex * -1;
+            obj.setAttribute("data-navindex", nowIndex);
+            obj.setAttribute("data-maxindex", maxIndex);
+            obj.querySelector("ul>li:first-child").style.marginLeft = ml + "px";
+        } else {
+            obj.setAttribute("data-navindex", nowIndex);
+            obj.querySelector("ul>li:first-child").removeAttribute("style");
+        }
+    }
+
+    // containerNav max 값 설정
+    function _chatbot_initContainerNavMax(obj) {
+        if (!obj.className.split(" ").indexOf("chatbot-imgCon")) return;
+        var ul = obj.querySelector("ul");
+        var lis = ul.querySelectorAll("li");
+        var ulstyle = window.getComputedStyle(ul) || ul.currentStyle;
+        var listyle = window.getComputedStyle(lis[0]) || lis[0].currentStyle;
+        obj.setAttribute("data-slidewidth", parseInt(listyle.width) + parseInt(listyle.marginRight));
+        var ss = Math.floor(parseInt(ulstyle.width) / parseInt(listyle.width));
+        obj.setAttribute("data-slidestep", ss);
+        obj.setAttribute("data-maxindex", Math.ceil(lis.length / ss - 1));
+        _chatbot_moveList(obj, parseInt(obj.getAttribute("data-navindex"))); // 2019.03.15 추가
+    }
+
+    // 만족도 선택에 따른 콘테이너 클래스명 변경
+    function _chatbot_initSatisfactionSurvey(item) {
+        var objs = Array.prototype.slice.call(
+            item.querySelectorAll('input[type="radio"]')
+        );
+        objs.map(function (obj) {
+            obj.addEventListener("click", function () {
+                _chatbot_toggleClassName("remove", item, "negative");
+                _chatbot_toggleClassName("remove", item, "positive");
+                var target = event.target ? event.target : this;
+                if (target.value == "positive") {
+                    _chatbot_toggleClassName("add", item, "positive");
+                } else {
+                    _chatbot_toggleClassName("add", item, "negative");
+                }
+                cbFunc.survey(target);
+                item.querySelectorAll('input[type="checkbox"]')[0].click();
+            });
+        });
+    }
+
+    //클래스명 토글 함수
+    function _chatbot_toggleClassName(status, obj, txt) {
+        if (!obj) {
+//            console.log('Object not found. Please check the javascript.');
+            return;
+        }
+        var cn = obj.className.split(" ");
+
+        if (status == "add") {
+            var addPlan = true;
+//            console.log(cn);
+            for (var c = 0; c < cn.length && addPlan == true; c++) {
+                if (cn[c] == txt) {
+                    addPlan = false;
+                }
+            }
+            if (addPlan) {
+                cn.push(txt);
+            }
+        } else {
+            var k = cn.indexOf(txt);
+            while (k > -1) {
+                cn.splice(k, 1);
+                k = cn.indexOf(txt);
+            }
+        }
+        obj.className = cn.join(" ");
+    }
+
+    // function _chatbot_toggleClassName(status, obj, txt) {
+    //     var cn = obj.className.split(" ");
+    //     if (status == "add") {
+    //         cn.push(txt);
+    //     } else {
+    //         while (cn.indexOf(txt) > -1) {
+    //             var k = cn.indexOf(txt);
+    //             // console.log(k)
+    //             cn.splice(k, 1);
+    //         }
+    //     }
+    //     obj.className = cn.join(" ");
+    // }
+
+    // 챗봇 창 크기 변경
+    function _chatbot_resize(event) {
+        event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+        var transparentDimmed = document.createElement('div');
+        transparentDimmed.className = "transparentDimmed";
+        document.body.appendChild(transparentDimmed);
+
+        var ww = getWindowWidth();
+        var wh = getWindowHeight();
+
+        var con = document.querySelectorAll("div.chatbot-container")[0];
+        var style = window.getComputedStyle(con) || con.currentStyle;
+        if (style.display == "none") return;
+        var ox = event.clientX,
+            oy = event.clientY;
+        var ow = parseInt(style.width),
+            oh = parseInt(style.height),
+            ob = parseInt(style.bottom),
+            or = parseInt(style.right),
+            mw = parseInt(style.minWidth),
+            mh = parseInt(style.minHeight);
+        var cls = event.target ?
+            event.target.className.replace("chatbot-", "") :
+            this.className.replace("chatbot-", "");
+        var nw = ow,
+            nh = oh,
+            nb = ob,
+            nr = or;
+
+        function _chatbot_resizeProcess(event) {
+            var dx = ox - event.clientX,
+                dy = oy - event.clientY;
+
+            function _chatbot_resizeCalc_t() {
+                nh = oh + dy + ob > wh ? wh - ob : oh + dy;
+            }
+
+            function _chatbot_resizeCalc_l() {
+                nw = ow + dx + or > ww ? ww - or : ow + dx;
+            }
+
+            function _chatbot_resizeCalc_r() {
+                nr = ow - dx > mw ? or + dx : null;
+                nw = nr && nr >= 0 ? ow - dx : null;
+            }
+
+            function _chatbot_resizeCalc_b() {
+                nb = oh - dy > mh ? ob + dy : null;
+                nh = nb && nb >= 0 ? oh - dy : null;
+            }
+            switch (cls) {
+                case "t":
+                    _chatbot_resizeCalc_t();
+                    break;
+                case "l":
+                    _chatbot_resizeCalc_l();
+                    break;
+                case "lt":
+                    _chatbot_resizeCalc_l();
+                    _chatbot_resizeCalc_t();
+                    break;
+                case "r":
+                    _chatbot_resizeCalc_r();
+                    break;
+                case "b":
+                    _chatbot_resizeCalc_b();
+                    break;
+                case "rt":
+                    _chatbot_resizeCalc_r();
+                    _chatbot_resizeCalc_t();
+                    break;
+                case "rb":
+                    _chatbot_resizeCalc_r();
+                    _chatbot_resizeCalc_b();
+                    break;
+                case "lb":
+                    _chatbot_resizeCalc_l();
+                    _chatbot_resizeCalc_b();
+                    break;
+            }
+            if (nw <= mw && nw) nw = mw;
+            if (nh <= mh && nh) nh = mh;
+            if (nr <= 0 && nr) nr = 0;
+            if (nb <= 0 && nb) nb = 0;
+
+            if (nh) con.style.height = nh + "px";
+            if (nw) con.style.width = nw + "px";
+            if (nr) con.style.right = nr + "px";
+            if (nb) con.style.bottom = nb + "px";
+        }
+
+        function _chatbot_removeEvent() {
+            document.body.removeChild(document.querySelectorAll('.transparentDimmed')[0]);
+            document.removeEventListener("mousemove", _chatbot_resizeProcess, false);
+            document.removeEventListener("mouseup", _chatbot_removeEvent, false);
+            var navIndex = Array.prototype.slice.call(
+                document.querySelectorAll("div[data-navindex]")
+            );
+            navIndex.map(function (item) {
+                // 시작메뉴, 채용공고 등 네비게이션이 있는 콘텐츠의 경우 스크롤 값 다시 설정
+                _chatbot_initContainerNavMax(item);
+            });
+
+            // console.log("[RESIZ]")
+            cbFunc.rsCb();
+            cbFunc.wmCb();
+        }
+        document.addEventListener("mousemove", _chatbot_resizeProcess);
+        document.addEventListener("mouseup", _chatbot_removeEvent);
+    }
+
+    // 챗봇 위치 변경
+    function _chatbot_reposition(event) {
+        event.preventDefault ? event.preventDefault() : (event.returnValue = false);
+        var transparentDimmed = document.createElement('div');
+        transparentDimmed.className = "transparentDimmed";
+        document.body.appendChild(transparentDimmed);
+        var con = document.querySelectorAll("div.chatbot-container")[0];
+        var style = window.getComputedStyle(con) || con.currentStyle;
+        if (style.display == "none") return;
+        var ox, oy;
+
+        if (event.touches) {
+            ox = event.touches[0].clientX;
+            oy = event.touches[0].clientY;
+        } else {
+            ox = event.clientX;
+            oy = event.clientY;
+        }
+        var ow = parseInt(style.width),
+            oh = parseInt(style.height),
+            ob = parseInt(style.bottom),
+            or = parseInt(style.right);
+        var nr = or,
+            nb = ob;
+        var winWidth = 0,
+            winHeight = 0;
+        if (typeof window.innerWidth == "number") {
+            //Non-IE
+            winWidth = window.innerWidth;
+            winHeight = window.innerHeight;
+        } else if (
+            document.documentElement &&
+            (document.documentElement.clientWidth ||
+                document.documentElement.clientHeight)
+        ) {
+            //IE 6+ in 'standards compliant mode'
+            winWidth = document.documentElement.clientWidth;
+            winHeight = document.documentElement.clientHeight;
+        } else if (
+            document.body &&
+            (document.body.clientWidth || document.body.clientHeight)
+        ) {
+            //IE 4 compatible
+            winWidth = document.body.clientWidth;
+            winHeight = document.body.clientHeight;
+        }
+
+        function _chatbot_repositionProcess(event) {
+            var dx, dy;
+            if (event.touches) {
+                dx = ox - event.touches[0].clientX;
+                dy = oy - event.touches[0].clientY;
+            } else {
+                dx = ox - event.clientX;
+                dy = oy - event.clientY;
+            }
+            nr = or + dx;
+            nb = ob + dy;
+            if (nr >= 0 && nr + ow <= winWidth - 20) con.style.right = nr + "px";
+            if (nb >= 0 && nb + oh <= winHeight - 5) con.style.bottom = nb + "px";
+        }
+
+        function _chatbot_removeEvent() {
+            document.body.removeChild(
+                document.querySelectorAll(".transparentDimmed")[0]
+            );
+            if (event.touches) {
+                document.removeEventListener("touchmove", _chatbot_repositionProcess, false);
+                document.removeEventListener("touchend", _chatbot_removeEvent, false);
+            } else {
+                document.removeEventListener("mousemove", _chatbot_repositionProcess, false);
+                document.removeEventListener("mouseup", _chatbot_removeEvent, false);
+            }
+
+            // console.log("[REPOS]")
+            cbFunc.rsCb();
+            cbFunc.wmCb();
+        }
+
+        if (event.touches) {
+//            console.log(event.type.indexOf("touch"));
+            document.addEventListener("touchmove", _chatbot_repositionProcess, false);
+            document.addEventListener("touchend", _chatbot_removeEvent, false);
+        } else {
+            document.addEventListener("mousemove", _chatbot_repositionProcess, false);
+            document.addEventListener("mouseup", _chatbot_removeEvent, false);
+        }
+    }
+
+    function getWindowWidth() {
+        return Math.max(
+            // document.body.scrollWidth,
+            // document.documentElement.scrollWidth,
+            document.body.offsetWidth,
+            document.documentElement.offsetWidth,
+            document.documentElement.clientWidth
+        );
+    }
+
+    function getWindowHeight() {
+        return Math.max(
+            // document.body.scrollHeight,
+            // document.documentElement.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.offsetHeight,
+            document.documentElement.clientHeight
+        );
+    }
+
+    // 챗봇 도움말 열기 + 도움말 메뉴 선택
+    function _chatbot_openHelper(id) {
+        var helper = document.querySelectorAll('article.chatbot-helper')[0];
+        _chatbot_toggleClassName("add", helper, 'active');
+        if (!id || id == "" || id == undefined) id = "location";
+        if (!helper.querySelector("#chatbotHelper_" + id).checked) {
+            helper.querySelector("#chatbotHelper_" + id).click();
+        }
+        helper.focus();
+    }
+
+    // 챗봇 열기
+    function _chatbot_open() {
+//console.log("_chatbot_open============");
+        var chatbotCon = document.querySelectorAll(".chatbot-container")[0];
+        var chatbotComeback = document.querySelectorAll(".chatbot-comeback")[0];
+        var chatbotStart = document.querySelectorAll(".chatbot-start")[0];
+        _chatbot_toggleClassName('remove', chatbotCon, 'disabled');
+        if(!util.detectMob())	//2020.10.14 bokking, 모바일에서는 최소화 버튼 안보이도록
+        	_chatbot_toggleClassName('add', chatbotComeback, 'disabled');
+        _chatbot_toggleClassName("add", chatbotStart, "disabled");
+        _chatbot_toggleClassName("add", document.body, "fix-for-chatbot");
+        chatbotCon.focus();
+
+        if (!_chatbot_getCookie('chatbotQuickGuide')) {
+            var con = document.querySelector('.chatbot-container');
+            var qg = document.querySelector('.chatbot-quickGuide');
+            _chatbot_toggleClassName('remove', qg, 'disabled');
+            qg.focus();
+            setTimeout(function () {
+                var rbtn = document.querySelector('.chatbot-quickGuide button.chatbot-recruitment');
+                if (!!rbtn) {
+                    var rbtnClone = qg.querySelector('div.chatbot-recruitment');
+                    rbtnClone.style.top = rbtn.getBoundingClientRect().top - qg.getBoundingClientRect().top + 'px';
+                    var rbtnCloneN = qg.querySelector('div.chatbot-recruitment + div');
+                    rbtnCloneN.style.top = rbtn.getBoundingClientRect().top - qg.getBoundingClientRect().top + rbtnClone.offsetHeight * 1.15 + 'px';
+                }
+            }, 500);
+
+            var clsBtns = Array.prototype.slice.call(qg.querySelectorAll('.chatbot_qgclose'));
+            clsBtns.map(function (clsBtn) {
+                clsBtn.addEventListener('click', function () {
+                    _chatbot_closeQuickGuide();
+                });
+            });
+
+            var qgArticle = Array.prototype.slice.call(document.querySelectorAll(".chatbot-quickGuide > article"));
+            var qgNav = document.querySelectorAll(".chatbot-quickGuide > input");
+            Array.prototype.slice.call(qgNav).map(function (nav) {
+                nav.addEventListener('change', function (e) {
+//                    console.log(e.target.id);
+                    switch (e.target.id) {
+                        case "chatbot-quickGuide-nav-3":
+                            if (e.target.checked && !document.querySelector('#chatbotMenuToggle').checked) {
+                                document.querySelector('#chatbotMenuToggle').click();
+                            }
+                            break;
+                        default:
+                            if (e.target.checked && document.querySelector('#chatbotMenuToggle').checked) {
+                                document.querySelector('#chatbotMenuToggle').click();
+                            }
+                    }
+                })
+            });
+            qgNav[0].click();
+            qgArticle.map(function (item) {
+                item.addEventListener('click', function () {
+                    var order = parseInt(item.className.split('chatbot-quickGuide-')[1]);
+                    if (qgNav[order]) {
+                        qgNav[order].click();
+                        $(qgNav[order]).siblings('.chatbot-quickGuide-'+(order+1)).find('button').focus();
+                    } else {
+                        _chatbot_closeQuickGuide();
+                    }
+                });
+            });
+        }
+
+        var chatbotMenuToggle = document.querySelector("#chatbotMenuToggle");
+        document.querySelector('#chatbotMenuToggle').setAttribute('tabindex', '0'); //햄버거 버튼 포커스 허용
+        //[...document.querySelector('#chatbotSendmessage').parentElement.children].filter(e => e.matches('button'))[0].setAttribute('tabindex', '0'); //전송 버튼 포커스 허용
+        [...document.querySelector('#chatbotSendmessage').parentElement.children].filter(e => e.matches('button'))[0].setAttribute('id', 'chatbotMsgSubmitBtn'); //전송 버튼 클래스명 부여
+        document.querySelector('#chatbotMsgSubmitBtn').setAttribute('tabindex', '0'); //전송 버튼 포커스 허용
+        chatbotMenuToggle.removeEventListener('change', _chatbot_menuToggle, false);
+        chatbotMenuToggle.addEventListener('change', _chatbot_menuToggle, false);
+    }
+
+    var _chatbot_menuToggleTimeout;
+    // 햄버거 메뉴 이벤트 처리
+    function _chatbot_menuToggle(event) {
+        if (event.target.checked) {
+            setTimeout(function () {
+                window.addEventListener('click', _chatbot_menuToggle_hide, false);
+            }, 1);
+            _chatbot_menuToggleTimeoutListener(event);
+            window.addEventListener('mousemove', _chatbot_menuToggleTimeoutListener, false);
+            window.addEventListener('keyup', _chatbot_menuToggleTimeoutListener, false);
+            window.addEventListener('keydown', _chatbot_menuToggleTimeoutListener, false);
+        }
+    }
+
+    function _chatbot_menuToggle_hide(event) {
+        if (!event || event && event.target.getAttribute("for") != "chatbotMenuToggle") {
+            var chatbotMenuToggle = document.querySelector("#chatbotMenuToggle");
+            chatbotMenuToggle.checked = false;
+            window.removeEventListener('click', _chatbot_menuToggle_hide, false);
+            if (_chatbot_menuToggleTimeout) clearTimeout(_chatbot_menuToggleTimeout, false);
+            window.removeEventListener('mousemove', _chatbot_menuToggleTimeoutListener, false);
+            window.removeEventListener('keyup', _chatbot_menuToggleTimeoutListener, false);
+            window.removeEventListener('keydown', _chatbot_menuToggleTimeoutListener, false);
+        }
+    }
+
+    function _chatbot_menuToggleTimeoutListener(event) {
+        if (_chatbot_menuToggleTimeout) clearTimeout(_chatbot_menuToggleTimeout);
+        _chatbot_menuToggleTimeout = setTimeout(_chatbot_menuToggle_hide, 3000);
+    }
+
+    // 챗봇 컴백 버튼 삭제
+    function _chatbot_comeback_cls() {
+        var chatbotComeback = document.querySelectorAll(".chatbot-comeback")[0];
+        if(!util.detectMob())	//2020.10.14 bokking, 모바일에서는 최소화 버튼 안보이도록
+        	_chatbot_toggleClassName("add", chatbotComeback, "disabled");
+    }
+
+    // 챗봇 숨기기
+    function _chatbot_minimize() {
+        var chatbotCon = document.querySelectorAll(".chatbot-container")[0];
+        var chatbotComeback = document.querySelectorAll(".chatbot-comeback")[0];
+        _chatbot_toggleClassName("add", chatbotCon, "disabled");
+        if(!util.detectMob())	//2020.10.14 bokking, 모바일에서는 최소화 버튼 안보이도록
+        	_chatbot_toggleClassName('remove', chatbotComeback, 'disabled');
+    }
+
+    // 챗봇 퀵가이드 닫기(+쿠키저장)
+    function _chatbot_closeQuickGuide() {
+        if (document.querySelector('#chatbotMenuToggle').checked) {
+            document.querySelector('#chatbotMenuToggle').click();
+        }
+        var qg = document.querySelector('.chatbot-quickGuide');
+        _chatbot_toggleClassName('add', qg, 'disabled');
+        _chatbot_setCookie('chatbotQuickGuide', 'cookieForChatbotQuickGuide', 1000);
+        var chatbotCon = document.querySelectorAll(".chatbot-container")[0];
+        chatbotCon.focus();
+    }
+
+    // 쿠키 생성
+    function _chatbot_setCookie(cName, cValue, cDay) {
+        var expire = new Date();
+        expire.setDate(expire.getDate() + cDay);
+        cookies = cName + '=' + escape(cValue) + '; path=/ '; // 한글 깨짐을 막기위해 escape(cValue)를 합니다.
+        if (typeof cDay != 'undefined') cookies += ';expires=' + expire.toGMTString() + ';';
+        document.cookie = cookies;
+    }
+
+    // 쿠키 가져오기
+    function _chatbot_getCookie(cName) {
+        cName = cName + '=';
+        var cookieData = document.cookie;
+        var start = cookieData.indexOf(cName);
+        var cValue = '';
+        if (start != -1) {
+            start += cName.length;
+            var end = cookieData.indexOf(';', start);
+            if (end == -1) end = cookieData.length;
+            cValue = cookieData.substring(start, end);
+        }
+        return unescape(cValue);
+    }
+
+    function _chatbot_isIE() {
+        var myNav = navigator.userAgent.toLowerCase();
+        return (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) : false;
+    }
+
+    // for requirejs - start
+    // window.addEventListener('load', function () {
+    function process(instance) {
+        // for requirejs - end
+
+        // 콜백함수 - resize, reposition
+        cbFunc.rsCb = instance.rsCb;
+        cbFunc.wmCb = instance.wmCb;
+        cbFunc.survey = instance.survey;
+        cbFunc.clearHelp = instance.clearHelp;
+
+        if (!document.querySelector('div#side-manu') || !document.querySelector('footer#quickbar')) {
+            _chatbot_toggleClassName("add", document.querySelector('html'), "web");
+        }
+
+        // 챗봇 열기 / 닫기 버튼
+        var chatbotCon = document.querySelectorAll(".chatbot-container")[0];
+        var chatbotComeback = document.querySelectorAll(".chatbot-comeback")[0];
+        var chatbotClsBtn = document.querySelectorAll("article.chatbot header button.minimum")[0];
+        // var chatbotRestoreBarClsBtn = document.querySelectorAll(".chatbot-comeback-btn-cls")[0];
+        chatbotClsBtn.addEventListener("click", function (event) {	//챗봇 화면 최소화 버튼
+
+            _chatbot_toggleClassName("add", chatbotCon, "disabled");
+            if(!util.detectMob())	//2020.10.14 bokking, 모바일에서는 최소화 버튼 안보이도록
+            	_chatbot_toggleClassName('remove', chatbotComeback, 'disabled');
+            _chatbot_toggleClassName("remove", document.body, "fix-for-chatbot");
+
+            sessionStorage.setItem(util.wncbConst.ssid.minimum_status, 0);	//챗봇 창이 최소화되면 최소화상태 0
+
+            //2020.10.16 bokking, 챗봇 창 최소화 시 클릭이벤트 활성화(worknet-cb-main.js > initChatBot 함수에서 클릭 이벤트가 비황성화 됨)
+            document.querySelectorAll(".quick_chatbot")[0].addEventListener("click", function(event){
+				console.log("여기도 탄다고~~~~~~~~~~~~~~");
+            	_chatbot_open();
+            	sessionStorage.setItem(util.wncbConst.ssid.minimum_status, 1);	//챗봇 창이 최소화되면 최소화상태 초기화
+            });
+
+        });
+        chatbotComeback.addEventListener("click", function (event) {	//챗봇 최소화 복귀 버튼
+            _chatbot_toggleClassName("remove", chatbotCon, "disabled");
+            if(!util.detectMob())	//2020.10.14 bokking, 모바일에서는 최소화 버튼 안보이도록
+            	_chatbot_toggleClassName('add', chatbotComeback, 'disabled');
+            _chatbot_toggleClassName("add", document.body, "fix-for-chatbot");
+        });
+        var chatbotSendmessage = document.querySelector('#chatbotSendmessage');
+        chatbotSendmessage.addEventListener("focus", function (event) {
+            $('.chatbot-msgCon').stop().animate({
+                scrollTop: $('.chatbot-msgCon')[0].scrollHeight
+            }, 500, 'swing');
+            setTimeout(function () {
+                $('.chatbot-msgCon').stop().animate({
+                    scrollTop: $('.chatbot-msgCon')[0].scrollHeight
+                }, 500, 'swing');
+            }, 500);
+        });
+
+        chatbotSendmessage.addEventListener("blur", function (event) {
+            _chatbot_toggleClassName("add", document.body, "switch");
+            document.body.scrollTop = 0;
+            setTimeout(function () {
+                _chatbot_toggleClassName("remove", document.body, "switch");
+            }, 1);
+        });
+        var navIndex = Array.prototype.slice.call(
+            document.querySelectorAll("div[data-navindex]")
+        );
+        navIndex.map(function (item) {
+            // 시작메뉴, 채용공고 등 네비게이션이 있는 콘텐츠의 경우 초기화 실행
+            _chatbot_initContainerNav(item);
+        });
+
+        var satisfactionSurveys = Array.prototype.slice.call(
+            document.querySelectorAll("div.chatbot-satisfactionSurvey")
+        );
+        satisfactionSurveys.map(function (item) {
+            // 만족도 조사가 포함된 글상자의 경우 초기화 실행
+            _chatbot_initSatisfactionSurvey(item);
+        });
+
+        // 레이어팝업 닫기 버튼
+        var popups = Array.prototype.slice.call(document.querySelectorAll(".chatbot-popup"));
+        popups.map(function (popup) {
+            var btn = popup.querySelectorAll("header>button")[0];
+            if (!btn) return;
+            btn.addEventListener("click", function () {
+                _chatbot_toggleClassName("remove", popup, "active");
+                cbFunc.clearHelp();
+            });
+        });
+
+        // 도움말 하위 메뉴 선택
+        var chatbotHelperSelectors = Array.prototype.slice.call(
+            document.querySelectorAll("input[name='chatbotHelperSelector']")
+        );
+        var chatbotSwitch = document.querySelector("#chatbotHelperNavSwitch");
+        chatbotSwitch.addEventListener("change", function () {
+            if (chatbotSwitch.checked) {
+                var target = document.querySelector("input[name='chatbotHelperSelector']:checked");
+                target.focus();
+            }
+        });
+        chatbotHelperSelectors.map(function (selector) {
+            var selected;
+            selector.addEventListener("change", function () {
+                if (selector.checked) {
+                    selected = selector;
+                    chatbotHelperSelectors.map(function (_selector) {
+                        if (selector != _selector) {
+                            _selector.checked = false;
+                        }
+                    });
+                }
+                if (chatbotSwitch.checked) {
+                    chatbotSwitch.checked = false;
+                    chatbotSwitch.focus();
+                }
+                selected.checked = true;
+            });
+        });
+
+        // 리사이즈 핸들러 초기화 실행
+        var resizers = Array.prototype.slice.call(
+            document.querySelectorAll(".chatbot-resizeHandler>span")
+        );
+        resizers.map(function (resizer) {
+            resizer.addEventListener("mousedown", function (event) {
+                _chatbot_resize(event);
+            });
+        });
+
+        // reposition handler initialization
+        var repositioner = document.querySelectorAll(".chatbot-repositionHandler")[0];
+        repositioner.addEventListener("mousedown", function (event) {
+            _chatbot_reposition(event);
+        });
+        repositioner.addEventListener("touchstart", function (event) {
+            _chatbot_reposition(event);
+        });
+
+        window.addEventListener('resize', function () {
+            var ww = getWindowWidth(),
+                wh = getWindowHeight();
+            var style = window.getComputedStyle(chatbotCon) || chatbotCon.currentStyle,
+                cw = parseInt(style.width),
+                ch = parseInt(style.height),
+                cr = parseInt(style.right),
+                cb = parseInt(style.bottom);
+            if (ww < cw + cr && ww > cw) {
+                chatbotCon.style.right = ww - cw + 'px';
+            }
+            if (wh < ch + cb && wh > ch) {
+                chatbotCon.style.bottom = wh - ch + 'px';
+            }
+        });
+
+        // ie 9 관련 시작 버튼 및 다시 시작 버튼 애니메이션 처리
+        if (_chatbot_isIE() && _chatbot_isIE() <= 9) {
+            // is IE version less than 9
+            var chatbotFncBtn = Array.prototype.slice.call(document.querySelectorAll(".chatbot-fnc-btn button"));
+            var chatbotFncBtnTimerInterval = 0;
+            var chatbotFncFadeTimer, chatbotFncFadeOpacity = 0;
+            var chatbotFncBubbleFadeAniCls = true;
+            setTimeout(chatbotFncBubbleFade, chatbotFncBtnTimerInterval);
+
+            function chatbotFncBubbleFade() {
+                if (chatbotFncBtnTimerInterval == 0 || chatbotFncBtnTimerInterval == 12 * 1000) {
+                    chatbotFncBtnTimerInterval = 3 * 1000;
+                    chatbotFncBubbleFadeAniCls = true;
+                    chatbotFncFadeTimer = setInterval(chatbotFncBubbleFadeAni, 1);
+                } else if (chatbotFncBtnTimerInterval == 3 * 1000) {
+                    chatbotFncBtnTimerInterval = 12 * 1000;
+                    chatbotFncBubbleFadeAniCls = false;
+                    chatbotFncFadeTimer = setInterval(chatbotFncBubbleFadeAni, 1);
+                }
+                setTimeout(chatbotFncBubbleFade, chatbotFncBtnTimerInterval);
+            }
+
+            function chatbotFncBubbleFadeAni() {
+                clearInterval(chatbotFncFadeTimer);
+                if (chatbotFncBubbleFadeAniCls) {
+                    chatbotFncFadeOpacity += 1;
+                } else {
+                    chatbotFncFadeOpacity -= 1;
+                }
+
+                chatbotFncBtn.map(function (btn) {
+                    var now = btn.getAttribute('data-now') * 1;
+                    if (!now) now = 1;
+                    var ns = btn.querySelector('span:nth-of-type(' + now + ')');
+                    ns.style.opacity = chatbotFncFadeOpacity * 0.01;
+                    if (!chatbotFncBubbleFadeAniCls && chatbotFncFadeOpacity == 0) {
+                        var next = btn.querySelector('span:nth-of-type(' + (now + 1) + ')') ? now + 1 : 1;
+                        btn.setAttribute('data-now', next);
+                    }
+                });
+
+                if (chatbotFncBubbleFadeAniCls && chatbotFncFadeOpacity < 100 || !chatbotFncBubbleFadeAniCls && chatbotFncFadeOpacity > 0) {
+                    chatbotFncFadeTimer = setInterval(chatbotFncBubbleFadeAni, 1);
+                }
+            }
+        }
+
+        // for requirejs - start
+    }
+    return {
+        setNavEvent: _chatbot_initContainerNav,
+        setSurveyEvent: _chatbot_initSatisfactionSurvey,
+        // restoreChatBotWindow: restoreChatBotWindow,
+        // minimizeChatBotWindow: minimizeChatBotWindow,
+        openHelp: _chatbot_openHelper,
+        open: _chatbot_open,
+        minimize: _chatbot_minimize,
+        process: process
+    };
+});
+// for requirejs - end
