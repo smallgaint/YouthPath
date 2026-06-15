@@ -8,7 +8,7 @@
 
 ## 🎬 시연 영상
 
-- ▶️ 시연 영상: [`docs/demo.mp4`](docs/demo.mp4) (저장소 내 파일, Git LFS 저장)
+- ▶️ 시연 영상: [`docs/demo.mp4`](docs/demo.mp4)
 
 ---
 
