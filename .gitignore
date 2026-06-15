@@ -35,4 +35,3 @@ week0/*
 # OMC 툴 상태 / 에이전트 출력 (커밋 금지)
 .omc/
 agent_outputs/
-*.mp4
