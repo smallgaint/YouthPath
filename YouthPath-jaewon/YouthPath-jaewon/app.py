@@ -296,41 +296,56 @@ if st.session_state.page == "home":
         target_role = ", ".join(target_roles)
         target_company = ", ".join(target_companies)
 
-        response = requests.post(
-            "http://127.0.0.1:8000/ask",
-            json={
-                "query": query,
-                "profile": {
-                    "age": age,
-                    "region": region,
-                    "income": income,
-                    "education": education,
-                    "skills": skills,
-                    "experience": experience,
-                    "experience_y": experience,
-                    "target_role": target_role,
-                    "target_roles": target_roles,
-                    "target_company": target_company,
-                    "target_companies": target_companies
-                }
-            }
-        )
+        try:
+            response = requests.post(
+                "http://127.0.0.1:8000/ask",
+                json={
+                    "query": query,
+                    "profile": {
+                        "age": age,
+                        "region": region,
+                        "income": income,
+                        "education": education,
+                        "skills": skills,
+                        "experience": experience,
+                        "experience_y": experience,
+                        "target_role": target_role,
+                        "target_roles": target_roles,
+                        "target_company": target_company,
+                        "target_companies": target_companies
+                    }
+                },
+                timeout=120  # 2분 타임아웃
+            )
+            response.raise_for_status() # 4xx, 5xx 에러 발생 시 예외 발생
 
-        response_data = response.json()
-        
-        # --- 터미널 디버깅 출력 ---
-        print("\n" + "="*60)
-        print("🛠️ [디버깅] 각 Agent별 응답 JSON 데이터")
-        print("="*60)
-        for agent_name in ["policy", "job", "resume", "calendar"]:
-            if response_data.get(agent_name):
-                print(f"\n[{agent_name.upper()} AGENT]")
-                print(json.dumps(response_data[agent_name], ensure_ascii=False, indent=2))
-        print("="*60 + "\n")
+            response_data = response.json()
+            
+            # --- 터미널 디버깅 출력 ---
+            print("\n" + "="*60)
+            print("🛠️ [디버깅] 각 Agent별 응답 JSON 데이터")
+            print("="*60)
+            for agent_name in ["policy", "job", "resume", "calendar"]:
+                if response_data.get(agent_name):
+                    print(f"\n[{agent_name.upper()} AGENT]")
+                    print(json.dumps(response_data[agent_name], ensure_ascii=False, indent=2))
+            print("="*60 + "\n")
 
-        st.session_state.response_data = response_data
-        st.session_state.page = "output"
-        st.rerun()
+            st.session_state.response_data = response_data
+            st.session_state.page = "output"
+            st.rerun()
+        except requests.exceptions.RequestException as e:
+            st.error(f"백엔드 서버 연결에 실패했습니다: {e}")
+            print(f"🚨 백엔드 연결 오류: {e}")
+        except json.JSONDecodeError:
+            st.error("백엔드 서버로부터 유효하지 않은 응답을 받았습니다. 서버 로그를 확인해주세요.")
+            print("\n" + "="*60)
+            print("🚨 JSONDecodeError: 백엔드 응답이 유효한 JSON이 아닙니다.")
+            print("="*60)
+            print(f"Status Code: {response.status_code}")
+            print("--- Response Text ---")
+            print(response.text)
+            print("="*60 + "\n")
 
     st.markdown("### 💡 예시 질문")
 

@@ -15,34 +15,6 @@
         },
         "saved_events": [
             {
-                "title": "sdfasdf",
-                "date": "2026-06-15",
-                "source": "policy",
-                "link": "",
-                "type": "정책 마감"
-            },
-            {
-                "title": "gebfnb",
-                "date": "2026-06-18",
-                "source": "job",
-                "link": "",
-                "type": "채용 마감"
-            },
-            {
-                "title": "asg",
-                "date": "2026-06-24",
-                "source": "other",
-                "link": "",
-                "type": "기타"
-            },
-            {
-                "title": "국민건강보험공단 - 2026년도 하반기 국민건강보험공단 기간제근로자 채용 공고",
-                "date": "2026-06-23",
-                "type": "채용",
-                "source": "job",
-                "link": ""
-            },
-            {
                 "title": "스타트업AI기술인력양성(이어드림스쿨)",
                 "date": "2026-05-10",
                 "type": "정책",
@@ -55,6 +27,13 @@
                 "type": "정책",
                 "source": "policy",
                 "link": ""
+            },
+            {
+                "title": "2026년 청년 학자금대출 장기연체자 지원사업",
+                "date": "2026-11-30",
+                "type": "정책",
+                "source": "policy",
+                "link": "https://apply.jobaba.net"
             }
         ]
     }
